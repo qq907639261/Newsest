@@ -14,7 +14,6 @@ public interface Contract {
         String TABLE_NAME = "news";
         Uri URI = Uri.parse("content://com.xhbb.qinzl.newsest/" + TABLE_NAME);
 
-        String _ALL_PAGES = "all_pages";
         String _TITLE = "title";
         String _PUBLISH_DATE = "publish_date";
         String _SOURCE_WEB = "source_web";

@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">最新闻</string>
+    <string name="key_news_total_pages">news_total_pages</string>
 </resources>
