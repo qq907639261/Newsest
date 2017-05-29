@@ -1,10 +1,8 @@
 package com.xhbb.qinzl.newsest.server;
 
 import android.content.ContentValues;
-import android.content.Context;
 
 import com.xhbb.qinzl.newsest.data.Contract.NewsEntry;
-import com.xhbb.qinzl.newsest.data.PreferencesUtils;
 import com.xhbb.qinzl.newsest.server.JsonUtils.JsonNews.ShowApiResBodyObject.PageBeanObject.ContentListArray;
 
 import org.json.JSONArray;
@@ -20,14 +18,18 @@ import java.util.List;
 
 public class JsonUtils {
 
-    public static List<ContentValues> getNewsValuesList(Context context, String jsonString)
+    public static ContentValues[] getNewsValuesArray(String jsonString)
             throws JSONException {
         JSONObject jsonNews = new JSONObject(jsonString);
         JSONObject showApiResBodyObject = jsonNews.getJSONObject(JsonNews.SHOW_API_RES_BODY);
         JSONObject pageBeanObject = showApiResBodyObject.getJSONObject(JsonNews.ShowApiResBodyObject.PAGE_BEAN);
 
         int totalPages = pageBeanObject.getInt(JsonNews.ShowApiResBodyObject.PageBeanObject.ALL_PAGES);
-        PreferencesUtils.saveNewsTotalPages(context, totalPages);
+        int currentPage = pageBeanObject.getInt(JsonNews.ShowApiResBodyObject.PageBeanObject.CURRENT_PAGE);
+
+        if (currentPage > totalPages) {
+            return null;
+        }
 
         JSONArray contentListArray = pageBeanObject.getJSONArray(JsonNews.ShowApiResBodyObject.PageBeanObject.CONTENT_LIST);
 
@@ -40,6 +42,7 @@ public class JsonUtils {
                 continue;
             }
 
+            String newsCode = contentListObject.getString(ContentListArray.ID);
             String title = contentListObject.getString(ContentListArray.TITLE);
             String publish_date = contentListObject.getString(ContentListArray.PUB_DATE);
             String source_web = contentListObject.getString(ContentListArray.SOURCE);
@@ -53,6 +56,7 @@ public class JsonUtils {
 
             ContentValues newsValues = new ContentValues();
 
+            newsValues.put(NewsEntry._NEWS_CODE, newsCode);
             newsValues.put(NewsEntry._TITLE, title);
             newsValues.put(NewsEntry._PUBLISH_DATE, publish_date);
             newsValues.put(NewsEntry._SOURCE_WEB, source_web);
@@ -63,7 +67,7 @@ public class JsonUtils {
             newsValuesList.add(newsValues);
         }
 
-        return newsValuesList;
+        return newsValuesList.toArray(new ContentValues[newsValuesList.size()]);
     }
 
     interface JsonNews {
@@ -77,17 +81,20 @@ public class JsonUtils {
             interface PageBeanObject {
 
                 String ALL_PAGES = "allPages";
+                String CURRENT_PAGE = "currentPage";
 
                 String CONTENT_LIST = "contentlist";
 
                 interface ContentListArray {
 
+                    String HAVE_PIC = "havePic";
+
+                    String ID = "id";
                     String TITLE = "title";
                     String PUB_DATE = "pubDate";
                     String SOURCE = "source";
                     String DESC = "desc";
                     String CONTENT = "content";
-                    String HAVE_PIC = "havePic";
 
                     String IMAGE_URLS = "imageurls";
 

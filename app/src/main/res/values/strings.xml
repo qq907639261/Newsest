@@ -1,4 +1,12 @@
 <resources>
     <string name="app_name">最新闻</string>
-    <string name="key_news_total_pages">news_total_pages</string>
+
+    <string name="recommendation">推荐</string>
+    <string name="society">社会</string>
+    <string name="technology">科技</string>
+    <string name="sports">体育</string>
+    <string name="military">军事</string>
+    <string name="finance">财经</string>
+    <string name="entertainment">娱乐</string>
+    <string name="game">游戏</string>
 </resources>

@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="news_type">
+        <item>@string/recommendation</item>
+        <item>@string/society</item>
+        <item>@string/technology</item>
+        <item>@string/sports</item>
+        <item>@string/military</item>
+        <item>@string/finance</item>
+        <item>@string/entertainment</item>
+        <item>@string/game</item>
+    </string-array>
+</resources>
