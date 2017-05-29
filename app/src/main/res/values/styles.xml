@@ -13,7 +13,7 @@
     </style>
 
     <style name="AppTitleTextAppearance" parent="TextAppearance.Widget.AppCompat.Toolbar.Title">
-        <item name="android:textColor">@color/titleTextColor</item>
+        <item name="android:textColor">@color/appBarTitleText</item>
     </style>
 
     <style name="AppTheme.NoActionBar">

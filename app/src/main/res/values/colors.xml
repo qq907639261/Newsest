@@ -4,5 +4,6 @@
     <color name="colorPrimaryDark">#303F9F</color>
     <color name="colorAccent">#FF4081</color>
 
-    <color name="titleTextColor">#ffffff</color>
+    <color name="appBarTitleText">#ffffff</color>
+    <color name="networkingFailedText">#ff0000</color>
 </resources>

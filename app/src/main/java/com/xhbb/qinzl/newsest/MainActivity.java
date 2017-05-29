@@ -1,34 +1,34 @@
 package com.xhbb.qinzl.newsest;
 
+import android.databinding.DataBindingUtil;
 import android.os.Bundle;
-import android.support.design.widget.TabLayout;
-import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
-import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
+
+import com.xhbb.qinzl.newsest.databinding.ActivityMainBinding;
+import com.xhbb.qinzl.newsest.viewmodel.Newsest;
 
 public class MainActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
-        setSupportActionBar((Toolbar) findViewById(R.id.toolbar));
-        ViewPager newsMasterViewPager = (ViewPager) findViewById(R.id.viewPager);
-        final TabLayout tabLayout = (TabLayout) findViewById(R.id.tabLayout);
-        tabLayout.setupWithViewPager(newsMasterViewPager);
-        newsMasterViewPager.setAdapter(new NewsMasterViewPagerAdapter(getSupportFragmentManager()));
+        ActivityMainBinding binding = DataBindingUtil.setContentView(this, R.layout.activity_main);
+
+        NewsMasterPagerAdapter newsMasterPagerAdapter = new NewsMasterPagerAdapter(getSupportFragmentManager());
+        Newsest newsest = new Newsest(this, newsMasterPagerAdapter);
+
+        binding.setNewsest(newsest);
     }
 
-    private class NewsMasterViewPagerAdapter extends FragmentPagerAdapter {
+    private class NewsMasterPagerAdapter extends FragmentPagerAdapter {
 
         private String[] mNewsTypeArray;
 
-        NewsMasterViewPagerAdapter(FragmentManager fm) {
-            super(fm);
+        NewsMasterPagerAdapter(FragmentManager fragmentManager) {
+            super(fragmentManager);
             mNewsTypeArray = getResources().getStringArray(R.array.news_type);
         }
 

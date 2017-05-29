@@ -1,6 +1,7 @@
 package com.xhbb.qinzl.newsest.server;
 
 import android.content.ContentValues;
+import android.support.annotation.NonNull;
 
 import com.xhbb.qinzl.newsest.data.Contract.NewsEntry;
 import com.xhbb.qinzl.newsest.server.JsonUtils.JsonNews.ShowApiResBodyObject.PageBeanObject.ContentListArray;
