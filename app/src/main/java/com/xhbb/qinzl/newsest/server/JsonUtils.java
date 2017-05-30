@@ -1,7 +1,6 @@
 package com.xhbb.qinzl.newsest.server;
 
 import android.content.ContentValues;
-import android.support.annotation.NonNull;
 
 import com.xhbb.qinzl.newsest.data.Contract.NewsEntry;
 import com.xhbb.qinzl.newsest.server.JsonUtils.JsonNews.ShowApiResBodyObject.PageBeanObject.ContentListArray;
@@ -19,7 +18,7 @@ import java.util.List;
 
 public class JsonUtils {
 
-    public static ContentValues[] getNewsValuesArray(String jsonString)
+    public static ContentValues[] getNewsValuesArray(String jsonString, String newsType)
             throws JSONException {
         JSONObject jsonNews = new JSONObject(jsonString);
         JSONObject showApiResBodyObject = jsonNews.getJSONObject(JsonNews.SHOW_API_RES_BODY);
@@ -62,8 +61,9 @@ public class JsonUtils {
             newsValues.put(NewsEntry._PUBLISH_DATE, publish_date);
             newsValues.put(NewsEntry._SOURCE_WEB, source_web);
             newsValues.put(NewsEntry._DESCRIPTION, description);
-            newsValues.put(NewsEntry._CONTENT, content);
+            newsValues.put(NewsEntry._NEWS_CONTENT, content);
             newsValues.put(NewsEntry._IMAGE_URL, imageUrl);
+            newsValues.put(NewsEntry._NEWS_TYPE, newsType);
 
             newsValuesList.add(newsValues);
         }

@@ -18,18 +18,20 @@ import java.io.IOException;
 
 public class UpdateDataTask {
 
-    public static boolean updateNewsFromServer(Context context, String newsType, int page)
+    public static boolean downloadNewsDataIntoDatabase(Context context, String newsType, int newsPage)
             throws IOException, JSONException {
-        String newsResponse = NetworkUtils.getNewsResponse(context, newsType, page);
-        ContentValues[] newsValuesArray = JsonUtils.getNewsValuesArray(newsResponse);
+        String newsResponse = NetworkUtils.getNewsResponse(context, newsType, newsPage);
+        ContentValues[] newsValuesArray = JsonUtils.getNewsValuesArray(newsResponse, newsType);
 
         if (newsValuesArray == null) {
             return false;
         }
 
         ContentResolver contentResolver = context.getContentResolver();
-        if (page == 1) {
-            contentResolver.delete(NewsEntry.URI, null, null);
+        if (newsPage == 1) {
+            String where = NewsEntry._NEWS_TYPE + "=?";
+            String[] selectionArgs = {newsType};
+            contentResolver.delete(NewsEntry.URI, where, selectionArgs);
         }
         contentResolver.bulkInsert(NewsEntry.URI, newsValuesArray);
 

@@ -13,18 +13,19 @@ import com.xhbb.qinzl.newsest.data.Contract.NewsEntry;
 class DbHelper extends SQLiteOpenHelper {
 
     private static final String DB_NAME = "newsest.db";
-    private static final int DB_VERSION = 1;
+    private static final int DB_VERSION = 2;
 
     private static final String CREATE_TABLE_NEWS =
             "CREATE TABLE " + NewsEntry.TABLE_NAME + " ( " +
                     NewsEntry._ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
-                    NewsEntry._CONTENT + " TEXT, " +
+                    NewsEntry._NEWS_CONTENT + " TEXT, " +
                     NewsEntry._DESCRIPTION + " TEXT, " +
                     NewsEntry._IMAGE_URL + " TEXT, " +
                     NewsEntry._PUBLISH_DATE + " TEXT, " +
                     NewsEntry._SOURCE_WEB + " TEXT, " +
                     NewsEntry._TITLE + " TEXT, " +
-                    NewsEntry._NEWS_CODE + " TEXT " +
+                    NewsEntry._NEWS_CODE + " TEXT, " +
+                    NewsEntry._NEWS_TYPE + " TEXT " +
                     ")";
 
     DbHelper(Context context) {
@@ -46,7 +47,7 @@ class DbHelper extends SQLiteOpenHelper {
             db.execSQL("ALTER TABLE " + tableName + " RENAME TO " + tempTableName);
             db.execSQL(CREATE_TABLE_NEWS);
             db.execSQL("INSERT INTO " + tableName +
-                    " SELECT *,null FROM " + tempTableName);
+                    " SELECT *,'推荐' FROM " + tempTableName);
             db.execSQL("DROP TABLE " + tempTableName);
 
             db.setTransactionSuccessful();

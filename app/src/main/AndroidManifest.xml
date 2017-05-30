@@ -28,6 +28,9 @@
             android:enabled="true"
             android:exported="false">
         </provider>
+
+        <activity android:name=".NewsDetailsActivity">
+        </activity>
     </application>
 
 </manifest>

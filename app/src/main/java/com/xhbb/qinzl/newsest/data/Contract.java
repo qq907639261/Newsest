@@ -19,7 +19,8 @@ public interface Contract {
         String _PUBLISH_DATE = "publish_date";
         String _SOURCE_WEB = "source_web";
         String _DESCRIPTION = "description";
-        String _CONTENT = "content";
+        String _NEWS_CONTENT = "news_content";
         String _IMAGE_URL = "image_url";
+        String _NEWS_TYPE = "news_type";
     }
 }
