@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    >
+
+    <data>
+
+        <import type="android.view.View"/>
+
+        <variable
+            name="news"
+            type="com.xhbb.qinzl.newsest.viewmodel.News"/>
+
+        <variable
+            name="errorText"
+            type="String"/>
+    </data>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:paddingTop="8dp">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:fontFamily="monospace"
+            android:text="@{errorText}"
+            android:textColor="@color/errorText"
+            android:textSize="20sp"
+            android:textStyle="italic"
+            android:visibility="@{errorText == null ? View.GONE : View.VISIBLE}"/>
+
+        <include
+            layout="@layout/item_news"
+            app:news="@{news}"/>
+    </LinearLayout>
+</layout>

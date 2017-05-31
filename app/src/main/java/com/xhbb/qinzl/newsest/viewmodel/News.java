@@ -3,15 +3,12 @@ package com.xhbb.qinzl.newsest.viewmodel;
 import android.content.Context;
 import android.database.Cursor;
 import android.databinding.BindingAdapter;
-import android.graphics.drawable.Drawable;
 import android.os.Parcel;
 import android.os.Parcelable;
-import android.support.v4.app.ActivityCompat;
 import android.view.View;
 import android.widget.ImageView;
 
-import com.bumptech.glide.Glide;
-import com.xhbb.qinzl.newsest.R;
+import com.xhbb.qinzl.newsest.common.GlideApp;
 import com.xhbb.qinzl.newsest.data.Contract.NewsEntry;
 
 /**
@@ -21,6 +18,7 @@ import com.xhbb.qinzl.newsest.data.Contract.NewsEntry;
 public class News implements Parcelable {
 
     private Context mContext;
+    private View.OnClickListener mOnClickItemListener;
 
     private String mNewsCode;
     private String mTitle;
@@ -29,8 +27,6 @@ public class News implements Parcelable {
     private String mDescription;
     private String mNewsContent;
     private String mImageUrl;
-
-    private View.OnClickListener mOnClickItemListener;
 
     public News(Context context, Cursor cursor, View.OnClickListener onClickItemListener) {
         mContext = context;
@@ -79,12 +75,9 @@ public class News implements Parcelable {
 
     @BindingAdapter({"android:setNewsImage"})
     public static void setNewsImageFromServer(ImageView imageView, News news) {
-        Drawable errorDrawable = ActivityCompat.getDrawable(news.mContext, R.mipmap.ic_launcher);
-
-        Glide.with(news.mContext)
+        GlideApp.with(news.mContext)
                 .load(news.mImageUrl)
-                .into(imageView)
-                .onLoadFailed(errorDrawable);
+                .into(imageView);
     }
 
     public void onItemClick(View view) {

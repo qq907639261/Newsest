@@ -8,6 +8,7 @@ import android.databinding.ViewDataBinding;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.LayoutRes;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.LoaderManager;
@@ -15,6 +16,7 @@ import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -22,7 +24,9 @@ import android.view.ViewGroup;
 import com.xhbb.qinzl.newsest.async.UpdateDataTask;
 import com.xhbb.qinzl.newsest.common.RecyclerViewCursorAdapter;
 import com.xhbb.qinzl.newsest.data.Contract;
+import com.xhbb.qinzl.newsest.data.PreferencesUtils;
 import com.xhbb.qinzl.newsest.databinding.LayoutRecyclerViewBinding;
+import com.xhbb.qinzl.newsest.server.NetworkUtils;
 import com.xhbb.qinzl.newsest.viewmodel.News;
 import com.xhbb.qinzl.newsest.viewmodel.RecyclerViewModel;
 
@@ -41,7 +45,11 @@ public class NewsMasterFragment extends Fragment
     private String mNewsType;
     private RecyclerViewModel mRecyclerViewModel;
     private int mNewsPage;
-    private SwipeRefreshLayout mSwipeRefreshLayout;
+    private LinearLayoutManager mLayoutManager;
+    private boolean mRecyclerViewScrollRefreshing;
+    private boolean mNewsTotalPageOuted;
+    private boolean mHasNewsData;
+    private String mErrorText;
 
     public static NewsMasterFragment newInstance(String newsType) {
         Bundle args = new Bundle();
@@ -58,9 +66,10 @@ public class NewsMasterFragment extends Fragment
         super.onCreate(savedInstanceState);
 
         mActivity = getActivity();
-        mNewsAdapter = new NewsAdapter(mActivity, R.layout.item_news_master);
+        mNewsAdapter = new NewsAdapter(mActivity, R.layout.item_news);
         mNewsType = getArguments().getString(ARG_NEWS_TYPE);
         mNewsPage = 1;
+        mHasNewsData = PreferencesUtils.hasNewsData(mActivity);
     }
 
     @Override
@@ -69,20 +78,38 @@ public class NewsMasterFragment extends Fragment
         View view = inflater.inflate(R.layout.layout_recycler_view, container, false);
         LayoutRecyclerViewBinding binding = DataBindingUtil.bind(view);
 
-        LinearLayoutManager layoutManager = new LinearLayoutManager(mActivity);
-        mRecyclerViewModel = new RecyclerViewModel(mNewsAdapter, layoutManager, this);
+        mLayoutManager = new LinearLayoutManager(mActivity);
+        mRecyclerViewModel = new RecyclerViewModel(mNewsAdapter, mLayoutManager,
+                getOnRecyclerViewScrollListener(), this);
 
         getLoaderManager().initLoader(0, null, this);
         refreshNewsData(false);
+
         binding.setRecyclerViewModel(mRecyclerViewModel);
 
         return view;
     }
 
-    @Override
-    public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
-        mSwipeRefreshLayout = mRecyclerViewModel.getSwipeRefreshLayout();
+    @NonNull
+    private RecyclerView.OnScrollListener getOnRecyclerViewScrollListener() {
+        return new RecyclerView.OnScrollListener() {
+            @Override
+            public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
+                super.onScrollStateChanged(recyclerView, newState);
+
+                if (mRecyclerViewScrollRefreshing || mNewsTotalPageOuted) {
+                    return;
+                }
+
+                int lastVisibleItemPosition = mLayoutManager.findLastVisibleItemPosition();
+                int itemCount = mLayoutManager.getItemCount();
+
+                if (lastVisibleItemPosition >= itemCount - NetworkUtils.NEWS_COUNT_OF_EACH_PAGE) {
+                    mRecyclerViewScrollRefreshing = true;
+                    refreshNewsData(false);
+                }
+            }
+        };
     }
 
     private void refreshNewsData(final boolean swipeRefreshing) {
@@ -94,6 +121,10 @@ public class NewsMasterFragment extends Fragment
 
             @Override
             protected Integer doInBackground(Void... params) {
+                if (!NetworkUtils.isNetworkConnectedOrConnecting(mActivity)) {
+                    return NETWORK_ERROR;
+                }
+
                 try {
                     int newsPage = swipeRefreshing ? 1 : mNewsPage;
                     boolean newsPageInRange = UpdateDataTask
@@ -113,22 +144,46 @@ public class NewsMasterFragment extends Fragment
             protected void onPostExecute(Integer integer) {
                 super.onPostExecute(integer);
 
+                mRecyclerViewScrollRefreshing = false;
                 mRecyclerViewModel.setAutoRefreshing(false);
                 if (swipeRefreshing) {
-                    mSwipeRefreshLayout.setRefreshing(false);
+                    mRecyclerViewModel.getSwipeRefreshLayout().setRefreshing(false);
                 }
 
                 switch (integer) {
                     case NETWORK_ERROR:
-                        mRecyclerViewModel.setAbnormalText(mActivity.getString(R.string.network_error_text));
+                        handleError(getString(R.string.network_error_text));
                         break;
                     case SERVER_ERROR:
-                        mRecyclerViewModel.setAbnormalText(mActivity.getString(R.string.server_error_text));
+                        handleError(getString(R.string.server_error_text));
                         break;
-                    case REFRESH_SUCCESS:
-                        mNewsPage = swipeRefreshing ? 2 : mNewsPage + 1;
+                    case NEWS_PAGE_OUT_RANGE:
+                        handleNewsTotalPageOuted();
                         break;
                     default:
+                        if (swipeRefreshing) {
+                            mNewsTotalPageOuted = false;
+                            mNewsPage = 2;
+                            mErrorText = null;
+                            mNewsAdapter.notifyItemChanged(0);
+                        } else {
+                            mNewsPage++;
+                        }
+                }
+            }
+
+            private void handleNewsTotalPageOuted() {
+                mNewsTotalPageOuted = true;
+                mNewsAdapter.notifyItemChanged(mNewsAdapter.getItemCount() - 1);
+            }
+
+            private void handleError(String errorText) {
+                if (mHasNewsData) {
+                    handleNewsTotalPageOuted();
+                    mErrorText = errorText;
+                    mNewsAdapter.notifyItemChanged(0);
+                } else {
+                    mRecyclerViewModel.setErrorText(errorText);
                 }
             }
         }.execute();
@@ -150,7 +205,9 @@ public class NewsMasterFragment extends Fragment
         }
 
         mRecyclerViewModel.setAutoRefreshing(false);
-        mRecyclerViewModel.setAbnormalText("");
+        mRecyclerViewModel.setErrorText(null);
+        mHasNewsData = true;
+        PreferencesUtils.saveHasNewsData(mActivity, true);
     }
 
     @Override
@@ -166,10 +223,43 @@ public class NewsMasterFragment extends Fragment
     private class NewsAdapter extends RecyclerViewCursorAdapter
             implements View.OnClickListener {
 
+        private static final int VIEW_TYPE_LAST_ITEM = 0;
+        private static final int VIEW_TYPE_FIRST_ITEM = 1;
+        private static final int VIEW_TYPE_OTHER_ITEM = 2;
+
         private News mNews;
 
         NewsAdapter(Context context, @LayoutRes int defaultResource) {
             super(context, defaultResource);
+        }
+
+        @Override
+        public int getItemViewType(int position) {
+            if (position == getItemCount() - 1) {
+                return VIEW_TYPE_LAST_ITEM;
+            } else if (position == 0) {
+                return VIEW_TYPE_FIRST_ITEM;
+            } else {
+                return VIEW_TYPE_OTHER_ITEM;
+            }
+        }
+
+        @Override
+        public BindingHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+            switch (viewType) {
+                case VIEW_TYPE_FIRST_ITEM:
+                    return getBindingHolder(parent, R.layout.item_news_first);
+                case VIEW_TYPE_LAST_ITEM:
+                    return getBindingHolder(parent, R.layout.item_news_last);
+                default:
+                    return super.onCreateViewHolder(parent, viewType);
+            }
+        }
+
+        @NonNull
+        private BindingHolder getBindingHolder(ViewGroup parent, @LayoutRes int itemResource) {
+            View view = LayoutInflater.from(mContext).inflate(itemResource, parent, false);
+            return new BindingHolder(view);
         }
 
         @Override
@@ -178,7 +268,15 @@ public class NewsMasterFragment extends Fragment
             mNews = new News(mContext, mCursor, this);
 
             ViewDataBinding binding = holder.getBinding();
+
             binding.setVariable(BR.news, mNews);
+
+            if (position == getItemCount() - 1) {
+                binding.setVariable(BR.newsTotalPageOuted, mNewsTotalPageOuted);
+            } else if (position == 0) {
+                binding.setVariable(BR.errorText, mErrorText);
+            }
+
             binding.executePendingBindings();
         }
 

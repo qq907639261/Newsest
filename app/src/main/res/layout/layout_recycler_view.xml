@@ -28,6 +28,7 @@
                 android:layout_marginLeft="8dp"
                 android:layout_marginRight="8dp"
                 android:adapter="@{recyclerViewModel.recyclerViewAdapter}"
+                android:onRecyclerViewScrolled="@{recyclerViewModel}"
                 app:layoutManager="@{recyclerViewModel.recyclerViewLayoutManager}"/>
 
             <ProgressBar
@@ -41,11 +42,11 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
-                android:text="@{recyclerViewModel.abnormalText}"
-                android:textColor="@color/abnormalText"
+                android:text="@{recyclerViewModel.errorText}"
+                android:textColor="@color/errorText"
                 android:textSize="20sp"
                 android:textStyle="bold"
-                tools:text="Networking Failed"/>
+                tools:text="Networking Error"/>
         </FrameLayout>
     </android.support.v4.widget.SwipeRefreshLayout>
 </layout>

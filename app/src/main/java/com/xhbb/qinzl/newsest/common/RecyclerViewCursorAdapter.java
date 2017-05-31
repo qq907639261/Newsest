@@ -48,7 +48,7 @@ public abstract class RecyclerViewCursorAdapter
 
         private ViewDataBinding mBinding;
 
-        BindingHolder(View itemView) {
+        public BindingHolder(View itemView) {
             super(itemView);
             mBinding = DataBindingUtil.bind(itemView);
         }
