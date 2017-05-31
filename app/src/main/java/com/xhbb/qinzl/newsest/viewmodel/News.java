@@ -7,10 +7,10 @@ import android.graphics.drawable.Drawable;
 import android.os.Parcel;
 import android.os.Parcelable;
 import android.support.v4.app.ActivityCompat;
+import android.view.View;
 import android.widget.ImageView;
 
 import com.bumptech.glide.Glide;
-import com.xhbb.qinzl.newsest.NewsDetailActivity;
 import com.xhbb.qinzl.newsest.R;
 import com.xhbb.qinzl.newsest.data.Contract.NewsEntry;
 
@@ -30,9 +30,12 @@ public class News implements Parcelable {
     private String mNewsContent;
     private String mImageUrl;
 
-    public News(Context context, Cursor cursor) {
+    private View.OnClickListener mOnClickItemListener;
+
+    public News(Context context, Cursor cursor, View.OnClickListener onClickItemListener) {
         mContext = context;
         setNews(cursor);
+        mOnClickItemListener = onClickItemListener;
     }
 
     private News(Parcel in) {
@@ -84,8 +87,8 @@ public class News implements Parcelable {
                 .onLoadFailed(errorDrawable);
     }
 
-    public void onItemClick() {
-        NewsDetailActivity.start(mContext, this);
+    public void onItemClick(View view) {
+        mOnClickItemListener.onClick(view);
     }
 
     public static final Creator<News> CREATOR = new Creator<News>() {

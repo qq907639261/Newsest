@@ -16,9 +16,6 @@ public class ExampleInstrumentedTest {
     public void useAppContext() throws Exception {
         Context appContext = InstrumentationRegistry.getTargetContext();
 
-//        String newsResponse = NetworkUtils.getNewsResponse(appContext, "社会", 1);
-//        JsonUtils.getNewsValuesArray(newsResponse);
-
         assertEquals("com.xhbb.qinzl.newsest", appContext.getPackageName());
     }
 }

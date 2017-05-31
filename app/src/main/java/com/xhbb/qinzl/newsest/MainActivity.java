@@ -8,7 +8,7 @@ import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v7.app.AppCompatActivity;
 
 import com.xhbb.qinzl.newsest.databinding.ActivityMainBinding;
-import com.xhbb.qinzl.newsest.viewmodel.Newsest;
+import com.xhbb.qinzl.newsest.viewmodel.MainModel;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -18,9 +18,9 @@ public class MainActivity extends AppCompatActivity {
         ActivityMainBinding binding = DataBindingUtil.setContentView(this, R.layout.activity_main);
 
         NewsMasterPagerAdapter newsMasterPagerAdapter = new NewsMasterPagerAdapter(getSupportFragmentManager());
-        Newsest newsest = new Newsest(this, newsMasterPagerAdapter);
+        MainModel mainModel = new MainModel(this, newsMasterPagerAdapter);
 
-        binding.setNewsest(newsest);
+        binding.setMainModel(mainModel);
     }
 
     private class NewsMasterPagerAdapter extends FragmentPagerAdapter {

@@ -1,3 +1,4 @@
+<!--suppress AndroidUnknownAttribute -->
 <layout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
@@ -8,40 +9,40 @@
         <import type="android.view.View"/>
 
         <variable
-            name="newsMaster"
-            type="com.xhbb.qinzl.newsest.viewmodel.NewsMaster"/>
+            name="recyclerViewModel"
+            type="com.xhbb.qinzl.newsest.viewmodel.RecyclerViewModel"/>
     </data>
 
     <android.support.v4.widget.SwipeRefreshLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:onSwipeRefresh="@{recyclerViewModel}">
 
         <FrameLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent">
 
-            <!--suppress AndroidUnknownAttribute -->
             <android.support.v7.widget.RecyclerView
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_marginLeft="8dp"
                 android:layout_marginRight="8dp"
-                android:adapter="@{newsMaster.recyclerViewAdapter}"
-                app:layoutManager="@{newsMaster.recyclerViewLayoutManager}"/>
+                android:adapter="@{recyclerViewModel.recyclerViewAdapter}"
+                app:layoutManager="@{recyclerViewModel.recyclerViewLayoutManager}"/>
 
             <ProgressBar
                 style="?android:attr/progressBarStyle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
-                android:visibility="@{newsMaster.autoRefreshing ? View.VISIBLE : View.GONE}"/>
+                android:visibility="@{recyclerViewModel.autoRefreshing ? View.VISIBLE : View.GONE}"/>
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
-                android:text="@{newsMaster.networkingFailedText}"
-                android:textColor="@color/networkingFailedText"
+                android:text="@{recyclerViewModel.abnormalText}"
+                android:textColor="@color/abnormalText"
                 android:textSize="20sp"
                 android:textStyle="bold"
                 tools:text="Networking Failed"/>

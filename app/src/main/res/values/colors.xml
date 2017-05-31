@@ -5,5 +5,5 @@
     <color name="colorAccent">#FF4081</color>
 
     <color name="appBarTitleText">#ffffff</color>
-    <color name="networkingFailedText">#ff0000</color>
+    <color name="abnormalText">#ff0000</color>
 </resources>

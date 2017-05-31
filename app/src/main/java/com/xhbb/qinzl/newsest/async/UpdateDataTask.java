@@ -18,10 +18,10 @@ import java.io.IOException;
 
 public class UpdateDataTask {
 
-    public static boolean downloadNewsDataIntoDatabase(Context context, String newsType, int newsPage)
+    public static boolean updateNewsDataIfThePageInRange(Context context, String newsType, int newsPage)
             throws IOException, JSONException {
         String newsResponse = NetworkUtils.getNewsResponse(context, newsType, newsPage);
-        ContentValues[] newsValuesArray = JsonUtils.getNewsValuesArray(newsResponse, newsType);
+        ContentValues[] newsValuesArray = JsonUtils.getNewsValuesArrayIfThePageInRange(newsResponse, newsType);
 
         if (newsValuesArray == null) {
             return false;

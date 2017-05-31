@@ -1,6 +1,7 @@
 package com.xhbb.qinzl.newsest.server;
 
 import android.content.ContentValues;
+import android.support.annotation.Nullable;
 
 import com.xhbb.qinzl.newsest.data.Contract.NewsEntry;
 import com.xhbb.qinzl.newsest.server.JsonUtils.JsonNews.ShowApiResBodyObject.PageBeanObject.ContentListArray;
@@ -18,7 +19,8 @@ import java.util.List;
 
 public class JsonUtils {
 
-    public static ContentValues[] getNewsValuesArray(String jsonString, String newsType)
+    @Nullable
+    public static ContentValues[] getNewsValuesArrayIfThePageInRange(String jsonString, String newsType)
             throws JSONException {
         JSONObject jsonNews = new JSONObject(jsonString);
         JSONObject showApiResBodyObject = jsonNews.getJSONObject(JsonNews.SHOW_API_RES_BODY);

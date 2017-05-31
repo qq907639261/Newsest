@@ -7,8 +7,8 @@
     <data>
 
         <variable
-            name="newsest"
-            type="com.xhbb.qinzl.newsest.viewmodel.Newsest"/>
+            name="mainModel"
+            type="com.xhbb.qinzl.newsest.viewmodel.MainModel"/>
     </data>
 
     <android.support.design.widget.CoordinatorLayout
@@ -22,7 +22,7 @@
             <android.support.v7.widget.Toolbar
                 android:layout_width="match_parent"
                 android:layout_height="?attr/actionBarSize"
-                android:bindActionBar="@{newsest}"
+                android:bindActionBar="@{mainModel}"
                 app:layout_scrollFlags="scroll|enterAlways">
             </android.support.v7.widget.Toolbar>
 
@@ -39,7 +39,7 @@
             android:id="@+id/viewPager"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:adapter="@{newsest.pagerAdapter}"
+            android:adapter="@{mainModel.pagerAdapter}"
             app:layout_behavior="@string/appbar_scrolling_view_behavior"/>
     </android.support.design.widget.CoordinatorLayout>
 </layout>

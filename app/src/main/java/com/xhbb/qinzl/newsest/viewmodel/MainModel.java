@@ -12,12 +12,12 @@ import android.support.v7.widget.Toolbar;
  * Created by qinzl on 2017/5/29.
  */
 
-public class Newsest {
+public class MainModel {
 
     private Context mContext;
     private PagerAdapter mPagerAdapter;
 
-    public Newsest(Context context, PagerAdapter pagerAdapter) {
+    public MainModel(Context context, PagerAdapter pagerAdapter) {
         mContext = context;
         mPagerAdapter = pagerAdapter;
     }
@@ -27,8 +27,8 @@ public class Newsest {
     }
 
     @BindingAdapter({"android:bindActionBar"})
-    public static void setActionBar(Toolbar toolbar, Newsest newsest) {
-        ((AppCompatActivity) newsest.mContext).setSupportActionBar(toolbar);
+    public static void setActionBar(Toolbar toolbar, MainModel mainModel) {
+        ((AppCompatActivity) mainModel.mContext).setSupportActionBar(toolbar);
     }
 
     @BindingAdapter({"android:bindViewPager"})
