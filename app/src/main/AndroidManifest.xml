@@ -14,7 +14,10 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme.NoActionBar"
         tools:ignore="GoogleAppIndexingWarning">
-        <activity android:name=".MainActivity">
+        <activity
+            android:name=".MainActivity"
+            android:launchMode="singleTop"
+            android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
 
@@ -29,7 +32,10 @@
             android:exported="false">
         </provider>
 
-        <activity android:name=".NewsDetailsActivity">
+        <activity
+            android:name=".NewsDetailActivity"
+            android:parentActivityName=".MainActivity"
+            android:screenOrientation="portrait">
         </activity>
     </application>
 

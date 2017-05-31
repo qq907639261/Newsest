@@ -3,12 +3,15 @@ package com.xhbb.qinzl.newsest.viewmodel;
 import android.content.Context;
 import android.database.Cursor;
 import android.databinding.BindingAdapter;
+import android.graphics.drawable.Drawable;
 import android.os.Parcel;
 import android.os.Parcelable;
+import android.support.v4.app.ActivityCompat;
 import android.widget.ImageView;
 
 import com.bumptech.glide.Glide;
-import com.xhbb.qinzl.newsest.NewsDetailsActivity;
+import com.xhbb.qinzl.newsest.NewsDetailActivity;
+import com.xhbb.qinzl.newsest.R;
 import com.xhbb.qinzl.newsest.data.Contract.NewsEntry;
 
 /**
@@ -73,11 +76,16 @@ public class News implements Parcelable {
 
     @BindingAdapter({"android:setNewsImage"})
     public static void setNewsImageFromServer(ImageView imageView, News news) {
-        Glide.with(news.mContext).load(news.mImageUrl).into(imageView);
+        Drawable errorDrawable = ActivityCompat.getDrawable(news.mContext, R.mipmap.ic_launcher);
+
+        Glide.with(news.mContext)
+                .load(news.mImageUrl)
+                .into(imageView)
+                .onLoadFailed(errorDrawable);
     }
 
     public void onItemClick() {
-        NewsDetailsActivity.start(mContext);
+        NewsDetailActivity.start(mContext, this);
     }
 
     public static final Creator<News> CREATOR = new Creator<News>() {

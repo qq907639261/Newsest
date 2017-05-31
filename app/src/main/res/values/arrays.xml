@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string-array name="news_type">
-        <item>@string/recommendation</item>
+        <item>@string/international</item>
         <item>@string/society</item>
         <item>@string/technology</item>
         <item>@string/sports</item>
