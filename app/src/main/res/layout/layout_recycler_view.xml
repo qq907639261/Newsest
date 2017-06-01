@@ -28,7 +28,7 @@
                 android:layout_marginLeft="8dp"
                 android:layout_marginRight="8dp"
                 android:adapter="@{recyclerViewModel.recyclerViewAdapter}"
-                android:onRecyclerViewScrolled="@{recyclerViewModel}"
+                android:onRecyclerViewScroll="@{recyclerViewModel}"
                 app:layoutManager="@{recyclerViewModel.recyclerViewLayoutManager}"/>
 
             <ProgressBar

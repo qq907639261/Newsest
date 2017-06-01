@@ -61,6 +61,8 @@ public class NewsMasterFragment extends Fragment
         return fragment;
     }
 
+    private OnNewsMasterFragmentListener mOnNewsMasterFragmentListener;
+
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -75,8 +77,8 @@ public class NewsMasterFragment extends Fragment
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.layout_recycler_view, container, false);
-        LayoutRecyclerViewBinding binding = DataBindingUtil.bind(view);
+        LayoutRecyclerViewBinding binding = DataBindingUtil
+                .inflate(inflater, R.layout.layout_recycler_view, container, false);
 
         mLayoutManager = new LinearLayoutManager(mActivity);
         mRecyclerViewModel = new RecyclerViewModel(mNewsAdapter, mLayoutManager,
@@ -87,7 +89,7 @@ public class NewsMasterFragment extends Fragment
 
         binding.setRecyclerViewModel(mRecyclerViewModel);
 
-        return view;
+        return binding.getRoot();
     }
 
     @NonNull
@@ -109,6 +111,14 @@ public class NewsMasterFragment extends Fragment
                     refreshNewsData(false);
                 }
             }
+
+            @Override
+            public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+                super.onScrolled(recyclerView, dx, dy);
+                if (mOnNewsMasterFragmentListener != null) {
+                    mOnNewsMasterFragmentListener.onRecyclerViewScrolled(recyclerView, dx, dy);
+                }
+            }
         };
     }
 
@@ -116,7 +126,7 @@ public class NewsMasterFragment extends Fragment
         new AsyncTask<Void, Void, Integer>() {
             private static final int NETWORK_ERROR = -2;
             private static final int SERVER_ERROR = -1;
-            private static final int NEWS_PAGE_OUT_RANGE = 0;
+            private static final int NEWS_TOTAL_PAGE_OUTED = 0;
             private static final int REFRESH_SUCCESS = 1;
 
             @Override
@@ -130,12 +140,10 @@ public class NewsMasterFragment extends Fragment
                     boolean newsPageInRange = UpdateDataTask
                             .updateNewsDataIfThePageInRange(mActivity, mNewsType, newsPage);
 
-                    return newsPageInRange ? REFRESH_SUCCESS : NEWS_PAGE_OUT_RANGE;
+                    return newsPageInRange ? REFRESH_SUCCESS : NEWS_TOTAL_PAGE_OUTED;
                 } catch (IOException e) {
-                    e.printStackTrace();
                     return NETWORK_ERROR;
                 } catch (JSONException e) {
-                    e.printStackTrace();
                     return SERVER_ERROR;
                 }
             }
@@ -157,7 +165,7 @@ public class NewsMasterFragment extends Fragment
                     case SERVER_ERROR:
                         handleError(getString(R.string.server_error_text));
                         break;
-                    case NEWS_PAGE_OUT_RANGE:
+                    case NEWS_TOTAL_PAGE_OUTED:
                         handleNewsTotalPageOuted();
                         break;
                     default:
@@ -187,6 +195,20 @@ public class NewsMasterFragment extends Fragment
                 }
             }
         }.execute();
+    }
+
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+        if (context instanceof OnNewsMasterFragmentListener) {
+            mOnNewsMasterFragmentListener = (OnNewsMasterFragmentListener) context;
+        }
+    }
+
+    @Override
+    public void onDetach() {
+        super.onDetach();
+        mOnNewsMasterFragmentListener = null;
     }
 
     @Override
@@ -284,5 +306,10 @@ public class NewsMasterFragment extends Fragment
         public void onClick(View v) {
             NewsDetailActivity.start(mContext, mNews);
         }
+    }
+
+    interface OnNewsMasterFragmentListener {
+
+        void onRecyclerViewScrolled(RecyclerView recyclerView, int dx, int dy);
     }
 }

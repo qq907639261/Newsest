@@ -6,9 +6,15 @@
 
     <data>
 
+        <import type="com.xhbb.qinzl.newsest.viewmodel.MainModel"/>
+
         <variable
-            name="mainModel"
-            type="com.xhbb.qinzl.newsest.viewmodel.MainModel"/>
+            name="pagerAdapter"
+            type="android.support.v4.view.PagerAdapter"/>
+
+        <variable
+            name="onClickFabListener"
+            type="android.view.View.OnClickListener"/>
     </data>
 
     <android.support.design.widget.CoordinatorLayout
@@ -20,18 +26,15 @@
             android:layout_height="wrap_content">
 
             <android.support.v7.widget.Toolbar
-                android:id="@+id/toolbar"
                 android:layout_width="match_parent"
                 android:layout_height="?attr/actionBarSize"
-                android:bindActionBar="@{mainModel}"
-                app:layout_collapseMode="parallax"
-                app:layout_scrollFlags="scroll|enterAlways"/>
+                android:bindActionBar="@{true}"
+                app:layout_scrollFlags="scroll"/>
 
             <android.support.design.widget.TabLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:bindViewPager="@{viewPager}"
-                app:layout_collapseMode="parallax"
                 app:layout_scrollFlags="scroll|enterAlways"
                 app:tabMode="scrollable"
                 app:tabSelectedTextColor="@color/colorAccent"/>
@@ -41,7 +44,19 @@
             android:id="@+id/viewPager"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:adapter="@{mainModel.pagerAdapter}"
+            android:adapter="@{pagerAdapter}"
             app:layout_behavior="@string/appbar_scrolling_view_behavior"/>
+
+        <android.support.design.widget.FloatingActionButton
+            android:id="@+id/fab"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="8dp"
+            android:clickable="true"
+            android:onClick="@{(view)->onClickFabListener.onClick(view)}"
+            app:fabSize="mini"
+            app:layout_anchor="@id/viewPager"
+            app:layout_anchorGravity="bottom|end"
+            app:srcCompat="@drawable/ic_action_stick_top"/>
     </android.support.design.widget.CoordinatorLayout>
 </layout>

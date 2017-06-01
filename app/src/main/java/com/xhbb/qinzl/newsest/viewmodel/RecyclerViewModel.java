@@ -21,6 +21,7 @@ public class RecyclerViewModel extends BaseObservable {
     private SwipeRefreshLayout mSwipeRefreshLayout;
     private RecyclerView.OnScrollListener mOnRecyclerViewScrollListener;
     private SwipeRefreshLayout.OnRefreshListener mOnSwipeRefreshListener;
+    private RecyclerView mRecyclerView;
 
     public RecyclerViewModel(RecyclerView.Adapter recyclerViewAdapter,
                              RecyclerView.LayoutManager recyclerViewLayoutManager,
@@ -34,8 +35,13 @@ public class RecyclerViewModel extends BaseObservable {
         mAutoRefreshing = true;
     }
 
-    @BindingAdapter({"android:onRecyclerViewScrolled"})
-    public static void onRecyclerViewScrolled(RecyclerView recyclerView, RecyclerViewModel recyclerViewModel) {
+    public RecyclerView getRecyclerView() {
+        return mRecyclerView;
+    }
+
+    @BindingAdapter({"android:onRecyclerViewScroll"})
+    public static void onRecyclerViewScroll(RecyclerView recyclerView, final RecyclerViewModel recyclerViewModel) {
+        recyclerViewModel.mRecyclerView = recyclerView;
         recyclerView.addOnScrollListener(recyclerViewModel.mOnRecyclerViewScrollListener);
     }
 

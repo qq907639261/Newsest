@@ -3,7 +3,6 @@ package com.xhbb.qinzl.newsest.viewmodel;
 import android.content.Context;
 import android.databinding.BindingAdapter;
 import android.support.design.widget.TabLayout;
-import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -14,21 +13,12 @@ import android.support.v7.widget.Toolbar;
 
 public class MainModel {
 
-    private Context mContext;
-    private PagerAdapter mPagerAdapter;
-
-    public MainModel(Context context, PagerAdapter pagerAdapter) {
-        mContext = context;
-        mPagerAdapter = pagerAdapter;
-    }
-
-    public PagerAdapter getPagerAdapter() {
-        return mPagerAdapter;
-    }
-
     @BindingAdapter({"android:bindActionBar"})
-    public static void setActionBar(Toolbar toolbar, MainModel mainModel) {
-        ((AppCompatActivity) mainModel.mContext).setSupportActionBar(toolbar);
+    public static void setActionBar(Toolbar toolbar, boolean bindActionBar) {
+        if (bindActionBar) {
+            Context context = toolbar.getContext();
+            ((AppCompatActivity) context).setSupportActionBar(toolbar);
+        }
     }
 
     @BindingAdapter({"android:bindViewPager"})
