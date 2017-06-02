@@ -18,10 +18,8 @@ public class RecyclerViewModel extends BaseObservable {
     private String mErrorText;
     private RecyclerView.Adapter mRecyclerViewAdapter;
     private RecyclerView.LayoutManager mRecyclerViewLayoutManager;
-    private SwipeRefreshLayout mSwipeRefreshLayout;
     private RecyclerView.OnScrollListener mOnRecyclerViewScrollListener;
     private SwipeRefreshLayout.OnRefreshListener mOnSwipeRefreshListener;
-    private RecyclerView mRecyclerView;
 
     public RecyclerViewModel(RecyclerView.Adapter recyclerViewAdapter,
                              RecyclerView.LayoutManager recyclerViewLayoutManager,
@@ -35,19 +33,13 @@ public class RecyclerViewModel extends BaseObservable {
         mAutoRefreshing = true;
     }
 
-    public RecyclerView getRecyclerView() {
-        return mRecyclerView;
-    }
-
     @BindingAdapter({"android:onRecyclerViewScroll"})
     public static void onRecyclerViewScroll(RecyclerView recyclerView, final RecyclerViewModel recyclerViewModel) {
-        recyclerViewModel.mRecyclerView = recyclerView;
         recyclerView.addOnScrollListener(recyclerViewModel.mOnRecyclerViewScrollListener);
     }
 
     @BindingAdapter({"android:onSwipeRefresh"})
     public static void onSwipeRefresh(SwipeRefreshLayout swipeRefreshLayout, RecyclerViewModel recyclerViewModel) {
-        recyclerViewModel.mSwipeRefreshLayout = swipeRefreshLayout;
         swipeRefreshLayout.setOnRefreshListener(recyclerViewModel.mOnSwipeRefreshListener);
     }
 
@@ -77,10 +69,5 @@ public class RecyclerViewModel extends BaseObservable {
 
     public RecyclerView.LayoutManager getRecyclerViewLayoutManager() {
         return mRecyclerViewLayoutManager;
-    }
-
-    @Bindable
-    public SwipeRefreshLayout getSwipeRefreshLayout() {
-        return mSwipeRefreshLayout;
     }
 }

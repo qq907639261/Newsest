@@ -57,6 +57,6 @@
             app:fabSize="mini"
             app:layout_anchor="@id/viewPager"
             app:layout_anchorGravity="bottom|end"
-            app:srcCompat="@drawable/ic_action_stick_top"/>
+            app:srcCompat="@drawable/ic_action_to_top"/>
     </android.support.design.widget.CoordinatorLayout>
 </layout>

@@ -6,7 +6,7 @@ import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentPagerAdapter;
+import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.RecyclerView;
@@ -14,14 +14,13 @@ import android.view.View;
 
 import com.xhbb.qinzl.newsest.databinding.ActivityMainBinding;
 import com.xhbb.qinzl.newsest.databinding.LayoutRecyclerViewBinding;
-import com.xhbb.qinzl.newsest.viewmodel.RecyclerViewModel;
 
 public class MainActivity extends AppCompatActivity implements
         NewsMasterFragment.OnNewsMasterFragmentListener {
 
     private NewsMasterPagerAdapter mNewsMasterPagerAdapter;
     private ViewPager mViewPager;
-    private FloatingActionButton mStickTopFab;
+    private FloatingActionButton mToTopFab;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -29,27 +28,25 @@ public class MainActivity extends AppCompatActivity implements
         ActivityMainBinding binding = DataBindingUtil.setContentView(this, R.layout.activity_main);
 
         mViewPager = binding.viewPager;
-        mStickTopFab = binding.fab;
+        mToTopFab = binding.fab;
         mNewsMasterPagerAdapter = new NewsMasterPagerAdapter(getSupportFragmentManager());
 
         binding.setPagerAdapter(mNewsMasterPagerAdapter);
-        binding.setOnClickFabListener(getOnClickStickTopFabListener());
+        binding.setOnClickFabListener(getOnClickToTopFabListener());
     }
 
     @NonNull
-    private View.OnClickListener getOnClickStickTopFabListener() {
+    private View.OnClickListener getOnClickToTopFabListener() {
         return new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 NewsMasterFragment newsMasterFragment = (NewsMasterFragment) mNewsMasterPagerAdapter
                         .instantiateItem(mViewPager, mViewPager.getCurrentItem());
-
                 LayoutRecyclerViewBinding binding = DataBindingUtil.getBinding(newsMasterFragment.getView());
-                if (binding != null) {
-                    RecyclerViewModel recyclerViewModel = binding.getRecyclerViewModel();
 
-                    recyclerViewModel.getRecyclerView().scrollToPosition(0);
-                    recyclerViewModel.getSwipeRefreshLayout().setRefreshing(true);
+                if (binding != null) {
+                    binding.recyclerView.smoothScrollToPosition(0);
+                    binding.swipeRefreshLayout.setRefreshing(true);
                     newsMasterFragment.onRefresh();
                 }
             }
@@ -58,14 +55,14 @@ public class MainActivity extends AppCompatActivity implements
 
     @Override
     public void onRecyclerViewScrolled(RecyclerView recyclerView, int dx, int dy) {
-        if (dy < 0 && !mStickTopFab.isShown()) {
-            mStickTopFab.show();
-        } else if (dy > 0 && mStickTopFab.isShown()) {
-            mStickTopFab.hide();
+        if (dy < 0 && !mToTopFab.isShown()) {
+            mToTopFab.show();
+        } else if (dy > 0 && mToTopFab.isShown()) {
+            mToTopFab.hide();
         }
     }
 
-    private class NewsMasterPagerAdapter extends FragmentPagerAdapter {
+    private class NewsMasterPagerAdapter extends FragmentStatePagerAdapter {
 
         private String[] mNewsTypeArray;
 
