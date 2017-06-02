@@ -28,10 +28,9 @@ public class News implements Parcelable {
     private String mNewsContent;
     private String mImageUrl;
 
-    public News(Context context, Cursor cursor, View.OnClickListener onClickItemListener) {
+    public News(Context context, Cursor cursor) {
         mContext = context;
         setNews(cursor);
-        mOnClickItemListener = onClickItemListener;
     }
 
     private News(Parcel in) {
@@ -69,6 +68,10 @@ public class News implements Parcelable {
         mImageUrl = cursor.getString(cursor.getColumnIndex(NewsEntry._IMAGE_URL));
     }
 
+    public void setOnClickItemListener(View.OnClickListener onClickItemListener) {
+        mOnClickItemListener = onClickItemListener;
+    }
+
     public String getTitle() {
         return mTitle;
     }
@@ -81,7 +84,9 @@ public class News implements Parcelable {
     }
 
     public void onItemClick(View view) {
-        mOnClickItemListener.onClick(view);
+        if (mOnClickItemListener != null) {
+            mOnClickItemListener.onClick(view);
+        }
     }
 
     public static final Creator<News> CREATOR = new Creator<News>() {

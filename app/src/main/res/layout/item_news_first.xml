@@ -14,6 +14,10 @@
         <variable
             name="errorText"
             type="String"/>
+
+        <variable
+            name="onClickTextListener"
+            type="android.view.View.OnClickListener"/>
     </data>
 
     <LinearLayout
@@ -27,6 +31,7 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:fontFamily="monospace"
+            android:onClick="@{(view)->onClickTextListener.onClick(view)}"
             android:text="@{errorText}"
             android:textColor="@color/errorText"
             android:textSize="20sp"

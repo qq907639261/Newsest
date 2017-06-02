@@ -2,6 +2,7 @@ package com.xhbb.qinzl.newsest;
 
 import android.databinding.DataBindingUtil;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -13,14 +14,14 @@ import android.view.View;
 
 import com.xhbb.qinzl.newsest.databinding.ActivityMainBinding;
 import com.xhbb.qinzl.newsest.databinding.LayoutRecyclerViewBinding;
+import com.xhbb.qinzl.newsest.viewmodel.RecyclerViewModel;
 
 public class MainActivity extends AppCompatActivity implements
-        View.OnClickListener,
         NewsMasterFragment.OnNewsMasterFragmentListener {
 
     private NewsMasterPagerAdapter mNewsMasterPagerAdapter;
     private ViewPager mViewPager;
-    private FloatingActionButton mFab;
+    private FloatingActionButton mStickTopFab;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -28,30 +29,39 @@ public class MainActivity extends AppCompatActivity implements
         ActivityMainBinding binding = DataBindingUtil.setContentView(this, R.layout.activity_main);
 
         mViewPager = binding.viewPager;
-        mFab = binding.fab;
+        mStickTopFab = binding.fab;
         mNewsMasterPagerAdapter = new NewsMasterPagerAdapter(getSupportFragmentManager());
 
         binding.setPagerAdapter(mNewsMasterPagerAdapter);
-        binding.setOnClickFabListener(this);
+        binding.setOnClickFabListener(getOnClickStickTopFabListener());
     }
 
-    @Override
-    public void onClick(View v) {
-        Fragment newsMasterFragment = (Fragment) mNewsMasterPagerAdapter
-                .instantiateItem(mViewPager, mViewPager.getCurrentItem());
-        LayoutRecyclerViewBinding binding = DataBindingUtil.getBinding(newsMasterFragment.getView());
+    @NonNull
+    private View.OnClickListener getOnClickStickTopFabListener() {
+        return new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                NewsMasterFragment newsMasterFragment = (NewsMasterFragment) mNewsMasterPagerAdapter
+                        .instantiateItem(mViewPager, mViewPager.getCurrentItem());
 
-        if (binding != null) {
-            binding.getRecyclerViewModel().getRecyclerView().smoothScrollToPosition(0);
-        }
+                LayoutRecyclerViewBinding binding = DataBindingUtil.getBinding(newsMasterFragment.getView());
+                if (binding != null) {
+                    RecyclerViewModel recyclerViewModel = binding.getRecyclerViewModel();
+
+                    recyclerViewModel.getRecyclerView().scrollToPosition(0);
+                    recyclerViewModel.getSwipeRefreshLayout().setRefreshing(true);
+                    newsMasterFragment.onRefresh();
+                }
+            }
+        };
     }
 
     @Override
     public void onRecyclerViewScrolled(RecyclerView recyclerView, int dx, int dy) {
-        if (dy < 0 && !mFab.isShown()) {
-            mFab.show();
-        } else if (dy > 0 && mFab.isShown()) {
-            mFab.hide();
+        if (dy < 0 && !mStickTopFab.isShown()) {
+            mStickTopFab.show();
+        } else if (dy > 0 && mStickTopFab.isShown()) {
+            mStickTopFab.hide();
         }
     }
 

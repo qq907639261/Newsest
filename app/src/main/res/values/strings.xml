@@ -14,6 +14,6 @@
 
     <string name="news_image_content_description">新闻图片</string>
     <string name="network_error_text">联网失败，请检查网络。</string>
-    <string name="server_error_text">服务器异常，请稍后再试。</string>
+    <string name="server_error_text">服务器异常，请稍后重试。</string>
     <string name="scroll_to_end_text">已经到底啦</string>
 </resources>

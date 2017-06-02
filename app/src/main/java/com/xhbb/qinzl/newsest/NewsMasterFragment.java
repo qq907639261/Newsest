@@ -23,7 +23,7 @@ import android.view.ViewGroup;
 
 import com.xhbb.qinzl.newsest.async.UpdateDataTask;
 import com.xhbb.qinzl.newsest.common.RecyclerViewCursorAdapter;
-import com.xhbb.qinzl.newsest.data.Contract;
+import com.xhbb.qinzl.newsest.data.Contract.NewsEntry;
 import com.xhbb.qinzl.newsest.data.PreferencesUtils;
 import com.xhbb.qinzl.newsest.databinding.LayoutRecyclerViewBinding;
 import com.xhbb.qinzl.newsest.server.NetworkUtils;
@@ -49,7 +49,7 @@ public class NewsMasterFragment extends Fragment
     private boolean mRecyclerViewScrollRefreshing;
     private boolean mNewsTotalPageOuted;
     private boolean mHasNewsData;
-    private String mErrorText;
+    private String mFirstItemErrorText;
 
     public static NewsMasterFragment newInstance(String newsType) {
         Bundle args = new Bundle();
@@ -98,7 +98,18 @@ public class NewsMasterFragment extends Fragment
             @Override
             public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
                 super.onScrollStateChanged(recyclerView, newState);
+                scrollRefresh();
+            }
 
+            @Override
+            public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+                super.onScrolled(recyclerView, dx, dy);
+                if (mOnNewsMasterFragmentListener != null) {
+                    mOnNewsMasterFragmentListener.onRecyclerViewScrolled(recyclerView, dx, dy);
+                }
+            }
+
+            private void scrollRefresh() {
                 if (mRecyclerViewScrollRefreshing || mNewsTotalPageOuted) {
                     return;
                 }
@@ -109,14 +120,6 @@ public class NewsMasterFragment extends Fragment
                 if (lastVisibleItemPosition >= itemCount - NetworkUtils.NEWS_COUNT_OF_EACH_PAGE) {
                     mRecyclerViewScrollRefreshing = true;
                     refreshNewsData(false);
-                }
-            }
-
-            @Override
-            public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
-                super.onScrolled(recyclerView, dx, dy);
-                if (mOnNewsMasterFragmentListener != null) {
-                    mOnNewsMasterFragmentListener.onRecyclerViewScrolled(recyclerView, dx, dy);
                 }
             }
         };
@@ -172,7 +175,7 @@ public class NewsMasterFragment extends Fragment
                         if (swipeRefreshing) {
                             mNewsTotalPageOuted = false;
                             mNewsPage = 2;
-                            mErrorText = null;
+                            mFirstItemErrorText = null;
                             mNewsAdapter.notifyItemChanged(0);
                         } else {
                             mNewsPage++;
@@ -188,7 +191,7 @@ public class NewsMasterFragment extends Fragment
             private void handleError(String errorText) {
                 if (mHasNewsData) {
                     handleNewsTotalPageOuted();
-                    mErrorText = errorText;
+                    mFirstItemErrorText = errorText;
                     mNewsAdapter.notifyItemChanged(0);
                 } else {
                     mRecyclerViewModel.setErrorText(errorText);
@@ -213,23 +216,24 @@ public class NewsMasterFragment extends Fragment
 
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
-        String selection = Contract.NewsEntry._NEWS_TYPE + "=?";
+        String selection = NewsEntry._NEWS_TYPE + "=?";
         String[] selectionArgs = {mNewsType};
-        return new CursorLoader(mActivity, Contract.NewsEntry.URI, null, selection, selectionArgs, null);
+        return new CursorLoader(mActivity, NewsEntry.URI, null, selection, selectionArgs, null);
     }
 
     @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor cursor) {
         mNewsAdapter.swapCursor(cursor);
-
         if (cursor.getCount() == 0) {
             return;
         }
 
         mRecyclerViewModel.setAutoRefreshing(false);
-        mRecyclerViewModel.setErrorText(null);
-        mHasNewsData = true;
-        PreferencesUtils.saveHasNewsData(mActivity, true);
+        if (!mHasNewsData) {
+            PreferencesUtils.saveHasNewsData(mActivity, true);
+            mHasNewsData = true;
+            mRecyclerViewModel.setErrorText(null);
+        }
     }
 
     @Override
@@ -242,14 +246,11 @@ public class NewsMasterFragment extends Fragment
         refreshNewsData(true);
     }
 
-    private class NewsAdapter extends RecyclerViewCursorAdapter
-            implements View.OnClickListener {
+    private class NewsAdapter extends RecyclerViewCursorAdapter {
 
         private static final int VIEW_TYPE_LAST_ITEM = 0;
         private static final int VIEW_TYPE_FIRST_ITEM = 1;
         private static final int VIEW_TYPE_OTHER_ITEM = 2;
-
-        private News mNews;
 
         NewsAdapter(Context context, @LayoutRes int defaultResource) {
             super(context, defaultResource);
@@ -287,24 +288,40 @@ public class NewsMasterFragment extends Fragment
         @Override
         public void onBindViewHolder(BindingHolder holder, int position) {
             mCursor.moveToPosition(position);
-            mNews = new News(mContext, mCursor, this);
-
+            News news = new News(mContext, mCursor);
+            news.setOnClickItemListener(getOnClickItemListener(news));
             ViewDataBinding binding = holder.getBinding();
 
-            binding.setVariable(BR.news, mNews);
-
+            binding.setVariable(BR.news, news);
             if (position == getItemCount() - 1) {
                 binding.setVariable(BR.newsTotalPageOuted, mNewsTotalPageOuted);
             } else if (position == 0) {
-                binding.setVariable(BR.errorText, mErrorText);
+                binding.setVariable(BR.errorText, mFirstItemErrorText);
+                binding.setVariable(BR.onClickTextListener, getOnClickErrorTextListener());
             }
 
             binding.executePendingBindings();
         }
 
-        @Override
-        public void onClick(View v) {
-            NewsDetailActivity.start(mContext, mNews);
+        @NonNull
+        private View.OnClickListener getOnClickErrorTextListener() {
+            return new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    mRecyclerViewModel.getSwipeRefreshLayout().setRefreshing(true);
+                    onRefresh();
+                }
+            };
+        }
+
+        @NonNull
+        private View.OnClickListener getOnClickItemListener(final News news) {
+            return new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    NewsDetailActivity.start(mContext, news);
+                }
+            };
         }
     }
 
