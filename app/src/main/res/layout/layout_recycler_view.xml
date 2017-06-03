@@ -13,42 +13,47 @@
             type="com.xhbb.qinzl.newsest.viewmodel.RecyclerViewModel"/>
     </data>
 
-    <android.support.v4.widget.SwipeRefreshLayout
-        android:id="@+id/swipeRefreshLayout"
+    <android.support.design.widget.CoordinatorLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:onSwipeRefresh="@{recyclerViewModel}">
+        android:layout_height="match_parent">
 
-        <FrameLayout
+        <android.support.v4.widget.SwipeRefreshLayout
+            android:id="@+id/swipeRefreshLayout"
             android:layout_width="match_parent"
-            android:layout_height="match_parent">
+            android:layout_height="match_parent"
+            android:onSwipeRefresh="@{recyclerViewModel}">
 
-            <android.support.v7.widget.RecyclerView
-                android:id="@+id/recyclerView"
+            <FrameLayout
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_marginLeft="8dp"
-                android:layout_marginRight="8dp"
-                android:adapter="@{recyclerViewModel.recyclerViewAdapter}"
-                android:onRecyclerViewScroll="@{recyclerViewModel}"
-                app:layoutManager="@{recyclerViewModel.recyclerViewLayoutManager}"/>
+                android:layout_height="match_parent">
 
-            <ProgressBar
-                style="?android:attr/progressBarStyle"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:visibility="@{recyclerViewModel.autoRefreshing ? View.VISIBLE : View.GONE}"/>
+                <android.support.v7.widget.RecyclerView
+                    android:id="@+id/recyclerView"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_marginLeft="8dp"
+                    android:layout_marginRight="8dp"
+                    android:adapter="@{recyclerViewModel.recyclerViewAdapter}"
+                    android:onRecyclerViewScroll="@{recyclerViewModel}"
+                    app:layoutManager="@{recyclerViewModel.recyclerViewLayoutManager}"/>
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:text="@{recyclerViewModel.errorText}"
-                android:textColor="@color/errorText"
-                android:textSize="20sp"
-                android:textStyle="bold"
-                tools:text="Networking Error"/>
-        </FrameLayout>
-    </android.support.v4.widget.SwipeRefreshLayout>
+                <ProgressBar
+                    style="?android:attr/progressBarStyle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:visibility="@{recyclerViewModel.autoRefreshing ? View.VISIBLE : View.GONE}"/>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:text="@{recyclerViewModel.errorText}"
+                    android:textColor="@color/errorText"
+                    android:textSize="20sp"
+                    android:textStyle="bold"
+                    tools:text="Networking Error"/>
+            </FrameLayout>
+        </android.support.v4.widget.SwipeRefreshLayout>
+    </android.support.design.widget.CoordinatorLayout>
 </layout>

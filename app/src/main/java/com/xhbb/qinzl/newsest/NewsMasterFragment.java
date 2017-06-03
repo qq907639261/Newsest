@@ -46,7 +46,7 @@ public class NewsMasterFragment extends Fragment
 
     private boolean mHasNewsData;
     private int mNewsPage;
-    private boolean mRecyclerViewScrollRefreshing;
+    private boolean mScrollRefreshing;
     private boolean mNewsTotalPageOuted;
     private boolean mSwipeRefreshing;
 
@@ -67,17 +67,22 @@ public class NewsMasterFragment extends Fragment
     }
 
     @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
+        mActivity = getActivity();
+        mNewsType = getArguments().getString(ARG_NEWS_TYPE);
+        mNewsAdapter = new NewsAdapter(mActivity, R.layout.item_news);
+    }
+
+    @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
         LayoutRecyclerViewBinding binding = DataBindingUtil
                 .inflate(inflater, R.layout.layout_recycler_view, container, false);
 
-        mActivity = getActivity();
-        mNewsType = getArguments().getString(ARG_NEWS_TYPE);
-        mNewsAdapter = new NewsAdapter(mActivity, R.layout.item_news);
-
         mHasNewsData = false;
-        mRecyclerViewScrollRefreshing = false;
+        mScrollRefreshing = false;
         mNewsTotalPageOuted = false;
         mSwipeRefreshing = false;
         mNewsPage = 1;
@@ -94,9 +99,6 @@ public class NewsMasterFragment extends Fragment
         return binding.getRoot();
     }
 
-    // 下拉刷新有一个恼人的BUG，在网络差的情况下进行下拉刷新然后马上点击距离>=2的tab进行跳转，
-    // 再转回来的时候界面出现异常（一个静止不动的Recyclerview定在正常的RecyclerView上面），
-    // 硬生生找不到解决方案，求高手指点！
     @Override
     public void onRefresh() {
         refreshNewsData(true);
@@ -135,7 +137,7 @@ public class NewsMasterFragment extends Fragment
             protected void onPostExecute(Integer integer) {
                 super.onPostExecute(integer);
 
-                mRecyclerViewScrollRefreshing = false;
+                mScrollRefreshing = false;
                 mRecyclerViewModel.setAutoRefreshing(false);
                 mSwipeRefreshLayout.setRefreshing(false);
 
@@ -196,7 +198,7 @@ public class NewsMasterFragment extends Fragment
             }
 
             private void scrollRefresh() {
-                if (mRecyclerViewScrollRefreshing || mNewsTotalPageOuted || mSwipeRefreshing) {
+                if (mScrollRefreshing || mNewsTotalPageOuted || mSwipeRefreshing) {
                     return;
                 }
 
@@ -204,7 +206,7 @@ public class NewsMasterFragment extends Fragment
                 int itemCount = mLayoutManager.getItemCount();
 
                 if (lastVisibleItemPosition >= itemCount - NetworkUtils.NEWS_COUNT_OF_EACH_PAGE) {
-                    mRecyclerViewScrollRefreshing = true;
+                    mScrollRefreshing = true;
                     refreshNewsData(false);
                 }
             }
