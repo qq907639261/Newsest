@@ -12,6 +12,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
 
+import com.xhbb.qinzl.newsest.common.MainEnum.RefreshState;
 import com.xhbb.qinzl.newsest.databinding.ActivityMainBinding;
 import com.xhbb.qinzl.newsest.databinding.LayoutRecyclerViewBinding;
 
@@ -47,7 +48,7 @@ public class MainActivity extends AppCompatActivity implements
                 if (binding != null) {
                     binding.recyclerView.smoothScrollToPosition(0);
                     binding.swipeRefreshLayout.setRefreshing(true);
-                    newsMasterFragment.onRefresh();
+                    newsMasterFragment.refreshNewsData(RefreshState.SWIPE_REFRESHING);
                 }
             }
         };

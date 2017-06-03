@@ -5,7 +5,6 @@ import android.content.Context;
 import android.database.Cursor;
 import android.databinding.DataBindingUtil;
 import android.databinding.ViewDataBinding;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.LayoutRes;
 import android.support.annotation.NonNull;
@@ -13,6 +12,7 @@ import android.support.annotation.Nullable;
 import android.support.annotation.StringRes;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.LoaderManager;
+import android.support.v4.content.AsyncTaskLoader;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
 import android.support.v4.widget.SwipeRefreshLayout;
@@ -23,6 +23,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.xhbb.qinzl.newsest.async.UpdateDataTask;
+import com.xhbb.qinzl.newsest.common.MainEnum.RefreshState;
 import com.xhbb.qinzl.newsest.common.RecyclerViewCursorAdapter;
 import com.xhbb.qinzl.newsest.data.Contract.NewsEntry;
 import com.xhbb.qinzl.newsest.databinding.LayoutRecyclerViewBinding;
@@ -39,20 +40,28 @@ public class NewsMasterFragment extends Fragment
         SwipeRefreshLayout.OnRefreshListener {
 
     private static final String ARG_NEWS_TYPE = "ARG_NEWS_TYPE";
+    private static final String ARG_REFRESH_STATE = "ARG_REFRESH_STATE";
 
+    private static final int LOADER_GET_NEWS_CURSOR = 0;
+    private static final int LOADER_REFRESH_NEWS_DATA = 1;
+
+    private static final String SAVE_ITEM_POSITION = "SAVE_ITEM_POSITION";
+
+    private boolean mNewsTotalPageOuted;
+    private int mNewsPage;
+    private boolean mHasNewsData;
+
+    private int mRefreshState;
     private Activity mActivity;
     private NewsAdapter mNewsAdapter;
     private String mNewsType;
-
-    private boolean mHasNewsData;
-    private int mNewsPage;
-    private boolean mScrollRefreshing;
-    private boolean mNewsTotalPageOuted;
-    private boolean mSwipeRefreshing;
+    private RefreshNewsDataLoaderCallbacks mRefreshNewsDataLoaderCallbacks;
+    private LoaderManager mLoaderManager;
+    private LinearLayoutManager mLinearLayoutManager;
+    private RecyclerViewModel mRecyclerViewModel;
+    private int mItemPosition;
 
     private SwipeRefreshLayout mSwipeRefreshLayout;
-    private RecyclerViewModel mRecyclerViewModel;
-    private LinearLayoutManager mLayoutManager;
 
     private OnNewsMasterFragmentListener mOnNewsMasterFragmentListener;
 
@@ -70,9 +79,19 @@ public class NewsMasterFragment extends Fragment
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        mRefreshState = RefreshState.NO_REFRESHING;
         mActivity = getActivity();
+        mLoaderManager = getLoaderManager();
+        mLinearLayoutManager = new LinearLayoutManager(mActivity);
         mNewsType = getArguments().getString(ARG_NEWS_TYPE);
         mNewsAdapter = new NewsAdapter(mActivity, R.layout.item_news);
+        mRefreshNewsDataLoaderCallbacks = new RefreshNewsDataLoaderCallbacks();
+        mRecyclerViewModel = new RecyclerViewModel(mNewsAdapter, mLinearLayoutManager,
+                getOnRecyclerViewScrollListener(), this);
+
+        if (savedInstanceState != null) {
+            mItemPosition = savedInstanceState.getInt(SAVE_ITEM_POSITION);
+        }
     }
 
     @Override
@@ -81,19 +100,16 @@ public class NewsMasterFragment extends Fragment
         LayoutRecyclerViewBinding binding = DataBindingUtil
                 .inflate(inflater, R.layout.layout_recycler_view, container, false);
 
-        mHasNewsData = false;
-        mScrollRefreshing = false;
-        mNewsTotalPageOuted = false;
-        mSwipeRefreshing = false;
-        mNewsPage = 1;
-
         mSwipeRefreshLayout = binding.swipeRefreshLayout;
-        mLayoutManager = new LinearLayoutManager(mActivity);
-        mRecyclerViewModel = new RecyclerViewModel(mNewsAdapter, mLayoutManager,
-                getOnRecyclerViewScrollListener(), this);
 
-        getLoaderManager().initLoader(0, null, this);
-        refreshNewsData(false);
+        mLoaderManager.initLoader(LOADER_GET_NEWS_CURSOR, null, this);
+        mLoaderManager.initLoader(
+                LOADER_REFRESH_NEWS_DATA,
+                getRefreshStateBundle(RefreshState.AUTO_REFRESHING),
+                mRefreshNewsDataLoaderCallbacks);
+
+        mLinearLayoutManager.scrollToPosition(mItemPosition);
+
         binding.setRecyclerViewModel(mRecyclerViewModel);
 
         return binding.getRoot();
@@ -101,83 +117,20 @@ public class NewsMasterFragment extends Fragment
 
     @Override
     public void onRefresh() {
-        refreshNewsData(true);
+        refreshNewsData(RefreshState.SWIPE_REFRESHING);
     }
 
-    private void refreshNewsData(boolean swipeRefreshing) {
-        mSwipeRefreshing = swipeRefreshing;
+    private Bundle getRefreshStateBundle(int refreshState) {
+        Bundle args = new Bundle();
+        args.putInt(ARG_REFRESH_STATE, refreshState);
+        return args;
+    }
 
-        new AsyncTask<Void, Void, Integer>() {
-
-            private static final int NETWORK_ERROR = -2;
-            private static final int SERVER_ERROR = -1;
-            private static final int NEWS_TOTAL_PAGE_OUTED = 0;
-            private static final int REFRESH_SUCCESS = 1;
-
-            @Override
-            protected Integer doInBackground(Void... params) {
-                if (!NetworkUtils.isNetworkConnectedOrConnecting(mActivity)) {
-                    return NETWORK_ERROR;
-                }
-
-                try {
-                    int newsPage = mSwipeRefreshing ? 1 : mNewsPage;
-                    boolean newsPageInRange = UpdateDataTask
-                            .updateNewsDataIfThePageInRange(mActivity, mNewsType, newsPage);
-
-                    return newsPageInRange ? REFRESH_SUCCESS : NEWS_TOTAL_PAGE_OUTED;
-                } catch (IOException e) {
-                    return NETWORK_ERROR;
-                } catch (JSONException e) {
-                    return SERVER_ERROR;
-                }
-            }
-
-            @Override
-            protected void onPostExecute(Integer integer) {
-                super.onPostExecute(integer);
-
-                mScrollRefreshing = false;
-                mRecyclerViewModel.setAutoRefreshing(false);
-                mSwipeRefreshLayout.setRefreshing(false);
-
-                switch (integer) {
-                    case NETWORK_ERROR:
-                        handleError(R.string.network_error_text);
-                        break;
-                    case SERVER_ERROR:
-                        handleError(R.string.server_error_text);
-                        break;
-                    case NEWS_TOTAL_PAGE_OUTED:
-                        handleNewsTotalPageOuted();
-                        break;
-                    default:
-                        if (mSwipeRefreshing) {
-                            mNewsTotalPageOuted = false;
-                            mNewsPage = 2;
-                        } else {
-                            mNewsPage++;
-                        }
-                }
-
-                mSwipeRefreshing = false;
-            }
-
-            private void handleNewsTotalPageOuted() {
-                mNewsTotalPageOuted = true;
-                mNewsAdapter.notifyItemChanged(mNewsAdapter.getItemCount() - 1);
-            }
-
-            private void handleError(@StringRes int errorTextResId) {
-                if (mHasNewsData) {
-                    handleNewsTotalPageOuted();
-                } else {
-                    if (isAdded()) {
-                        mRecyclerViewModel.setErrorText(getString(errorTextResId));
-                    }
-                }
-            }
-        }.execute();
+    public void refreshNewsData(int refreshState) {
+        mLoaderManager.restartLoader(
+                LOADER_REFRESH_NEWS_DATA,
+                getRefreshStateBundle(refreshState),
+                mRefreshNewsDataLoaderCallbacks);
     }
 
     @NonNull
@@ -198,16 +151,15 @@ public class NewsMasterFragment extends Fragment
             }
 
             private void scrollRefresh() {
-                if (mScrollRefreshing || mNewsTotalPageOuted || mSwipeRefreshing) {
+                if (mRefreshState != RefreshState.NO_REFRESHING || mNewsTotalPageOuted) {
                     return;
                 }
 
-                int lastVisibleItemPosition = mLayoutManager.findLastVisibleItemPosition();
-                int itemCount = mLayoutManager.getItemCount();
+                int lastVisibleItemPosition = mLinearLayoutManager.findLastVisibleItemPosition();
+                int itemCount = mNewsAdapter.getItemCount();
 
                 if (lastVisibleItemPosition >= itemCount - NetworkUtils.NEWS_COUNT_OF_EACH_PAGE) {
-                    mScrollRefreshing = true;
-                    refreshNewsData(false);
+                    refreshNewsData(RefreshState.SCROLL_REFRESHING);
                 }
             }
         };
@@ -225,6 +177,13 @@ public class NewsMasterFragment extends Fragment
     public void onDetach() {
         super.onDetach();
         mOnNewsMasterFragmentListener = null;
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        int itemPosition = mLinearLayoutManager.findFirstCompletelyVisibleItemPosition();
+        outState.putInt(SAVE_ITEM_POSITION, itemPosition);
     }
 
     @Override
@@ -247,6 +206,96 @@ public class NewsMasterFragment extends Fragment
     @Override
     public void onLoaderReset(Loader<Cursor> loader) {
         mNewsAdapter.swapCursor(null);
+    }
+
+    private class RefreshNewsDataLoaderCallbacks implements LoaderManager.LoaderCallbacks<Integer> {
+
+        private static final int NETWORK_ERROR = -2;
+        private static final int SERVER_ERROR = -1;
+        private static final int NEWS_TOTAL_PAGE_OUTED = 0;
+        private static final int REFRESH_SUCCESS = 1;
+
+        @Override
+        public Loader<Integer> onCreateLoader(int id, final Bundle args) {
+            return new AsyncTaskLoader<Integer>(mActivity) {
+                @Override
+                protected void onStartLoading() {
+                    super.onStartLoading();
+                    forceLoad();
+                }
+
+                @Override
+                public Integer loadInBackground() {
+                    mRefreshState = args.getInt(ARG_REFRESH_STATE);
+
+                    if (!NetworkUtils.isNetworkConnectedOrConnecting(mActivity)) {
+                        return NETWORK_ERROR;
+                    }
+
+                    try {
+                        boolean scrollRefreshing = mRefreshState == RefreshState.SCROLL_REFRESHING;
+                        int newsPage = scrollRefreshing ? mNewsPage : 1;
+                        boolean newsPageInRange = UpdateDataTask
+                                .updateNewsDataIfThePageInRange(mActivity, mNewsType, newsPage);
+
+                        return newsPageInRange ? REFRESH_SUCCESS : NEWS_TOTAL_PAGE_OUTED;
+                    } catch (IOException e) {
+                        return NETWORK_ERROR;
+                    } catch (JSONException e) {
+                        return SERVER_ERROR;
+                    }
+                }
+            };
+        }
+
+        @Override
+        public void onLoadFinished(Loader<Integer> loader, Integer data) {
+            switch (data) {
+                case NETWORK_ERROR:
+                    handleError(R.string.network_error_text);
+                    break;
+                case SERVER_ERROR:
+                    handleError(R.string.server_error_text);
+                    break;
+                case NEWS_TOTAL_PAGE_OUTED:
+                    handleNewsTotalPageOuted();
+                    break;
+                default:
+                    switch (mRefreshState) {
+                        case RefreshState.AUTO_REFRESHING:
+                        case RefreshState.SWIPE_REFRESHING:
+                            mNewsTotalPageOuted = false;
+                            mNewsPage = 2;
+                            break;
+                        case RefreshState.SCROLL_REFRESHING:
+                            mNewsPage++;
+                            break;
+                        default:
+                    }
+            }
+
+            mRecyclerViewModel.setAutoRefreshing(false);
+            mSwipeRefreshLayout.setRefreshing(false);
+            mRefreshState = RefreshState.NO_REFRESHING;
+        }
+
+        private void handleNewsTotalPageOuted() {
+            mNewsTotalPageOuted = true;
+            mNewsAdapter.notifyItemChanged(mNewsAdapter.getItemCount() - 1);
+        }
+
+        private void handleError(@StringRes int errorTextRes) {
+            if (mHasNewsData) {
+                handleNewsTotalPageOuted();
+            } else {
+                mRecyclerViewModel.setErrorText(getString(errorTextRes));
+            }
+        }
+
+        @Override
+        public void onLoaderReset(Loader<Integer> loader) {
+
+        }
     }
 
     private class NewsAdapter extends RecyclerViewCursorAdapter {
