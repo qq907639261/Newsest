@@ -1,7 +1,6 @@
 package com.xhbb.qinzl.newsest.server;
 
 import android.content.ContentValues;
-import android.support.annotation.Nullable;
 
 import com.xhbb.qinzl.newsest.data.Contract.NewsEntry;
 import com.xhbb.qinzl.newsest.server.JsonUtils.JsonNews.ShowApiResBodyObject.PageBeanObject.ContentListArray;
@@ -10,7 +9,6 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -19,23 +17,17 @@ import java.util.List;
 
 public class JsonUtils {
 
-    @Nullable
-    public static ContentValues[] getNewsValuesArrayIfThePageInRange(String jsonString, String newsType)
+    public static int fillNewsValuesAndGetTotalPage(
+            String jsonString, List<ContentValues> newsValuesList, String newsType)
             throws JSONException {
         JSONObject jsonNews = new JSONObject(jsonString);
         JSONObject showApiResBodyObject = jsonNews.getJSONObject(JsonNews.SHOW_API_RES_BODY);
         JSONObject pageBeanObject = showApiResBodyObject.getJSONObject(JsonNews.ShowApiResBodyObject.PAGE_BEAN);
 
-        int totalPages = pageBeanObject.getInt(JsonNews.ShowApiResBodyObject.PageBeanObject.ALL_PAGES);
-        int currentPage = pageBeanObject.getInt(JsonNews.ShowApiResBodyObject.PageBeanObject.CURRENT_PAGE);
-
-        if (currentPage > totalPages) {
-            return null;
-        }
+        int totalPage = pageBeanObject.getInt(JsonNews.ShowApiResBodyObject.PageBeanObject.ALL_PAGES);
 
         JSONArray contentListArray = pageBeanObject.getJSONArray(JsonNews.ShowApiResBodyObject.PageBeanObject.CONTENT_LIST);
 
-        List<ContentValues> newsValuesList = new ArrayList<>();
         for (int i = 0; i < contentListArray.length(); i++) {
             JSONObject contentListObject = contentListArray.getJSONObject(i);
 
@@ -57,7 +49,6 @@ public class JsonUtils {
             String imageUrl = imageUrlsObject.getString(ContentListArray.ImageUrlsArray.URL);
 
             ContentValues newsValues = new ContentValues();
-
             newsValues.put(NewsEntry._NEWS_CODE, newsCode);
             newsValues.put(NewsEntry._TITLE, title);
             newsValues.put(NewsEntry._PUBLISH_DATE, publish_date);
@@ -70,7 +61,7 @@ public class JsonUtils {
             newsValuesList.add(newsValues);
         }
 
-        return newsValuesList.toArray(new ContentValues[newsValuesList.size()]);
+        return totalPage;
     }
 
     interface JsonNews {
@@ -84,7 +75,6 @@ public class JsonUtils {
             interface PageBeanObject {
 
                 String ALL_PAGES = "allPages";
-                String CURRENT_PAGE = "currentPage";
 
                 String CONTENT_LIST = "contentlist";
 

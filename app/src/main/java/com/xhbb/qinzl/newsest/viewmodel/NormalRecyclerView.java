@@ -2,7 +2,6 @@ package com.xhbb.qinzl.newsest.viewmodel;
 
 import android.databinding.BaseObservable;
 import android.databinding.Bindable;
-import android.databinding.BindingAdapter;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.RecyclerView;
 
@@ -12,19 +11,21 @@ import com.xhbb.qinzl.newsest.BR;
  * Created by qinzl on 2017/5/29.
  */
 
-public class RecyclerViewModel extends BaseObservable {
+public class NormalRecyclerView extends BaseObservable {
 
     private boolean mAutoRefreshing;
+    private boolean mSwipeRefreshing;
+    private boolean mSmoothScrollToTop;
     private String mErrorText;
     private RecyclerView.Adapter mRecyclerViewAdapter;
     private RecyclerView.LayoutManager mRecyclerViewLayoutManager;
     private RecyclerView.OnScrollListener mOnRecyclerViewScrollListener;
     private SwipeRefreshLayout.OnRefreshListener mOnSwipeRefreshListener;
 
-    public RecyclerViewModel(RecyclerView.Adapter recyclerViewAdapter,
-                             RecyclerView.LayoutManager recyclerViewLayoutManager,
-                             RecyclerView.OnScrollListener onRecyclerViewScrollListener,
-                             SwipeRefreshLayout.OnRefreshListener onSwipeRefreshListener) {
+    public NormalRecyclerView(RecyclerView.Adapter recyclerViewAdapter,
+                              RecyclerView.LayoutManager recyclerViewLayoutManager,
+                              RecyclerView.OnScrollListener onRecyclerViewScrollListener,
+                              SwipeRefreshLayout.OnRefreshListener onSwipeRefreshListener) {
         mRecyclerViewAdapter = recyclerViewAdapter;
         mRecyclerViewLayoutManager = recyclerViewLayoutManager;
         mOnRecyclerViewScrollListener = onRecyclerViewScrollListener;
@@ -33,14 +34,22 @@ public class RecyclerViewModel extends BaseObservable {
         mAutoRefreshing = true;
     }
 
-    @BindingAdapter({"android:onRecyclerViewScroll"})
-    public static void onRecyclerViewScroll(RecyclerView recyclerView, final RecyclerViewModel recyclerViewModel) {
-        recyclerView.addOnScrollListener(recyclerViewModel.mOnRecyclerViewScrollListener);
+    public RecyclerView.OnScrollListener getOnRecyclerViewScrollListener() {
+        return mOnRecyclerViewScrollListener;
     }
 
-    @BindingAdapter({"android:onSwipeRefresh"})
-    public static void onSwipeRefresh(SwipeRefreshLayout swipeRefreshLayout, RecyclerViewModel recyclerViewModel) {
-        swipeRefreshLayout.setOnRefreshListener(recyclerViewModel.mOnSwipeRefreshListener);
+    public SwipeRefreshLayout.OnRefreshListener getOnSwipeRefreshListener() {
+        return mOnSwipeRefreshListener;
+    }
+
+    public void setSmoothScrollToTop(boolean smoothScrollToTop) {
+        mSmoothScrollToTop = smoothScrollToTop;
+        notifyPropertyChanged(BR.smoothScrollToTop);
+    }
+
+    @Bindable
+    public boolean isSmoothScrollToTop() {
+        return mSmoothScrollToTop;
     }
 
     public void setAutoRefreshing(boolean autoRefreshing) {
@@ -51,6 +60,16 @@ public class RecyclerViewModel extends BaseObservable {
     @Bindable
     public boolean isAutoRefreshing() {
         return mAutoRefreshing;
+    }
+
+    public void setSwipeRefreshing(boolean swipeRefreshing) {
+        mSwipeRefreshing = swipeRefreshing;
+        notifyPropertyChanged(BR.swipeRefreshing);
+    }
+
+    @Bindable
+    public boolean isSwipeRefreshing() {
+        return mSwipeRefreshing;
     }
 
     public void setErrorText(String errorText) {

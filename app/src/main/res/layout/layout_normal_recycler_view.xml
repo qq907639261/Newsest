@@ -9,8 +9,8 @@
         <import type="android.view.View"/>
 
         <variable
-            name="recyclerViewModel"
-            type="com.xhbb.qinzl.newsest.viewmodel.RecyclerViewModel"/>
+            name="normalRecyclerView"
+            type="com.xhbb.qinzl.newsest.viewmodel.NormalRecyclerView"/>
     </data>
 
     <android.support.design.widget.CoordinatorLayout
@@ -18,37 +18,37 @@
         android:layout_height="match_parent">
 
         <android.support.v4.widget.SwipeRefreshLayout
-            android:id="@+id/swipeRefreshLayout"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:onSwipeRefresh="@{recyclerViewModel}">
+            android:onRefresh="@{normalRecyclerView.onSwipeRefreshListener}"
+            android:refreshing="@{normalRecyclerView.swipeRefreshing}">
 
             <FrameLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent">
 
                 <android.support.v7.widget.RecyclerView
-                    android:id="@+id/recyclerView"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:layout_marginLeft="8dp"
                     android:layout_marginRight="8dp"
-                    android:adapter="@{recyclerViewModel.recyclerViewAdapter}"
-                    android:onRecyclerViewScroll="@{recyclerViewModel}"
-                    app:layoutManager="@{recyclerViewModel.recyclerViewLayoutManager}"/>
+                    android:adapter="@{normalRecyclerView.recyclerViewAdapter}"
+                    android:onScroll="@{normalRecyclerView.onRecyclerViewScrollListener}"
+                    android:smoothScrollToTop="@{normalRecyclerView.smoothScrollToTop}"
+                    app:layoutManager="@{normalRecyclerView.recyclerViewLayoutManager}"/>
 
                 <ProgressBar
                     style="?android:attr/progressBarStyle"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
-                    android:visibility="@{recyclerViewModel.autoRefreshing ? View.VISIBLE : View.GONE}"/>
+                    android:visibility="@{normalRecyclerView.autoRefreshing ? View.VISIBLE : View.GONE}"/>
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
-                    android:text="@{recyclerViewModel.errorText}"
+                    android:text="@{normalRecyclerView.errorText}"
                     android:textColor="@color/errorText"
                     android:textSize="20sp"
                     android:textStyle="bold"

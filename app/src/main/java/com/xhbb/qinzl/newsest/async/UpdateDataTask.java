@@ -11,6 +11,8 @@ import com.xhbb.qinzl.newsest.server.NetworkUtils;
 import org.json.JSONException;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by qinzl on 2017/5/29.
@@ -18,14 +20,12 @@ import java.io.IOException;
 
 public class UpdateDataTask {
 
-    public static boolean updateNewsDataIfThePageInRange(Context context, String newsType, int newsPage)
+    public static boolean updateNewsDataAndGetIsPageEqualsTotalPage(Context context, String newsType, int newsPage)
             throws IOException, JSONException {
         String newsResponse = NetworkUtils.getNewsResponse(context, newsType, newsPage);
-        ContentValues[] newsValuesArray = JsonUtils.getNewsValuesArrayIfThePageInRange(newsResponse, newsType);
 
-        if (newsValuesArray == null) {
-            return false;
-        }
+        List<ContentValues> newsValuesList = new ArrayList<>();
+        int totalPage = JsonUtils.fillNewsValuesAndGetTotalPage(newsResponse, newsValuesList, newsType);
 
         ContentResolver contentResolver = context.getContentResolver();
         if (newsPage == 1) {
@@ -33,8 +33,10 @@ public class UpdateDataTask {
             String[] selectionArgs = {newsType};
             contentResolver.delete(NewsEntry.URI, where, selectionArgs);
         }
+
+        ContentValues[] newsValuesArray = newsValuesList.toArray(new ContentValues[newsValuesList.size()]);
         contentResolver.bulkInsert(NewsEntry.URI, newsValuesArray);
 
-        return true;
+        return totalPage == newsPage;
     }
 }

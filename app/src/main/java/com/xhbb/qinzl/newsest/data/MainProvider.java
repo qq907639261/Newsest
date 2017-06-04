@@ -46,7 +46,6 @@ public class MainProvider extends ContentProvider {
             db.setTransactionSuccessful();
 
             getContentResolver().notifyChange(uri, null);
-
             return valuesArray.length;
         } finally {
             db.endTransaction();
@@ -61,7 +60,6 @@ public class MainProvider extends ContentProvider {
         long insertedId = db.insert(tableName, null, values);
 
         getContentResolver().notifyChange(uri, null);
-
         return Uri.withAppendedPath(uri, String.valueOf(insertedId));
     }
 
@@ -74,7 +72,6 @@ public class MainProvider extends ContentProvider {
         int affectedRows = db.update(tableName, values, selection, selectionArgs);
 
         getContentResolver().notifyChange(uri, null);
-
         return affectedRows;
     }
 
@@ -86,7 +83,6 @@ public class MainProvider extends ContentProvider {
         int affectedRows = db.delete(tableName, selection, selectionArgs);
 
         getContentResolver().notifyChange(uri, null);
-
         return affectedRows;
     }
 

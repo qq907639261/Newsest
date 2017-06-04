@@ -4,8 +4,6 @@
 
     <data>
 
-        <import type="com.xhbb.qinzl.newsest.viewmodel.MainModel"/>
-
         <variable
             name="news"
             type="com.xhbb.qinzl.newsest.viewmodel.News"/>
@@ -32,6 +30,7 @@
             app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
             <TextView
+                android:text="@{news.title}"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 tools:text="TextView"/>

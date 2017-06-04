@@ -13,7 +13,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_margin="8dp"
-        android:onClick="@{(view)->news.onItemClick(view)}">
+        android:onClick="@{()->news.onClickItem()}">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -22,16 +22,14 @@
 
             <!--suppress AndroidUnknownAttribute -->
             <ImageView
-                android:id="@+id/newsImage"
                 android:layout_width="150dp"
                 android:layout_height="100dp"
                 android:contentDescription="@string/news_image_content_description"
+                android:imageObj="@{news.imageUrl}"
                 android:scaleType="centerCrop"
-                android:setNewsImage="@{news}"
                 tools:src="@mipmap/ic_launcher"/>
 
             <TextView
-                android:id="@+id/title"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_marginLeft="8dp"

@@ -2,64 +2,57 @@ package com.xhbb.qinzl.newsest;
 
 import android.databinding.DataBindingUtil;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
-import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.RecyclerView;
-import android.view.View;
+import android.support.v7.widget.LinearLayoutManager;
 
 import com.xhbb.qinzl.newsest.common.MainEnum.RefreshState;
 import com.xhbb.qinzl.newsest.databinding.ActivityMainBinding;
-import com.xhbb.qinzl.newsest.databinding.LayoutRecyclerViewBinding;
+import com.xhbb.qinzl.newsest.databinding.LayoutNormalRecyclerViewBinding;
+import com.xhbb.qinzl.newsest.viewmodel.MainModel;
+import com.xhbb.qinzl.newsest.viewmodel.NormalRecyclerView;
 
 public class MainActivity extends AppCompatActivity implements
-        NewsMasterFragment.OnNewsMasterFragmentListener {
+        NewsMasterFragment.OnNewsMasterFragmentListener,
+        MainModel.OnMainModelListener {
 
     private NewsMasterPagerAdapter mNewsMasterPagerAdapter;
-    private ViewPager mViewPager;
-    private FloatingActionButton mToTopFab;
+    private MainModel mMainModel;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         ActivityMainBinding binding = DataBindingUtil.setContentView(this, R.layout.activity_main);
 
-        mViewPager = binding.viewPager;
-        mToTopFab = binding.fab;
         mNewsMasterPagerAdapter = new NewsMasterPagerAdapter(getSupportFragmentManager());
+        mMainModel = new MainModel(mNewsMasterPagerAdapter, this);
 
-        binding.setPagerAdapter(mNewsMasterPagerAdapter);
-        binding.setOnClickFabListener(getOnClickToTopFabListener());
-    }
-
-    @NonNull
-    private View.OnClickListener getOnClickToTopFabListener() {
-        return new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                NewsMasterFragment newsMasterFragment = (NewsMasterFragment) mNewsMasterPagerAdapter
-                        .instantiateItem(mViewPager, mViewPager.getCurrentItem());
-                LayoutRecyclerViewBinding binding = DataBindingUtil.getBinding(newsMasterFragment.getView());
-
-                if (binding != null) {
-                    binding.recyclerView.smoothScrollToPosition(0);
-                    binding.swipeRefreshLayout.setRefreshing(true);
-                    newsMasterFragment.refreshNewsData(RefreshState.SWIPE_REFRESHING);
-                }
-            }
-        };
+        binding.setMainModel(mMainModel);
     }
 
     @Override
-    public void onRecyclerViewScrolled(RecyclerView recyclerView, int dx, int dy) {
-        if (dy < 0 && !mToTopFab.isShown()) {
-            mToTopFab.show();
-        } else if (dy > 0 && mToTopFab.isShown()) {
-            mToTopFab.hide();
+    public void onRecyclerViewScrolled(LinearLayoutManager linearLayoutManager, int dy) {
+        if (dy < 0 && linearLayoutManager.findFirstCompletelyVisibleItemPosition() != 0) {
+            mMainModel.setShowFab(true);
+        } else {
+            mMainModel.setShowFab(false);
+        }
+    }
+
+    @Override
+    public void onClickToTopFab(ViewPager viewPager) {
+        NewsMasterFragment newsMasterFragment = (NewsMasterFragment) mNewsMasterPagerAdapter
+                .instantiateItem(viewPager, viewPager.getCurrentItem());
+        LayoutNormalRecyclerViewBinding binding = DataBindingUtil.getBinding(newsMasterFragment.getView());
+
+        if (binding != null) {
+            NormalRecyclerView normalRecyclerView = binding.getNormalRecyclerView();
+            normalRecyclerView.setSmoothScrollToTop(true);
+            normalRecyclerView.setSwipeRefreshing(true);
+            newsMasterFragment.refreshNewsData(RefreshState.SWIPE_REFRESHING);
         }
     }
 
