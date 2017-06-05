@@ -43,22 +43,23 @@ public class NewsMasterFragment extends Fragment
 
     private static final String SAVE_ITEM_POSITION = "SAVE_ITEM_POSITION";
     private static final String SAVE_NEWS_PAGE = "SAVE_NEWS_PAGE";
-    private static final String SAVE_NEWS_TOTAL_PAGE_OUTED = "SAVE_NEWS_TOTAL_PAGE_OUTED";
+    private static final String SAVE_NEWS_PAGE_EQUALS_TOTAL_PAGE = "SAVE_NEWS_PAGE_EQUALS_TOTAL_PAGE";
 
     private OnNewsMasterFragmentListener mOnNewsMasterFragmentListener;
     private boolean mHasNewsData;
 
-    private int mRefreshState;
-    private Activity mActivity;
-    private NewsAdapter mNewsAdapter;
-    private String mNewsType;
-    private LoaderManager mLoaderManager;
-    private LinearLayoutManager mLinearLayoutManager;
-    private NormalRecyclerView mNormalRecyclerView;
-
     private int mItemPosition;
     private int mNewsPage;
     private boolean mNewsPageEqualsTotalPage;
+
+    private int mRefreshState;
+    private Activity mActivity;
+    private String mNewsType;
+    private LoaderManager mLoaderManager;
+
+    private NewsAdapter mNewsAdapter;
+    private LinearLayoutManager mLinearLayoutManager;
+    private NormalRecyclerView mNormalRecyclerView;
 
     private boolean mViewRecreating;
 
@@ -79,15 +80,16 @@ public class NewsMasterFragment extends Fragment
         if (savedInstanceState != null) {
             mItemPosition = savedInstanceState.getInt(SAVE_ITEM_POSITION);
             mNewsPage = savedInstanceState.getInt(SAVE_NEWS_PAGE);
-            mNewsPageEqualsTotalPage = savedInstanceState.getBoolean(SAVE_NEWS_TOTAL_PAGE_OUTED);
+            mNewsPageEqualsTotalPage = savedInstanceState.getBoolean(SAVE_NEWS_PAGE_EQUALS_TOTAL_PAGE);
         }
 
         mRefreshState = RefreshState.NO_REFRESHING;
         mActivity = getActivity();
         mLoaderManager = getLoaderManager();
-        mLinearLayoutManager = new LinearLayoutManager(mActivity);
         mNewsType = getArguments().getString(ARG_NEWS_TYPE);
+
         mNewsAdapter = new NewsAdapter(mActivity, R.layout.item_news);
+        mLinearLayoutManager = new LinearLayoutManager(mActivity);
         mNormalRecyclerView = new NormalRecyclerView(mNewsAdapter, mLinearLayoutManager,
                 getOnRecyclerViewScrollListener(), this);
     }
@@ -238,7 +240,7 @@ public class NewsMasterFragment extends Fragment
         super.onSaveInstanceState(outState);
         outState.putInt(SAVE_ITEM_POSITION, mItemPosition);
         outState.putInt(SAVE_NEWS_PAGE, mNewsPage);
-        outState.putBoolean(SAVE_NEWS_TOTAL_PAGE_OUTED, mNewsPageEqualsTotalPage);
+        outState.putBoolean(SAVE_NEWS_PAGE_EQUALS_TOTAL_PAGE, mNewsPageEqualsTotalPage);
     }
 
     @Override
@@ -306,7 +308,7 @@ public class NewsMasterFragment extends Fragment
         @Override
         public void onBindViewHolder(BindingHolder holder, int position) {
             mCursor.moveToPosition(position);
-            News news = new News(mCursor, this, position);
+            News news = new News(mContext, mCursor, this, position);
             ViewDataBinding binding = holder.getBinding();
 
             binding.setVariable(BR.news, news);

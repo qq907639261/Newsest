@@ -1,8 +1,11 @@
 package com.xhbb.qinzl.newsest.viewmodel;
 
+import android.app.Activity;
+import android.content.Context;
 import android.database.Cursor;
 import android.os.Parcel;
 import android.os.Parcelable;
+import android.util.DisplayMetrics;
 
 import com.xhbb.qinzl.newsest.data.Contract.NewsEntry;
 
@@ -12,6 +15,7 @@ import com.xhbb.qinzl.newsest.data.Contract.NewsEntry;
 
 public class News implements Parcelable {
 
+    private Context mContext;
     private OnNewsListener mOnNewsListener;
     private int mItemPosition;
 
@@ -23,8 +27,9 @@ public class News implements Parcelable {
     private String mNewsContent;
     private String mImageUrl;
 
-    public News(Cursor cursor, OnNewsListener onNewsListener, int itemPosition) {
+    public News(Context context, Cursor cursor, OnNewsListener onNewsListener, int itemPosition) {
         setNews(cursor);
+        mContext = context;
         mOnNewsListener = onNewsListener;
         mItemPosition = itemPosition;
     }
@@ -60,6 +65,10 @@ public class News implements Parcelable {
         dest.writeString(mImageUrl);
     }
 
+    public void setContext(Context context) {
+        mContext = context;
+    }
+
     public String getTitle() {
         return mTitle;
     }
@@ -68,8 +77,19 @@ public class News implements Parcelable {
         return mImageUrl;
     }
 
+    public String getDescription() {
+        return mDescription;
+    }
+
     public void onClickItem() {
         mOnNewsListener.onClickItem(this, mItemPosition);
+    }
+
+    public int getLargeNewsImageHeight() {
+        Activity activity = (Activity) mContext;
+        DisplayMetrics metrics = new DisplayMetrics();
+        activity.getWindowManager().getDefaultDisplay().getMetrics(metrics);
+        return metrics.widthPixels * 2 / 3;
     }
 
     public static final Creator<News> CREATOR = new Creator<News>() {

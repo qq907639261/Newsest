@@ -17,24 +17,24 @@
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="100dp"
             android:orientation="horizontal">
 
             <!--suppress AndroidUnknownAttribute -->
             <ImageView
                 android:layout_width="150dp"
-                android:layout_height="100dp"
+                android:layout_height="match_parent"
                 android:contentDescription="@string/news_image_content_description"
                 android:imageObj="@{news.imageUrl}"
                 android:scaleType="centerCrop"
                 tools:src="@mipmap/ic_launcher"/>
 
             <TextView
-                android:layout_width="match_parent"
+                android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:layout_marginLeft="8dp"
-                android:layout_marginStart="8dp"
-                android:gravity="center_vertical"
+                android:layout_marginRight="8dp"
+                android:gravity="center"
                 android:text="@{news.title}"
                 android:textAppearance="@android:style/TextAppearance.Large"
                 tools:text="Title"/>

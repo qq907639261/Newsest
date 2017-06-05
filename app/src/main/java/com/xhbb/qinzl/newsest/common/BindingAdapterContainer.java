@@ -4,10 +4,13 @@ import android.content.Context;
 import android.databinding.BindingAdapter;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.widget.SwipeRefreshLayout;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.widget.ImageView;
+
+import com.xhbb.qinzl.newsest.R;
 
 /**
  * Created by qinzl on 2017/6/4.
@@ -15,18 +18,20 @@ import android.widget.ImageView;
 
 public class BindingAdapterContainer {
 
-    @BindingAdapter({"android:bindActionBar"})
-    public static void setSupportActionBar(Toolbar toolbar, boolean bindActionBar) {
+    @BindingAdapter(value = {"android:bindActionBar", "android:displayHomeAsUpEnabled"},
+            requireAll = false)
+    public static void setActionBar(Toolbar toolbar, boolean bindActionBar, boolean displayHomeAsUpEnabled) {
         if (bindActionBar) {
-            Context context = toolbar.getContext();
-            ((AppCompatActivity) context).setSupportActionBar(toolbar);
-        }
-    }
+            AppCompatActivity appCompatActivity = (AppCompatActivity) toolbar.getContext();
+            appCompatActivity.setSupportActionBar(toolbar);
 
-    @BindingAdapter({"android:onScroll"})
-    public static void addOnScrollListener(RecyclerView recyclerView,
-                                           RecyclerView.OnScrollListener onRecyclerViewScrollListener) {
-        recyclerView.addOnScrollListener(onRecyclerViewScrollListener);
+            ActionBar actionBar = appCompatActivity.getSupportActionBar();
+            assert actionBar != null;
+            if (displayHomeAsUpEnabled) {
+                actionBar.setDisplayHomeAsUpEnabled(true);
+                actionBar.setHomeAsUpIndicator(R.drawable.ic_action_home_as_up);
+            }
+        }
     }
 
     @BindingAdapter({"android:onRefresh"})
@@ -44,6 +49,12 @@ public class BindingAdapterContainer {
         }
     }
 
+    @BindingAdapter({"android:onScroll"})
+    public static void addOnScrollListener(RecyclerView recyclerView,
+                                           RecyclerView.OnScrollListener onRecyclerViewScrollListener) {
+        recyclerView.addOnScrollListener(onRecyclerViewScrollListener);
+    }
+
     @BindingAdapter({"android:smoothScrollToTop"})
     public static void smoothScrollToTop(RecyclerView recyclerView, boolean smoothScrollToTop) {
         if (smoothScrollToTop) {
@@ -56,6 +67,8 @@ public class BindingAdapterContainer {
         Context context = imageView.getContext();
         GlideApp.with(context)
                 .load(imageObj)
+                .placeholder(R.mipmap.ic_launcher_round)
+                .error(R.mipmap.ic_launcher)
                 .into(imageView);
     }
 }

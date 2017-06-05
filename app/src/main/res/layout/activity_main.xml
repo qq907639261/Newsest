@@ -30,6 +30,7 @@
                 android:layout_height="wrap_content"
                 android:setupWithViewPager="@{viewPager}"
                 app:layout_scrollFlags="scroll|enterAlways"
+                app:tabMinWidth="@dimen/newsTabMinWidth"
                 app:tabMode="scrollable"
                 app:tabSelectedTextColor="@color/colorAccent"/>
         </android.support.design.widget.AppBarLayout>
