@@ -2,6 +2,7 @@ package com.xhbb.qinzl.newsest.common;
 
 import android.content.Context;
 import android.databinding.BindingAdapter;
+import android.graphics.drawable.Drawable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.ActionBar;
@@ -27,6 +28,7 @@ public class BindingAdapterContainer {
 
             ActionBar actionBar = appCompatActivity.getSupportActionBar();
             assert actionBar != null;
+
             if (displayHomeAsUpEnabled) {
                 actionBar.setDisplayHomeAsUpEnabled(true);
                 actionBar.setHomeAsUpIndicator(R.drawable.ic_action_home_as_up);
@@ -62,13 +64,22 @@ public class BindingAdapterContainer {
         }
     }
 
-    @BindingAdapter({"android:imageObj"})
-    public static void loadImageIntoImageView(ImageView imageView, Object imageObj) {
+    @BindingAdapter(value = {"android:imageObj", "android:placeHolderSrc", "android:errorSrc"},
+            requireAll = false)
+    public static void loadImageIntoImageView(ImageView imageView, Object imageObj,
+                                              Drawable placeHolderDrawable, Drawable errorDrawable) {
         Context context = imageView.getContext();
         GlideApp.with(context)
                 .load(imageObj)
-                .placeholder(R.mipmap.ic_launcher_round)
-                .error(R.mipmap.ic_launcher)
+                .placeholder(placeHolderDrawable)
+                .error(errorDrawable)
                 .into(imageView);
+    }
+
+    @BindingAdapter({"android:heightByWidth"})
+    public static void setImageHeightByImageWidth(ImageView imageView, int imageWidth) {
+        int imageHeight = imageWidth * 2 / 3;
+        imageView.setMaxHeight(imageHeight);
+        imageView.setMinimumHeight(imageHeight);
     }
 }

@@ -34,14 +34,6 @@ public class NormalRecyclerView extends BaseObservable {
         mAutoRefreshing = true;
     }
 
-    public RecyclerView.OnScrollListener getOnRecyclerViewScrollListener() {
-        return mOnRecyclerViewScrollListener;
-    }
-
-    public SwipeRefreshLayout.OnRefreshListener getOnSwipeRefreshListener() {
-        return mOnSwipeRefreshListener;
-    }
-
     public void setSmoothScrollToTop(boolean smoothScrollToTop) {
         mSmoothScrollToTop = smoothScrollToTop;
         notifyPropertyChanged(BR.smoothScrollToTop);
@@ -80,6 +72,14 @@ public class NormalRecyclerView extends BaseObservable {
     @Bindable
     public String getErrorText() {
         return mErrorText;
+    }
+
+    public RecyclerView.OnScrollListener getOnRecyclerViewScrollListener() {
+        return mOnRecyclerViewScrollListener;
+    }
+
+    public SwipeRefreshLayout.OnRefreshListener getOnSwipeRefreshListener() {
+        return mOnSwipeRefreshListener;
     }
 
     public RecyclerView.Adapter getRecyclerViewAdapter() {

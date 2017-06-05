@@ -36,13 +36,18 @@
                 android:orientation="vertical">
 
                 <ImageView
-                    android:layout_width="match_parent"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_gravity="center"
                     android:contentDescription="@string/news_image_content_description"
+                    android:cropToPadding="true"
+                    android:errorSrc="@{@drawable/news_error}"
+                    android:heightByWidth="@{news.largeNewsImageWidth}"
                     android:imageObj="@{news.imageUrl}"
-                    android:maxHeight="@{news.largeNewsImageHeight}"
-                    android:minimumHeight="@{news.largeNewsImageHeight}"
-                    android:scaleType="centerCrop"/>
+                    android:maxWidth="@{news.largeNewsImageWidth}"
+                    android:minimumWidth="@{news.largeNewsImageWidth}"
+                    android:scaleType="centerCrop"
+                    tools:src="@drawable/news_error"/>
 
                 <TextView
                     android:layout_width="wrap_content"

@@ -43,7 +43,7 @@ public class NewsDetailFragment extends Fragment {
                 inflater, R.layout.fragment_news_detail, container, false);
 
         mNews.setContext(mActivity);
-
+        mNews.setupLargeNewsImageWidth();
         binding.setNews(mNews);
 
         return binding.getRoot();

@@ -26,8 +26,9 @@
                 android:layout_height="match_parent"
                 android:contentDescription="@string/news_image_content_description"
                 android:imageObj="@{news.imageUrl}"
+                android:placeHolderSrc="@{@drawable/news_empty}"
                 android:scaleType="centerCrop"
-                tools:src="@mipmap/ic_launcher"/>
+                tools:src="@drawable/news_empty"/>
 
             <TextView
                 android:layout_width="wrap_content"

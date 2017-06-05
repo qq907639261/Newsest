@@ -18,6 +18,7 @@ public class News implements Parcelable {
     private Context mContext;
     private OnNewsListener mOnNewsListener;
     private int mItemPosition;
+    private int mLargeNewsImageWidth;
 
     private String mNewsCode;
     private String mTitle;
@@ -69,6 +70,18 @@ public class News implements Parcelable {
         mContext = context;
     }
 
+    public void setupLargeNewsImageWidth() {
+        Activity activity = (Activity) mContext;
+
+        DisplayMetrics metrics = new DisplayMetrics();
+        activity.getWindowManager().getDefaultDisplay().getMetrics(metrics);
+
+        int widthPixels = metrics.widthPixels;
+        int heightPixels = metrics.heightPixels;
+
+        mLargeNewsImageWidth = widthPixels < heightPixels ? widthPixels : heightPixels;
+    }
+
     public String getTitle() {
         return mTitle;
     }
@@ -85,11 +98,8 @@ public class News implements Parcelable {
         mOnNewsListener.onClickItem(this, mItemPosition);
     }
 
-    public int getLargeNewsImageHeight() {
-        Activity activity = (Activity) mContext;
-        DisplayMetrics metrics = new DisplayMetrics();
-        activity.getWindowManager().getDefaultDisplay().getMetrics(metrics);
-        return metrics.widthPixels * 2 / 3;
+    public int getLargeNewsImageWidth() {
+        return mLargeNewsImageWidth;
     }
 
     public static final Creator<News> CREATOR = new Creator<News>() {

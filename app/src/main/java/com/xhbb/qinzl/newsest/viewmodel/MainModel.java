@@ -22,14 +22,6 @@ public class MainModel extends BaseObservable {
         mOnMainModelListener = onMainModelListener;
     }
 
-    public PagerAdapter getPagerAdapter() {
-        return mPagerAdapter;
-    }
-
-    public void onClick(ViewPager viewPager) {
-        mOnMainModelListener.onClickToTopFab(viewPager);
-    }
-
     public void setShowFab(boolean showFab) {
         mShowFab = showFab;
         notifyPropertyChanged(BR.showFab);
@@ -38,6 +30,14 @@ public class MainModel extends BaseObservable {
     @Bindable
     public boolean isShowFab() {
         return mShowFab;
+    }
+
+    public PagerAdapter getPagerAdapter() {
+        return mPagerAdapter;
+    }
+
+    public void onClick(ViewPager viewPager) {
+        mOnMainModelListener.onClickToTopFab(viewPager);
     }
 
     public interface OnMainModelListener {
