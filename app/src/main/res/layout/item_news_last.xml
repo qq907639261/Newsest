@@ -4,14 +4,12 @@
 
     <data>
 
-        <import type="android.view.View"/>
-
         <variable
             name="news"
             type="com.xhbb.qinzl.newsest.viewmodel.News"/>
 
         <variable
-            name="newsPageEqualsTotalPage"
+            name="alreadyToBottom"
             type="boolean"/>
     </data>
 
@@ -25,22 +23,8 @@
             layout="@layout/item_news"
             app:news="@{news}"/>
 
-        <ProgressBar
-            style="?android:attr/progressBarStyle"
-            android:layout_width="30dp"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:visibility="@{newsPageEqualsTotalPage ? View.GONE : View.VISIBLE}"/>
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:fontFamily="monospace"
-            android:text="@string/scroll_to_end_text"
-            android:textColor="@color/scrollToEndText"
-            android:textSize="20sp"
-            android:textStyle="italic"
-            android:visibility="@{newsPageEqualsTotalPage ? View.VISIBLE : View.GONE}"/>
+        <include
+            layout="@layout/layout_item_last"
+            app:alreadyToBottom="@{alreadyToBottom}"/>
     </LinearLayout>
 </layout>

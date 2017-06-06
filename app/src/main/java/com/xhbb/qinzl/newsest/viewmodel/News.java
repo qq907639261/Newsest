@@ -1,11 +1,8 @@
 package com.xhbb.qinzl.newsest.viewmodel;
 
-import android.app.Activity;
-import android.content.Context;
 import android.database.Cursor;
 import android.os.Parcel;
 import android.os.Parcelable;
-import android.util.DisplayMetrics;
 import android.view.View;
 
 import com.xhbb.qinzl.newsest.data.Contract.NewsEntry;
@@ -16,23 +13,22 @@ import com.xhbb.qinzl.newsest.data.Contract.NewsEntry;
 
 public class News implements Parcelable {
 
-    private Context mContext;
     private OnNewsListener mOnNewsListener;
     private int mItemPosition;
     private int mLargeNewsImageWidth;
-
-    private String mDescription;
+    private int mLargeNewsImageHeight;
 
     private String mNewsCode;
     private String mTitle;
     private String mPublishDate;
     private String mSourceWeb;
     private String mNewsContent;
-    private String mImageUrl;
+    private String mImageUrl1;
+    private String mImageUrl2;
+    private String mImageUrl3;
 
-    public News(Context context, Cursor cursor, OnNewsListener onNewsListener, int itemPosition) {
+    public News(Cursor cursor, OnNewsListener onNewsListener, int itemPosition) {
         setNews(cursor);
-        mContext = context;
         mOnNewsListener = onNewsListener;
         mItemPosition = itemPosition;
     }
@@ -42,9 +38,10 @@ public class News implements Parcelable {
         mTitle = cursor.getString(cursor.getColumnIndex(NewsEntry._TITLE));
         mPublishDate = cursor.getString(cursor.getColumnIndex(NewsEntry._PUBLISH_DATE));
         mSourceWeb = cursor.getString(cursor.getColumnIndex(NewsEntry._SOURCE_WEB));
-        mDescription = cursor.getString(cursor.getColumnIndex(NewsEntry._DESCRIPTION));
         mNewsContent = cursor.getString(cursor.getColumnIndex(NewsEntry._NEWS_CONTENT));
-        mImageUrl = cursor.getString(cursor.getColumnIndex(NewsEntry._IMAGE_URL));
+        mImageUrl1 = cursor.getString(cursor.getColumnIndex(NewsEntry._IMAGE_URL_1));
+        mImageUrl2 = cursor.getString(cursor.getColumnIndex(NewsEntry._IMAGE_URL_2));
+        mImageUrl3 = cursor.getString(cursor.getColumnIndex(NewsEntry._IMAGE_URL_3));
     }
 
     private News(Parcel in) {
@@ -53,7 +50,7 @@ public class News implements Parcelable {
         mPublishDate = in.readString();
         mSourceWeb = in.readString();
         mNewsContent = in.readString();
-        mImageUrl = in.readString();
+        mImageUrl1 = in.readString();
     }
 
     @Override
@@ -63,43 +60,43 @@ public class News implements Parcelable {
         dest.writeString(mPublishDate);
         dest.writeString(mSourceWeb);
         dest.writeString(mNewsContent);
-        dest.writeString(mImageUrl);
+        dest.writeString(mImageUrl1);
     }
 
-    public void setContext(Context context) {
-        mContext = context;
+    public void setLargeNewsImageWidth(int largeNewsImageWidth) {
+        mLargeNewsImageWidth = largeNewsImageWidth;
     }
 
-    public void setupLargeNewsImageWidth() {
-        Activity activity = (Activity) mContext;
+    public int getLargeNewsImageWidth() {
+        return mLargeNewsImageWidth;
+    }
 
-        DisplayMetrics metrics = new DisplayMetrics();
-        activity.getWindowManager().getDefaultDisplay().getMetrics(metrics);
+    public void setLargeNewsImageHeight(int largeNewsImageHeight) {
+        mLargeNewsImageHeight = largeNewsImageHeight;
+    }
 
-        int widthPixels = metrics.widthPixels;
-        int heightPixels = metrics.heightPixels;
-
-        mLargeNewsImageWidth = widthPixels < heightPixels ? widthPixels : heightPixels;
+    public int getLargeNewsImageHeight() {
+        return mLargeNewsImageHeight;
     }
 
     public String getTitle() {
         return mTitle;
     }
 
-    public String getImageUrl() {
-        return mImageUrl;
+    public String getImageUrl1() {
+        return mImageUrl1;
     }
 
-    public String getDescription() {
-        return mDescription;
+    public String getImageUrl2() {
+        return mImageUrl2;
+    }
+
+    public String getImageUrl3() {
+        return mImageUrl3;
     }
 
     public void onClickItem(View sharedElement) {
         mOnNewsListener.onClickItem(this, mItemPosition, sharedElement);
-    }
-
-    public int getLargeNewsImageWidth() {
-        return mLargeNewsImageWidth;
     }
 
     public static final Creator<News> CREATOR = new Creator<News>() {

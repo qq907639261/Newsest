@@ -43,10 +43,12 @@
                     android:contentDescription="@string/news_image_content_description"
                     android:cropToPadding="true"
                     android:errorSrc="@{@drawable/news_error}"
-                    android:heightByWidth="@{news.largeNewsImageWidth}"
-                    android:imageObj="@{news.imageUrl}"
+                    android:imageObj="@{news.imageUrl1}"
+                    android:maxHeight="@{news.largeNewsImageHeight}"
                     android:maxWidth="@{news.largeNewsImageWidth}"
+                    android:minimumHeight="@{news.largeNewsImageHeight}"
                     android:minimumWidth="@{news.largeNewsImageWidth}"
+                    android:placeHolderSrc="@{@drawable/news_empty}"
                     android:scaleType="centerCrop"
                     tools:src="@drawable/news_error"/>
 

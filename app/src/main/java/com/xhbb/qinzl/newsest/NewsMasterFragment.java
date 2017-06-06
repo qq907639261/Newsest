@@ -302,12 +302,12 @@ public class NewsMasterFragment extends Fragment
         @Override
         public void onBindViewHolder(BindingHolder holder, int position) {
             mCursor.moveToPosition(position);
-            News news = new News(mContext, mCursor, this, position);
+            News news = new News(mCursor, this, position);
             ViewDataBinding binding = holder.getBinding();
 
             binding.setVariable(BR.news, news);
             if (position == getItemCount() - 1) {
-                binding.setVariable(BR.newsPageEqualsTotalPage, mNewsPageEqualsTotalPage);
+                binding.setVariable(BR.alreadyToBottom, mNewsPageEqualsTotalPage);
             }
 
             binding.executePendingBindings();

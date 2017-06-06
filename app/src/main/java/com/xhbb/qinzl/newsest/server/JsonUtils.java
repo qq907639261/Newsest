@@ -31,31 +31,29 @@ public class JsonUtils {
         for (int i = 0; i < contentListArray.length(); i++) {
             JSONObject contentListObject = contentListArray.getJSONObject(i);
 
-            boolean havePicture = contentListObject.getBoolean(ContentListArray.HAVE_PIC);
-            if (!havePicture) {
-                continue;
-            }
-
             String newsCode = contentListObject.getString(ContentListArray.ID);
             String title = contentListObject.getString(ContentListArray.TITLE);
             String publish_date = contentListObject.getString(ContentListArray.PUB_DATE);
             String source_web = contentListObject.getString(ContentListArray.SOURCE);
-            String description = contentListObject.getString(ContentListArray.DESC);
             String content = contentListObject.getString(ContentListArray.CONTENT);
 
             JSONArray imageUrlsArray = contentListObject.getJSONArray(ContentListArray.IMAGE_URLS);
-            JSONObject imageUrlsObject = imageUrlsArray.getJSONObject(0);
 
-            String imageUrl = imageUrlsObject.getString(ContentListArray.ImageUrlsArray.URL);
+            String[] imageUrlStringArray = new String[3];
+            for (int j = 0; j < imageUrlsArray.length() && j < 3; j++) {
+                JSONObject imageUrlsObject = imageUrlsArray.getJSONObject(j);
+                imageUrlStringArray[j] = imageUrlsObject.getString(ContentListArray.ImageUrlsArray.URL);
+            }
 
             ContentValues newsValues = new ContentValues();
             newsValues.put(NewsEntry._NEWS_CODE, newsCode);
             newsValues.put(NewsEntry._TITLE, title);
             newsValues.put(NewsEntry._PUBLISH_DATE, publish_date);
             newsValues.put(NewsEntry._SOURCE_WEB, source_web);
-            newsValues.put(NewsEntry._DESCRIPTION, description);
             newsValues.put(NewsEntry._NEWS_CONTENT, content);
-            newsValues.put(NewsEntry._IMAGE_URL, imageUrl);
+            newsValues.put(NewsEntry._IMAGE_URL_1, imageUrlStringArray[0]);
+            newsValues.put(NewsEntry._IMAGE_URL_2, imageUrlStringArray[1]);
+            newsValues.put(NewsEntry._IMAGE_URL_3, imageUrlStringArray[2]);
             newsValues.put(NewsEntry._NEWS_TYPE, newsType);
 
             newsValuesList.add(newsValues);
@@ -80,13 +78,10 @@ public class JsonUtils {
 
                 interface ContentListArray {
 
-                    String HAVE_PIC = "havePic";
-
                     String ID = "id";
                     String TITLE = "title";
                     String PUB_DATE = "pubDate";
                     String SOURCE = "source";
-                    String DESC = "desc";
                     String CONTENT = "content";
 
                     String IMAGE_URLS = "imageurls";

@@ -19,8 +19,9 @@ class DbHelper extends SQLiteOpenHelper {
             "CREATE TABLE " + NewsEntry.TABLE_NAME + " ( " +
                     NewsEntry._ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
                     NewsEntry._NEWS_CONTENT + " TEXT, " +
-                    NewsEntry._DESCRIPTION + " TEXT, " +
-                    NewsEntry._IMAGE_URL + " TEXT, " +
+                    NewsEntry._IMAGE_URL_1 + " TEXT, " +
+                    NewsEntry._IMAGE_URL_2 + " TEXT, " +
+                    NewsEntry._IMAGE_URL_3 + " TEXT, " +
                     NewsEntry._PUBLISH_DATE + " TEXT, " +
                     NewsEntry._SOURCE_WEB + " TEXT, " +
                     NewsEntry._TITLE + " TEXT, " +
@@ -47,7 +48,7 @@ class DbHelper extends SQLiteOpenHelper {
             db.execSQL("ALTER TABLE " + tableName + " RENAME TO " + tempTableName);
             db.execSQL(CREATE_TABLE_NEWS);
             db.execSQL("INSERT INTO " + tableName +
-                    " SELECT *,'推荐' FROM " + tempTableName);
+                    " SELECT *,'国际' FROM " + tempTableName);
             db.execSQL("DROP TABLE " + tempTableName);
 
             db.setTransactionSuccessful();

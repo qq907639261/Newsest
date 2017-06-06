@@ -54,7 +54,7 @@ public class CustomAttributes {
 
     @BindingAdapter(value = {"android:imageObj", "android:placeHolderSrc", "android:errorSrc"},
             requireAll = false)
-    public static void loadImageIntoImageView(ImageView imageView, Object imageObj,
+    public static void loadImageIntoImageView(final ImageView imageView, Object imageObj,
                                               Drawable placeHolderDrawable, Drawable errorDrawable) {
         Context context = imageView.getContext();
         GlideApp.with(context)
@@ -62,12 +62,5 @@ public class CustomAttributes {
                 .placeholder(placeHolderDrawable)
                 .error(errorDrawable)
                 .into(imageView);
-    }
-
-    @BindingAdapter({"android:heightByWidth"})
-    public static void setImageHeightByImageWidth(ImageView imageView, int imageWidth) {
-        int imageHeight = imageWidth * 2 / 3;
-        imageView.setMaxHeight(imageHeight);
-        imageView.setMinimumHeight(imageHeight);
     }
 }

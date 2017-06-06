@@ -18,9 +18,10 @@ public interface Contract {
         String _TITLE = "title";
         String _PUBLISH_DATE = "publish_date";
         String _SOURCE_WEB = "source_web";
-        String _DESCRIPTION = "description";
         String _NEWS_CONTENT = "news_content";
-        String _IMAGE_URL = "image_url";
+        String _IMAGE_URL_1 = "image_url_1";
+        String _IMAGE_URL_2 = "image_url_2";
+        String _IMAGE_URL_3 = "image_url_3";
         String _NEWS_TYPE = "news_type";
     }
 }

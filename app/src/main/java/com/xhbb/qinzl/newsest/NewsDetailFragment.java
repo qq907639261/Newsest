@@ -5,6 +5,7 @@ import android.databinding.DataBindingUtil;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.util.DisplayMetrics;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -42,10 +43,21 @@ public class NewsDetailFragment extends Fragment {
         FragmentNewsDetailBinding binding = DataBindingUtil.inflate(
                 inflater, R.layout.fragment_news_detail, container, false);
 
-        mNews.setContext(mActivity);
-        mNews.setupLargeNewsImageWidth();
+        int newsImageWidth = getNewsImageWidth();
+        mNews.setLargeNewsImageWidth(newsImageWidth);
+        mNews.setLargeNewsImageHeight(newsImageWidth * 2 / 3);
         binding.setNews(mNews);
 
         return binding.getRoot();
+    }
+
+    private int getNewsImageWidth() {
+        DisplayMetrics metrics = new DisplayMetrics();
+        mActivity.getWindowManager().getDefaultDisplay().getMetrics(metrics);
+
+        int widthPixels = metrics.widthPixels;
+        int heightPixels = metrics.heightPixels;
+
+        return widthPixels < heightPixels ? widthPixels : heightPixels;
     }
 }
