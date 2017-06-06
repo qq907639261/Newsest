@@ -6,6 +6,7 @@ import android.database.Cursor;
 import android.os.Parcel;
 import android.os.Parcelable;
 import android.util.DisplayMetrics;
+import android.view.View;
 
 import com.xhbb.qinzl.newsest.data.Contract.NewsEntry;
 
@@ -20,11 +21,12 @@ public class News implements Parcelable {
     private int mItemPosition;
     private int mLargeNewsImageWidth;
 
+    private String mDescription;
+
     private String mNewsCode;
     private String mTitle;
     private String mPublishDate;
     private String mSourceWeb;
-    private String mDescription;
     private String mNewsContent;
     private String mImageUrl;
 
@@ -50,7 +52,6 @@ public class News implements Parcelable {
         mTitle = in.readString();
         mPublishDate = in.readString();
         mSourceWeb = in.readString();
-        mDescription = in.readString();
         mNewsContent = in.readString();
         mImageUrl = in.readString();
     }
@@ -61,7 +62,6 @@ public class News implements Parcelable {
         dest.writeString(mTitle);
         dest.writeString(mPublishDate);
         dest.writeString(mSourceWeb);
-        dest.writeString(mDescription);
         dest.writeString(mNewsContent);
         dest.writeString(mImageUrl);
     }
@@ -94,8 +94,8 @@ public class News implements Parcelable {
         return mDescription;
     }
 
-    public void onClickItem() {
-        mOnNewsListener.onClickItem(this, mItemPosition);
+    public void onClickItem(View sharedElement) {
+        mOnNewsListener.onClickItem(this, mItemPosition, sharedElement);
     }
 
     public int getLargeNewsImageWidth() {
@@ -121,6 +121,6 @@ public class News implements Parcelable {
 
     public interface OnNewsListener {
 
-        void onClickItem(News news, int itemPosition);
+        void onClickItem(News news, int itemPosition, View sharedElement);
     }
 }

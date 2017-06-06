@@ -1,6 +1,7 @@
 package com.xhbb.qinzl.newsest;
 
 import android.app.Activity;
+import android.app.ActivityOptions;
 import android.content.Context;
 import android.database.Cursor;
 import android.databinding.DataBindingUtil;
@@ -15,7 +16,6 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
-import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -25,6 +25,7 @@ import android.view.ViewGroup;
 import com.xhbb.qinzl.newsest.async.UpdateDataTask;
 import com.xhbb.qinzl.newsest.common.MainEnum.RefreshState;
 import com.xhbb.qinzl.newsest.common.RecyclerViewCursorAdapter;
+import com.xhbb.qinzl.newsest.custom.CustomListeners;
 import com.xhbb.qinzl.newsest.data.Contract.NewsEntry;
 import com.xhbb.qinzl.newsest.databinding.LayoutNormalRecyclerViewBinding;
 import com.xhbb.qinzl.newsest.server.NetworkUtils;
@@ -37,7 +38,8 @@ import java.io.IOException;
 
 public class NewsMasterFragment extends Fragment
         implements LoaderManager.LoaderCallbacks<Cursor>,
-        SwipeRefreshLayout.OnRefreshListener {
+        CustomListeners.OnSwipeRefreshListener,
+        CustomListeners.OnRecyclerViewScrollListener {
 
     private static final String ARG_NEWS_TYPE = "ARG_NEWS_TYPE";
 
@@ -90,8 +92,7 @@ public class NewsMasterFragment extends Fragment
 
         mNewsAdapter = new NewsAdapter(mActivity, R.layout.item_news);
         mLinearLayoutManager = new LinearLayoutManager(mActivity);
-        mNormalRecyclerView = new NormalRecyclerView(mNewsAdapter, mLinearLayoutManager,
-                getOnRecyclerViewScrollListener(), this);
+        mNormalRecyclerView = new NormalRecyclerView(mNewsAdapter, mLinearLayoutManager, this, this);
     }
 
     @Override
@@ -113,7 +114,7 @@ public class NewsMasterFragment extends Fragment
     }
 
     @Override
-    public void onRefresh() {
+    public void onSwipeRefresh() {
         refreshNewsData(RefreshState.SWIPE_REFRESHING);
     }
 
@@ -186,39 +187,32 @@ public class NewsMasterFragment extends Fragment
         }.execute();
     }
 
-    @NonNull
-    private RecyclerView.OnScrollListener getOnRecyclerViewScrollListener() {
-        return new RecyclerView.OnScrollListener() {
-            @Override
-            public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
-                super.onScrollStateChanged(recyclerView, newState);
-                if (newState == RecyclerView.SCROLL_STATE_IDLE) {
-                    mItemPosition = mLinearLayoutManager.findFirstCompletelyVisibleItemPosition();
-                    scrollRefresh();
-                }
-            }
+    @Override
+    public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
+        if (newState == RecyclerView.SCROLL_STATE_IDLE) {
+            mItemPosition = mLinearLayoutManager.findFirstCompletelyVisibleItemPosition();
+            scrollRefresh();
+        }
+    }
 
-            @Override
-            public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
-                super.onScrolled(recyclerView, dx, dy);
-                if (mOnNewsMasterFragmentListener != null) {
-                    mOnNewsMasterFragmentListener.onRecyclerViewScrolled(mLinearLayoutManager, dy);
-                }
-            }
+    private void scrollRefresh() {
+        if (mRefreshState != RefreshState.NO_REFRESHING || mNewsPageEqualsTotalPage) {
+            return;
+        }
 
-            private void scrollRefresh() {
-                if (mRefreshState != RefreshState.NO_REFRESHING || mNewsPageEqualsTotalPage) {
-                    return;
-                }
+        int lastVisibleItemPosition = mLinearLayoutManager.findLastVisibleItemPosition();
+        int itemCount = mNewsAdapter.getItemCount();
 
-                int lastVisibleItemPosition = mLinearLayoutManager.findLastVisibleItemPosition();
-                int itemCount = mNewsAdapter.getItemCount();
+        if (lastVisibleItemPosition >= itemCount - NetworkUtils.NEWS_COUNT_OF_EACH_PAGE) {
+            refreshNewsData(RefreshState.SCROLL_REFRESHING);
+        }
+    }
 
-                if (lastVisibleItemPosition >= itemCount - NetworkUtils.NEWS_COUNT_OF_EACH_PAGE) {
-                    refreshNewsData(RefreshState.SCROLL_REFRESHING);
-                }
-            }
-        };
+    @Override
+    public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+        if (mOnNewsMasterFragmentListener != null) {
+            mOnNewsMasterFragmentListener.onRecyclerViewScrolled(mLinearLayoutManager, dy);
+        }
     }
 
     @Override
@@ -320,9 +314,15 @@ public class NewsMasterFragment extends Fragment
         }
 
         @Override
-        public void onClickItem(News news, int itemPosition) {
+        public void onClickItem(News news, int itemPosition, View sharedElement) {
             mItemPosition = itemPosition;
-            NewsDetailActivity.start(mContext, news);
+
+            Bundle options = null;
+            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP) {
+                options = ActivityOptions.makeSceneTransitionAnimation(
+                        (Activity) mContext, sharedElement, sharedElement.getTransitionName()).toBundle();
+            }
+            NewsDetailActivity.start(mContext, news, options);
         }
     }
 

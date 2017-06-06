@@ -1,6 +1,8 @@
 <resources>
     <string name="app_name">最新闻</string>
 
+    <string name="news_image_transition" translatable="false">news_image_transition</string>
+
     <string name="international">国际</string>
     <string name="society">社会</string>
     <string name="technology">科技</string>

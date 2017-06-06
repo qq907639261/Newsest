@@ -14,7 +14,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_margin="8dp"
-        android:onClick="@{()->news.onClickItem()}">
+        android:onClick="@{()->news.onClickItem(newsImage)}">
 
         <android.support.constraint.ConstraintLayout
             android:layout_width="match_parent"
@@ -23,6 +23,7 @@
             <!--suppress AndroidUnknownAttribute -->
             <ImageView
                 android:id="@+id/newsImage"
+                style="@style/NewsImageTransition"
                 android:layout_width="200dp"
                 android:layout_height="0dp"
                 android:contentDescription="@string/news_image_content_description"

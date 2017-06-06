@@ -1,10 +1,9 @@
-package com.xhbb.qinzl.newsest.common;
+package com.xhbb.qinzl.newsest.custom;
 
 import android.content.Context;
 import android.databinding.BindingAdapter;
 import android.graphics.drawable.Drawable;
 import android.support.design.widget.FloatingActionButton;
-import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.RecyclerView;
@@ -12,12 +11,13 @@ import android.support.v7.widget.Toolbar;
 import android.widget.ImageView;
 
 import com.xhbb.qinzl.newsest.R;
+import com.xhbb.qinzl.newsest.common.GlideApp;
 
 /**
  * Created by qinzl on 2017/6/4.
  */
 
-public class BindingAdapterContainer {
+public class CustomAttributes {
 
     @BindingAdapter(value = {"android:bindActionBar", "android:displayHomeAsUpEnabled"},
             requireAll = false)
@@ -36,12 +36,6 @@ public class BindingAdapterContainer {
         }
     }
 
-    @BindingAdapter({"android:onRefresh"})
-    public static void setOnRefreshListener(SwipeRefreshLayout swipeRefreshLayout,
-                                            SwipeRefreshLayout.OnRefreshListener onRefreshListener) {
-        swipeRefreshLayout.setOnRefreshListener(onRefreshListener);
-    }
-
     @BindingAdapter({"android:shown"})
     public static void showOrHideFab(FloatingActionButton fab, boolean showFab) {
         if (!fab.isShown() && showFab) {
@@ -49,12 +43,6 @@ public class BindingAdapterContainer {
         } else if (fab.isShown() && !showFab) {
             fab.hide();
         }
-    }
-
-    @BindingAdapter({"android:onScroll"})
-    public static void addOnScrollListener(RecyclerView recyclerView,
-                                           RecyclerView.OnScrollListener onRecyclerViewScrollListener) {
-        recyclerView.addOnScrollListener(onRecyclerViewScrollListener);
     }
 
     @BindingAdapter({"android:smoothScrollToTop"})

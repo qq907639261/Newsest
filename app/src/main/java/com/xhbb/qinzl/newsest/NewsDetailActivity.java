@@ -3,7 +3,8 @@ package com.xhbb.qinzl.newsest;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.v7.app.ActionBar;
+import android.support.annotation.Nullable;
+import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 
 import com.xhbb.qinzl.newsest.viewmodel.News;
@@ -12,10 +13,10 @@ public class NewsDetailActivity extends AppCompatActivity {
 
     private static final String EXTRA_NEWS = "com.xhbb.qinzl.newsest.EXTRA_NEWS";
 
-    public static void start(Context context, News news) {
+    public static void start(Context context, News news, @Nullable Bundle options) {
         Intent starter = new Intent(context, NewsDetailActivity.class);
         starter.putExtra(EXTRA_NEWS, news);
-        context.startActivity(starter);
+        ActivityCompat.startActivity(context, starter, options);
     }
 
     @Override
@@ -27,7 +28,7 @@ public class NewsDetailActivity extends AppCompatActivity {
             News news = getIntent().getParcelableExtra(EXTRA_NEWS);
 
             getSupportFragmentManager().beginTransaction()
-                    .replace(R.id.fragment_container, NewsDetailFragment.newInstance(news))
+                    .add(R.id.fragment_container, NewsDetailFragment.newInstance(news))
                     .commit();
         }
     }

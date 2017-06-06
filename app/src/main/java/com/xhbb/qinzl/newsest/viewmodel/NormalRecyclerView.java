@@ -2,10 +2,10 @@ package com.xhbb.qinzl.newsest.viewmodel;
 
 import android.databinding.BaseObservable;
 import android.databinding.Bindable;
-import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.RecyclerView;
 
 import com.xhbb.qinzl.newsest.BR;
+import com.xhbb.qinzl.newsest.custom.CustomListeners;
 
 /**
  * Created by qinzl on 2017/5/29.
@@ -19,13 +19,15 @@ public class NormalRecyclerView extends BaseObservable {
     private String mErrorText;
     private RecyclerView.Adapter mRecyclerViewAdapter;
     private RecyclerView.LayoutManager mRecyclerViewLayoutManager;
-    private RecyclerView.OnScrollListener mOnRecyclerViewScrollListener;
-    private SwipeRefreshLayout.OnRefreshListener mOnSwipeRefreshListener;
+    private CustomListeners.OnRecyclerViewScrollListener mOnRecyclerViewScrollListener;
+    private CustomListeners.OnSwipeRefreshListener mOnSwipeRefreshListener;
 
-    public NormalRecyclerView(RecyclerView.Adapter recyclerViewAdapter,
-                              RecyclerView.LayoutManager recyclerViewLayoutManager,
-                              RecyclerView.OnScrollListener onRecyclerViewScrollListener,
-                              SwipeRefreshLayout.OnRefreshListener onSwipeRefreshListener) {
+    public NormalRecyclerView(
+            RecyclerView.Adapter recyclerViewAdapter,
+            RecyclerView.LayoutManager recyclerViewLayoutManager,
+            CustomListeners.OnRecyclerViewScrollListener onRecyclerViewScrollListener,
+            CustomListeners.OnSwipeRefreshListener onSwipeRefreshListener) {
+
         mRecyclerViewAdapter = recyclerViewAdapter;
         mRecyclerViewLayoutManager = recyclerViewLayoutManager;
         mOnRecyclerViewScrollListener = onRecyclerViewScrollListener;
@@ -74,11 +76,11 @@ public class NormalRecyclerView extends BaseObservable {
         return mErrorText;
     }
 
-    public RecyclerView.OnScrollListener getOnRecyclerViewScrollListener() {
+    public CustomListeners.OnRecyclerViewScrollListener getOnRecyclerViewScrollListener() {
         return mOnRecyclerViewScrollListener;
     }
 
-    public SwipeRefreshLayout.OnRefreshListener getOnSwipeRefreshListener() {
+    public CustomListeners.OnSwipeRefreshListener getOnSwipeRefreshListener() {
         return mOnSwipeRefreshListener;
     }
 
