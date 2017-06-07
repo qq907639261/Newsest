@@ -1,14 +1,16 @@
 package com.xhbb.qinzl.newsest;
 
-import android.app.Activity;
 import android.databinding.DataBindingUtil;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
-import android.util.DisplayMetrics;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import com.xhbb.qinzl.newsest.databinding.FragmentNewsDetailBinding;
 import com.xhbb.qinzl.newsest.viewmodel.News;
@@ -18,7 +20,6 @@ public class NewsDetailFragment extends Fragment {
     private static final String ARG_NEWS = "ARG_NEWS";
 
     private News mNews;
-    private Activity mActivity;
 
     public static NewsDetailFragment newInstance(News news) {
         Bundle args = new Bundle();
@@ -32,9 +33,9 @@ public class NewsDetailFragment extends Fragment {
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setHasOptionsMenu(true);
 
         mNews = getArguments().getParcelable(ARG_NEWS);
-        mActivity = getActivity();
     }
 
     @Override
@@ -48,13 +49,20 @@ public class NewsDetailFragment extends Fragment {
         return binding.getRoot();
     }
 
-    private int getNewsImageWidth() {
-        DisplayMetrics metrics = new DisplayMetrics();
-        mActivity.getWindowManager().getDefaultDisplay().getMetrics(metrics);
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        super.onCreateOptionsMenu(menu, inflater);
+        inflater.inflate(R.menu.news_detail, menu);
+    }
 
-        int widthPixels = metrics.widthPixels;
-        int heightPixels = metrics.heightPixels;
-
-        return widthPixels < heightPixels ? widthPixels : heightPixels;
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.menu_item_share:
+                Toast.makeText(getActivity(), "", Toast.LENGTH_SHORT).show();
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
     }
 }

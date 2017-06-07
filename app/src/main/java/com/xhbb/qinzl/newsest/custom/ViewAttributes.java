@@ -54,7 +54,7 @@ public class ViewAttributes {
 
     @BindingAdapter(value = {"android:imageObj", "android:placeHolderSrc", "android:errorSrc"},
             requireAll = false)
-    public static void loadImageIntoImageView(final ImageView imageView, Object imageObj,
+    public static void loadImageIntoImageView(ImageView imageView, Object imageObj,
                                               Drawable placeHolderDrawable, Drawable errorDrawable) {
         Context context = imageView.getContext();
         GlideApp.with(context)

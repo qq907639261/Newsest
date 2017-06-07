@@ -6,8 +6,8 @@
     <data>
 
         <variable
-            name="topComments"
-            type="com.xhbb.qinzl.newsest.viewmodel.TopComments"/>
+            name="comment"
+            type="com.xhbb.qinzl.newsest.viewmodel.Comment"/>
     </data>
 
     <android.support.constraint.ConstraintLayout
@@ -53,7 +53,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
             android:lineSpacingExtra="8sp"
-            android:text="@{topComments.userComment1}"
+            android:text="@{comment.userComment1}"
             android:textSize="18sp"
             android:textStyle="bold"
             app:layout_constraintLeft_toLeftOf="parent"
@@ -77,7 +77,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
             android:lineSpacingExtra="8sp"
-            android:text="@{topComments.userComment2}"
+            android:text="@{comment.userComment2}"
             android:textSize="18sp"
             android:textStyle="bold"
             app:layout_constraintLeft_toLeftOf="parent"
@@ -101,7 +101,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
             android:lineSpacingExtra="8sp"
-            android:text="@{topComments.userComment3}"
+            android:text="@{comment.userComment3}"
             android:textSize="18sp"
             android:textStyle="bold"
             app:layout_constraintLeft_toLeftOf="parent"
@@ -125,7 +125,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="32dp"
-            android:onClick="@{()->topComments.onClickMoreCommentsText()}"
+            android:onClick="@{()->comment.onClickMoreCommentsText()}"
             android:text="@string/more_comments_text"
             android:textSize="16sp"
             app:layout_constraintLeft_toLeftOf="parent"

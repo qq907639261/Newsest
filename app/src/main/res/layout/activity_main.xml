@@ -47,6 +47,7 @@
             android:layout_height="wrap_content"
             android:layout_margin="8dp"
             android:clickable="true"
+            android:contentDescription="@string/to_top_fab_content_description"
             android:onClick="@{()->mainModel.onClick(viewPager)}"
             android:shown="@{mainModel.showFab}"
             app:fabSize="mini"

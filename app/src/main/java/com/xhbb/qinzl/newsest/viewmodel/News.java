@@ -13,7 +13,7 @@ import com.xhbb.qinzl.newsest.data.Contract.NewsEntry;
 
 public class News implements Parcelable {
 
-    private OnNewsListener mOnNewsListener;
+    private OnNewsMasterListener mOnNewsMasterListener;
     private int mItemPosition;
 
     private String mNewsCode;
@@ -25,9 +25,9 @@ public class News implements Parcelable {
     private String mImageUrl2;
     private String mImageUrl3;
 
-    public News(Cursor cursor, OnNewsListener onNewsListener, int itemPosition) {
+    public News(Cursor cursor, OnNewsMasterListener onNewsMasterListener, int itemPosition) {
         setNews(cursor);
-        mOnNewsListener = onNewsListener;
+        mOnNewsMasterListener = onNewsMasterListener;
         mItemPosition = itemPosition;
     }
 
@@ -69,10 +69,6 @@ public class News implements Parcelable {
         return mSourceWeb;
     }
 
-    public String getNewsCode() {
-        return mNewsCode;
-    }
-
     public String getNewsContent() {
         return mNewsContent;
     }
@@ -94,7 +90,7 @@ public class News implements Parcelable {
     }
 
     public void onClickItem(View sharedElement) {
-        mOnNewsListener.onClickItem(this, mItemPosition, sharedElement);
+        mOnNewsMasterListener.onClickNewsItem(this, mItemPosition, sharedElement);
     }
 
     public static final Creator<News> CREATOR = new Creator<News>() {
@@ -114,8 +110,8 @@ public class News implements Parcelable {
         return 0;
     }
 
-    public interface OnNewsListener {
+    public interface OnNewsMasterListener {
 
-        void onClickItem(News news, int itemPosition, View sharedElement);
+        void onClickNewsItem(News news, int itemPosition, View sharedElement);
     }
 }

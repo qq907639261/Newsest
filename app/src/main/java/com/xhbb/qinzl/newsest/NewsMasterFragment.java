@@ -265,7 +265,7 @@ public class NewsMasterFragment extends Fragment
     }
 
     private class NewsAdapter extends RecyclerViewCursorAdapter
-            implements News.OnNewsListener {
+            implements News.OnNewsMasterListener {
 
         private static final int VIEW_TYPE_LAST_ITEM = 0;
         private static final int VIEW_TYPE_OTHER_ITEM = 1;
@@ -314,7 +314,7 @@ public class NewsMasterFragment extends Fragment
         }
 
         @Override
-        public void onClickItem(News news, int itemPosition, View sharedElement) {
+        public void onClickNewsItem(News news, int itemPosition, View sharedElement) {
             mItemPosition = itemPosition;
 
             Bundle options = null;
