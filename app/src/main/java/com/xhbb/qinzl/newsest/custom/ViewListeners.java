@@ -8,7 +8,7 @@ import android.support.v7.widget.RecyclerView;
  * Created by qinzl on 2017/6/6.
  */
 
-public class CustomListeners {
+public class ViewListeners {
 
     @BindingAdapter({"android:onScroll"})
     public static void addOnRecyclerViewScrollListener(

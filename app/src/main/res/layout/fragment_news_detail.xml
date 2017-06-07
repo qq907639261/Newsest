@@ -8,6 +8,10 @@
         <variable
             name="news"
             type="com.xhbb.qinzl.newsest.viewmodel.News"/>
+
+        <variable
+            name="topComments"
+            type="com.xhbb.qinzl.newsest.viewmodel.TopComments"/>
     </data>
 
     <android.support.design.widget.CoordinatorLayout
@@ -33,32 +37,75 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:orientation="vertical">
+                android:orientation="vertical"
+                android:paddingBottom="24dp">
 
                 <ImageView
-                    style="@style/NewsImageTransition"
-                    android:layout_width="wrap_content"
+                    style="@style/LargeNewsImage"
                     android:layout_height="wrap_content"
-                    android:layout_gravity="center"
                     android:contentDescription="@string/news_image_content_description"
-                    android:cropToPadding="true"
                     android:errorSrc="@{@drawable/news_error}"
                     android:imageObj="@{news.imageUrl1}"
-                    android:maxHeight="@{news.largeNewsImageHeight}"
-                    android:maxWidth="@{news.largeNewsImageWidth}"
-                    android:minimumHeight="@{news.largeNewsImageHeight}"
-                    android:minimumWidth="@{news.largeNewsImageWidth}"
                     android:placeHolderSrc="@{@drawable/news_empty}"
                     android:scaleType="centerCrop"
                     tools:src="@drawable/news_error"/>
 
                 <TextView
-                    android:layout_width="wrap_content"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_gravity="center"
+                    android:layout_marginLeft="8dp"
+                    android:layout_marginRight="8dp"
+                    android:layout_marginTop="8dp"
+                    android:gravity="center"
                     android:text="@{news.title}"
                     android:textAppearance="@android:style/TextAppearance.Large"
-                    tools:text="Title"/>
+                    tools:text="标题"/>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="8dp"
+                    android:layout_marginRight="8dp"
+                    android:layout_marginTop="8dp"
+                    android:text="@{news.publishDate}"
+                    android:textStyle="italic"
+                    tools:text="2017-06-07 10:25:58"/>
+
+                <TextView
+                    android:id="@+id/source"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="8dp"
+                    android:layout_marginRight="8dp"
+                    android:layout_marginTop="4dp"
+                    android:text="@{news.sourceWeb}"
+                    android:textStyle="italic"
+                    tools:text="中国新闻网"/>
+
+                <TextView
+                    android:id="@+id/content"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="8dp"
+                    android:layout_marginRight="8dp"
+                    android:layout_marginTop="8dp"
+                    android:lineSpacingExtra="10sp"
+                    android:text="@{news.newsContent}"
+                    android:textSize="@dimen/news_content_text_size"
+                    android:textStyle="bold"
+                    tools:text="正文"/>
+
+                <FrameLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:paddingLeft="8dp"
+                    android:paddingRight="8dp"
+                    android:paddingTop="32dp">
+
+                    <include
+                        layout="@layout/layout_top_comments"
+                        app:topComments="@{topComments}"/>
+                </FrameLayout>
             </LinearLayout>
         </android.support.v4.widget.NestedScrollView>
     </android.support.design.widget.CoordinatorLayout>

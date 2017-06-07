@@ -33,6 +33,7 @@ public class NetworkUtils {
                 .appendQueryParameter("channelName", newsType)
                 .appendQueryParameter("page", String.valueOf(page))
                 .appendQueryParameter("needContent", "1")
+                .appendQueryParameter("needHtml", "1")
                 .appendQueryParameter("needAllList", "0")
                 .build().toString();
 

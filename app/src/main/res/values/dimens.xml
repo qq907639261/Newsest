@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <dimen name="newsTabMinWidth">70dp</dimen>
+    <dimen name="news_tab_min_width">70dp</dimen>
+    <dimen name="news_content_text_size">18sp</dimen>
 </resources>

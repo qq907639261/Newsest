@@ -25,7 +25,7 @@ import android.view.ViewGroup;
 import com.xhbb.qinzl.newsest.async.UpdateDataTask;
 import com.xhbb.qinzl.newsest.common.MainEnum.RefreshState;
 import com.xhbb.qinzl.newsest.common.RecyclerViewCursorAdapter;
-import com.xhbb.qinzl.newsest.custom.CustomListeners;
+import com.xhbb.qinzl.newsest.custom.ViewListeners;
 import com.xhbb.qinzl.newsest.data.Contract.NewsEntry;
 import com.xhbb.qinzl.newsest.databinding.LayoutNormalRecyclerViewBinding;
 import com.xhbb.qinzl.newsest.server.NetworkUtils;
@@ -38,8 +38,8 @@ import java.io.IOException;
 
 public class NewsMasterFragment extends Fragment
         implements LoaderManager.LoaderCallbacks<Cursor>,
-        CustomListeners.OnSwipeRefreshListener,
-        CustomListeners.OnRecyclerViewScrollListener {
+        ViewListeners.OnSwipeRefreshListener,
+        ViewListeners.OnRecyclerViewScrollListener {
 
     private static final String ARG_NEWS_TYPE = "ARG_NEWS_TYPE";
 

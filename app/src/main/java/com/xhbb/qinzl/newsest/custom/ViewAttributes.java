@@ -17,7 +17,7 @@ import com.xhbb.qinzl.newsest.common.GlideApp;
  * Created by qinzl on 2017/6/4.
  */
 
-public class CustomAttributes {
+public class ViewAttributes {
 
     @BindingAdapter(value = {"android:bindActionBar", "android:displayHomeAsUpEnabled"},
             requireAll = false)

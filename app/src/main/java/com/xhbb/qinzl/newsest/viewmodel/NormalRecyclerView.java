@@ -5,7 +5,7 @@ import android.databinding.Bindable;
 import android.support.v7.widget.RecyclerView;
 
 import com.xhbb.qinzl.newsest.BR;
-import com.xhbb.qinzl.newsest.custom.CustomListeners;
+import com.xhbb.qinzl.newsest.custom.ViewListeners;
 
 /**
  * Created by qinzl on 2017/5/29.
@@ -19,14 +19,14 @@ public class NormalRecyclerView extends BaseObservable {
     private String mErrorText;
     private RecyclerView.Adapter mRecyclerViewAdapter;
     private RecyclerView.LayoutManager mRecyclerViewLayoutManager;
-    private CustomListeners.OnRecyclerViewScrollListener mOnRecyclerViewScrollListener;
-    private CustomListeners.OnSwipeRefreshListener mOnSwipeRefreshListener;
+    private ViewListeners.OnRecyclerViewScrollListener mOnRecyclerViewScrollListener;
+    private ViewListeners.OnSwipeRefreshListener mOnSwipeRefreshListener;
 
     public NormalRecyclerView(
             RecyclerView.Adapter recyclerViewAdapter,
             RecyclerView.LayoutManager recyclerViewLayoutManager,
-            CustomListeners.OnRecyclerViewScrollListener onRecyclerViewScrollListener,
-            CustomListeners.OnSwipeRefreshListener onSwipeRefreshListener) {
+            ViewListeners.OnRecyclerViewScrollListener onRecyclerViewScrollListener,
+            ViewListeners.OnSwipeRefreshListener onSwipeRefreshListener) {
 
         mRecyclerViewAdapter = recyclerViewAdapter;
         mRecyclerViewLayoutManager = recyclerViewLayoutManager;
@@ -76,11 +76,11 @@ public class NormalRecyclerView extends BaseObservable {
         return mErrorText;
     }
 
-    public CustomListeners.OnRecyclerViewScrollListener getOnRecyclerViewScrollListener() {
+    public ViewListeners.OnRecyclerViewScrollListener getOnRecyclerViewScrollListener() {
         return mOnRecyclerViewScrollListener;
     }
 
-    public CustomListeners.OnSwipeRefreshListener getOnSwipeRefreshListener() {
+    public ViewListeners.OnSwipeRefreshListener getOnSwipeRefreshListener() {
         return mOnSwipeRefreshListener;
     }
 

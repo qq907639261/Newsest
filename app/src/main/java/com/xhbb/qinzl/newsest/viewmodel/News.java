@@ -15,8 +15,6 @@ public class News implements Parcelable {
 
     private OnNewsListener mOnNewsListener;
     private int mItemPosition;
-    private int mLargeNewsImageWidth;
-    private int mLargeNewsImageHeight;
 
     private String mNewsCode;
     private String mTitle;
@@ -63,20 +61,20 @@ public class News implements Parcelable {
         dest.writeString(mImageUrl1);
     }
 
-    public void setLargeNewsImageWidth(int largeNewsImageWidth) {
-        mLargeNewsImageWidth = largeNewsImageWidth;
+    public String getPublishDate() {
+        return mPublishDate;
     }
 
-    public int getLargeNewsImageWidth() {
-        return mLargeNewsImageWidth;
+    public String getSourceWeb() {
+        return mSourceWeb;
     }
 
-    public void setLargeNewsImageHeight(int largeNewsImageHeight) {
-        mLargeNewsImageHeight = largeNewsImageHeight;
+    public String getNewsCode() {
+        return mNewsCode;
     }
 
-    public int getLargeNewsImageHeight() {
-        return mLargeNewsImageHeight;
+    public String getNewsContent() {
+        return mNewsContent;
     }
 
     public String getTitle() {

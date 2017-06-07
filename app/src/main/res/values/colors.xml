@@ -7,5 +7,5 @@
     <color name="appBarTitleText">#ffffff</color>
     <color name="errorText">#ff0000</color>
     <color name="scrollToEndText">#000000</color>
-    <color name="item_line">#d4d4d4</color>
+    <color name="dividingLine">#d4d4d4</color>
 </resources>

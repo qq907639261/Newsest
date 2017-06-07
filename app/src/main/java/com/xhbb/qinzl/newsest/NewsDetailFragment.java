@@ -43,9 +43,6 @@ public class NewsDetailFragment extends Fragment {
         FragmentNewsDetailBinding binding = DataBindingUtil.inflate(
                 inflater, R.layout.fragment_news_detail, container, false);
 
-        int newsImageWidth = getNewsImageWidth();
-        mNews.setLargeNewsImageWidth(newsImageWidth);
-        mNews.setLargeNewsImageHeight(newsImageWidth * 2 / 3);
         binding.setNews(mNews);
 
         return binding.getRoot();
