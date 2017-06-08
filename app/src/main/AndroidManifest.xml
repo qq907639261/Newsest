@@ -36,6 +36,8 @@
             android:name=".NewsDetailActivity"
             android:parentActivityName=".MainActivity">
         </activity>
+        <activity android:name=".SettingsActivity">
+        </activity>
     </application>
 
 </manifest>

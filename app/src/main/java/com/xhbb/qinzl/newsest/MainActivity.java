@@ -1,6 +1,7 @@
 package com.xhbb.qinzl.newsest;
 
 import android.databinding.DataBindingUtil;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -8,6 +9,10 @@ import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
+import android.transition.Transition;
+import android.transition.TransitionInflater;
+import android.view.Menu;
+import android.view.MenuItem;
 
 import com.xhbb.qinzl.newsest.common.MainEnum.RefreshState;
 import com.xhbb.qinzl.newsest.databinding.ActivityMainBinding;
@@ -31,6 +36,28 @@ public class MainActivity extends AppCompatActivity implements
         mMainModel = new MainModel(mNewsMasterPagerAdapter, this);
 
         binding.setMainModel(mMainModel);
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.main, menu);
+        menu.findItem(R.id.menu_item_share).setVisible(false);
+        return super.onCreateOptionsMenu(menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.menu_item_settings:
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                    Transition transition = TransitionInflater.from(this).inflateTransition(R.transition.slide_start);
+                    getWindow().setExitTransition(transition);
+                }
+                SettingsActivity.start(this);
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
     }
 
     @Override

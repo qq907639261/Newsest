@@ -28,7 +28,7 @@ public class NewsDetailActivity extends AppCompatActivity {
             News news = getIntent().getParcelableExtra(EXTRA_NEWS);
 
             getSupportFragmentManager().beginTransaction()
-                    .add(R.id.fragment_container, NewsDetailFragment.newInstance(news))
+                    .replace(R.id.fragment_container, NewsDetailFragment.newInstance(news))
                     .commit();
         }
     }

@@ -20,6 +20,7 @@
     <string name="top_comments_text">热门评论</string>
     <string name="more_comments_text">点击查看所有评论>>></string>
     <string name="comment_hint">评论</string>
-    <string name="share_menu_item_title">分享</string>
+    <string name="share_menu">分享</string>
     <string name="commit_comment_button">提交</string>
+    <string name="settings_menu">设置</string>
 </resources>

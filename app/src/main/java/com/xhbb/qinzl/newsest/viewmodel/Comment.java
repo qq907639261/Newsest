@@ -9,14 +9,14 @@ public class Comment {
     private String mUserComment1;
     private String mUserComment2;
     private String mUserComment3;
-    private OnTopCommentsListener mOnTopCommentsListener;
+    private OnCommentListener mOnCommentListener;
 
     public Comment(String userComment1, String userComment2, String userComment3,
-                   OnTopCommentsListener onTopCommentsListener) {
+                   OnCommentListener onCommentListener) {
         mUserComment1 = userComment1;
         mUserComment2 = userComment2;
         mUserComment3 = userComment3;
-        mOnTopCommentsListener = onTopCommentsListener;
+        mOnCommentListener = onCommentListener;
     }
 
     public String getUserComment1() {
@@ -31,12 +31,12 @@ public class Comment {
         return mUserComment3;
     }
 
-    public void onClickMoreCommentsText() {
-        mOnTopCommentsListener.onClickMoreCommentsText();
+    public void onClickCommitButton() {
+        mOnCommentListener.onClickCommitCommentButton();
     }
 
-    public interface OnTopCommentsListener {
+    public interface OnCommentListener {
 
-        void onClickMoreCommentsText();
+        void onClickCommitCommentButton();
     }
 }

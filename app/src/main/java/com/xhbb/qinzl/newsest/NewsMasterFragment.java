@@ -1,7 +1,6 @@
 package com.xhbb.qinzl.newsest;
 
 import android.app.Activity;
-import android.app.ActivityOptions;
 import android.content.Context;
 import android.database.Cursor;
 import android.databinding.DataBindingUtil;
@@ -12,10 +11,13 @@ import android.support.annotation.LayoutRes;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.StringRes;
+import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
+import android.support.v4.view.ViewCompat;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -47,22 +49,20 @@ public class NewsMasterFragment extends Fragment
     private static final String SAVE_NEWS_PAGE = "SAVE_NEWS_PAGE";
     private static final String SAVE_NEWS_PAGE_EQUALS_TOTAL_PAGE = "SAVE_NEWS_PAGE_EQUALS_TOTAL_PAGE";
 
-    private OnNewsMasterFragmentListener mOnNewsMasterFragmentListener;
     private boolean mHasNewsData;
 
     private int mItemPosition;
     private int mNewsPage;
     private boolean mNewsPageEqualsTotalPage;
-
-    private int mRefreshState;
-    private Activity mActivity;
     private String mNewsType;
-    private LoaderManager mLoaderManager;
+    private int mRefreshState;
 
+    private FragmentActivity mActivity;
     private NewsAdapter mNewsAdapter;
     private LinearLayoutManager mLinearLayoutManager;
-    private NormalRecyclerView mNormalRecyclerView;
 
+    private NormalRecyclerView mNormalRecyclerView;
+    private OnNewsMasterFragmentListener mOnNewsMasterFragmentListener;
     private boolean mViewRecreating;
 
     public static NewsMasterFragment newInstance(String newsType) {
@@ -71,28 +71,22 @@ public class NewsMasterFragment extends Fragment
 
         NewsMasterFragment fragment = new NewsMasterFragment();
         fragment.setArguments(args);
-
         return fragment;
     }
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        Bundle args = getArguments();
+
+        mRefreshState = RefreshState.NO_REFRESHING;
+        mNewsType = args.getString(ARG_NEWS_TYPE);
 
         if (savedInstanceState != null) {
             mItemPosition = savedInstanceState.getInt(SAVE_ITEM_POSITION);
             mNewsPage = savedInstanceState.getInt(SAVE_NEWS_PAGE);
             mNewsPageEqualsTotalPage = savedInstanceState.getBoolean(SAVE_NEWS_PAGE_EQUALS_TOTAL_PAGE);
         }
-
-        mRefreshState = RefreshState.NO_REFRESHING;
-        mActivity = getActivity();
-        mLoaderManager = getLoaderManager();
-        mNewsType = getArguments().getString(ARG_NEWS_TYPE);
-
-        mNewsAdapter = new NewsAdapter(mActivity, R.layout.item_news);
-        mLinearLayoutManager = new LinearLayoutManager(mActivity);
-        mNormalRecyclerView = new NormalRecyclerView(mNewsAdapter, mLinearLayoutManager, this, this);
     }
 
     @Override
@@ -101,16 +95,36 @@ public class NewsMasterFragment extends Fragment
         LayoutNormalRecyclerViewBinding binding = DataBindingUtil
                 .inflate(inflater, R.layout.layout_normal_recycler_view, container, false);
 
+        mActivity = getActivity();
+        mNewsAdapter = new NewsAdapter(mActivity, R.layout.item_news);
+        mLinearLayoutManager = new LinearLayoutManager(mActivity);
+
+        mNormalRecyclerView = new NormalRecyclerView(mNewsAdapter, mLinearLayoutManager, this, this);
+
+        getLoaderManager().initLoader(0, null, this);
+        binding.setNormalRecyclerView(mNormalRecyclerView);
+
         if (savedInstanceState == null) {
             refreshNewsData(RefreshState.AUTO_REFRESHING);
         } else {
             mViewRecreating = true;
         }
 
-        mLoaderManager.initLoader(0, null, this);
-        binding.setNormalRecyclerView(mNormalRecyclerView);
-
         return binding.getRoot();
+    }
+
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+        if (context instanceof OnNewsMasterFragmentListener) {
+            mOnNewsMasterFragmentListener = (OnNewsMasterFragmentListener) context;
+        }
+    }
+
+    @Override
+    public void onDetach() {
+        super.onDetach();
+        mOnNewsMasterFragmentListener = null;
     }
 
     @Override
@@ -216,20 +230,6 @@ public class NewsMasterFragment extends Fragment
     }
 
     @Override
-    public void onAttach(Context context) {
-        super.onAttach(context);
-        if (context instanceof OnNewsMasterFragmentListener) {
-            mOnNewsMasterFragmentListener = (OnNewsMasterFragmentListener) context;
-        }
-    }
-
-    @Override
-    public void onDetach() {
-        super.onDetach();
-        mOnNewsMasterFragmentListener = null;
-    }
-
-    @Override
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
         outState.putInt(SAVE_ITEM_POSITION, mItemPosition);
@@ -316,13 +316,9 @@ public class NewsMasterFragment extends Fragment
         @Override
         public void onClickNewsItem(News news, int itemPosition, View sharedElement) {
             mItemPosition = itemPosition;
-
-            Bundle options = null;
-            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP) {
-                options = ActivityOptions.makeSceneTransitionAnimation(
-                        (Activity) mContext, sharedElement, sharedElement.getTransitionName()).toBundle();
-            }
-            NewsDetailActivity.start(mContext, news, options);
+            ActivityOptionsCompat options = ActivityOptionsCompat.makeSceneTransitionAnimation(
+                    (Activity) mContext, sharedElement, ViewCompat.getTransitionName(sharedElement));
+            NewsDetailActivity.start(mContext, news, options.toBundle());
         }
     }
 

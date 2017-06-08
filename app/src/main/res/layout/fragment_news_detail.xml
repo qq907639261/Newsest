@@ -44,6 +44,7 @@
                 <ImageView
                     style="@style/LargeNewsImage"
                     android:layout_height="wrap_content"
+                    android:layout_gravity="center"
                     android:contentDescription="@string/news_image_content_description"
                     android:errorSrc="@{@drawable/news_error}"
                     android:imageObj="@{news.imageUrl1}"
@@ -87,8 +88,8 @@
                     android:id="@+id/content"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginLeft="8dp"
-                    android:layout_marginRight="8dp"
+                    android:layout_marginLeft="16dp"
+                    android:layout_marginRight="16dp"
                     android:layout_marginTop="8dp"
                     android:lineSpacingExtra="10sp"
                     android:text="@{news.newsContent}"
@@ -126,7 +127,7 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:hint="@string/comment_hint"
-                    android:maxLines="5"/>
+                    android:maxLines="4"/>
 
                 <Button
                     android:layout_width="wrap_content"
@@ -134,6 +135,7 @@
                     android:layout_gravity="center"
                     android:layout_marginLeft="8dp"
                     android:layout_marginRight="8dp"
+                    android:onClick="@{()->comment.onClickCommitButton()}"
                     android:text="@string/commit_comment_button"/>
             </LinearLayout>
         </android.support.v7.widget.Toolbar>
