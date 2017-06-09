@@ -9,10 +9,12 @@ import android.provider.BaseColumns;
 
 public interface Contract {
 
+    String CONTENT_AUTHORITY = "content://com.xhbb.qinzl.newsest/";
+
     interface NewsEntry extends BaseColumns {
 
         String TABLE_NAME = "news";
-        Uri URI = Uri.parse("content://com.xhbb.qinzl.newsest/" + TABLE_NAME);
+        Uri URI = Uri.parse(CONTENT_AUTHORITY + TABLE_NAME);
 
         String _NEWS_CODE = "news_code";
         String _TITLE = "title";
@@ -23,5 +25,15 @@ public interface Contract {
         String _IMAGE_URL_2 = "image_url_2";
         String _IMAGE_URL_3 = "image_url_3";
         String _NEWS_TYPE = "news_type";
+    }
+
+    interface CommentEntry extends BaseColumns {
+
+        String TABLE_NAME = "comment";
+        Uri URI = Uri.parse(CONTENT_AUTHORITY + TABLE_NAME);
+
+        String _COMMENT_CONTENT = "comment_content";
+        String _COMMENT_DATE = "comment_date";
+        String _NEWS_CODE = "news_code";
     }
 }

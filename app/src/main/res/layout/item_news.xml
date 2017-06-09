@@ -7,14 +7,14 @@
     <data>
 
         <variable
-            name="news"
-            type="com.xhbb.qinzl.newsest.viewmodel.News"/>
+            name="newsMaster"
+            type="com.xhbb.qinzl.newsest.viewmodel.NewsMaster"/>
     </data>
 
     <android.support.constraint.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:onClick="@{()->news.onClickItem(newsImage1)}"
+        android:onClick="@{()->newsMaster.onClickItem(newsImage1)}"
         android:paddingLeft="8dp"
         android:paddingRight="8dp"
         android:paddingTop="8dp">
@@ -23,7 +23,7 @@
             android:id="@+id/title"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:text="@{news.title}"
+            android:text="@{newsMaster.title}"
             android:textAppearance="@android:style/TextAppearance.Large"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toRightOf="parent"
@@ -40,7 +40,7 @@
             android:layout_marginTop="8dp"
             android:contentDescription="@string/news_image_content_description"
             android:errorSrc="@{@drawable/news_error}"
-            android:imageObj="@{news.imageUrl1}"
+            android:imageObj="@{newsMaster.imageUrl1}"
             android:placeHolderSrc="@{@drawable/news_empty}"
             android:scaleType="centerCrop"
             app:layout_constraintDimensionRatio="3:2"
@@ -57,7 +57,7 @@
             android:layout_marginRight="1dp"
             android:contentDescription="@string/news_image_content_description"
             android:errorSrc="@{@drawable/news_error}"
-            android:imageObj="@{news.imageUrl2}"
+            android:imageObj="@{newsMaster.imageUrl2}"
             android:placeHolderSrc="@{@drawable/news_empty}"
             android:scaleType="centerCrop"
             app:layout_constraintBottom_toBottomOf="@+id/newsImage1"
@@ -73,7 +73,7 @@
             android:layout_height="0dp"
             android:contentDescription="@string/news_image_content_description"
             android:errorSrc="@{@drawable/news_error}"
-            android:imageObj="@{news.imageUrl3}"
+            android:imageObj="@{newsMaster.imageUrl3}"
             android:placeHolderSrc="@{@drawable/news_empty}"
             android:scaleType="centerCrop"
             app:layout_constraintBottom_toBottomOf="@+id/newsImage1"

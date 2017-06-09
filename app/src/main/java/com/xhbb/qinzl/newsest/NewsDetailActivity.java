@@ -1,5 +1,6 @@
 package com.xhbb.qinzl.newsest;
 
+import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
@@ -7,15 +8,13 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 
-import com.xhbb.qinzl.newsest.viewmodel.News;
-
 public class NewsDetailActivity extends AppCompatActivity {
 
-    private static final String EXTRA_NEWS = "com.xhbb.qinzl.newsest.EXTRA_NEWS";
+    private static final String EXTRA_NEWS_DETAIL_VALUES = "com.xhbb.qinzl.newsest.EXTRA_NEWS_DETAIL_VALUES";
 
-    public static void start(Context context, News news, @Nullable Bundle options) {
+    public static void start(Context context, ContentValues newsDetailValues, @Nullable Bundle options) {
         Intent starter = new Intent(context, NewsDetailActivity.class);
-        starter.putExtra(EXTRA_NEWS, news);
+        starter.putExtra(EXTRA_NEWS_DETAIL_VALUES, newsDetailValues);
         ActivityCompat.startActivity(context, starter, options);
     }
 
@@ -25,10 +24,10 @@ public class NewsDetailActivity extends AppCompatActivity {
         setContentView(R.layout.activity_fragment);
 
         if (savedInstanceState == null) {
-            News news = getIntent().getParcelableExtra(EXTRA_NEWS);
+            ContentValues newsDetailValues = getIntent().getParcelableExtra(EXTRA_NEWS_DETAIL_VALUES);
 
             getSupportFragmentManager().beginTransaction()
-                    .replace(R.id.fragment_container, NewsDetailFragment.newInstance(news))
+                    .replace(R.id.fragment_container, NewsDetailFragment.newInstance(newsDetailValues))
                     .commit();
         }
     }

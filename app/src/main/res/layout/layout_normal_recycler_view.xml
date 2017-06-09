@@ -31,7 +31,8 @@
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:adapter="@{normalRecyclerView.recyclerViewAdapter}"
-                    android:onScroll="@{normalRecyclerView.onRecyclerViewScrollListener}"
+                    android:onScrollListener="@{normalRecyclerView.onScrollListener}"
+                    android:removeOnScrollListener="@{normalRecyclerView.removeOnScrollListener}"
                     android:smoothScrollToTop="@{normalRecyclerView.smoothScrollToTop}"
                     app:layoutManager="@{normalRecyclerView.recyclerViewLayoutManager}"/>
 

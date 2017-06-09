@@ -1,7 +1,5 @@
 package com.xhbb.qinzl.newsest;
 
-import com.xhbb.qinzl.newsest.server.NetworkUtils;
-
 import org.junit.Test;
 
 import static org.junit.Assert.*;

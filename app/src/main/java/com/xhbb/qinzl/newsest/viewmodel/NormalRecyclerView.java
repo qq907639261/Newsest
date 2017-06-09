@@ -16,21 +16,22 @@ public class NormalRecyclerView extends BaseObservable {
     private boolean mAutoRefreshing;
     private boolean mSwipeRefreshing;
     private boolean mSmoothScrollToTop;
+    private boolean mRemoveOnScrollListener;
     private String mErrorText;
     private RecyclerView.Adapter mRecyclerViewAdapter;
     private RecyclerView.LayoutManager mRecyclerViewLayoutManager;
-    private ViewListeners.OnRecyclerViewScrollListener mOnRecyclerViewScrollListener;
+    private RecyclerView.OnScrollListener mOnScrollListener;
     private ViewListeners.OnSwipeRefreshListener mOnSwipeRefreshListener;
 
     public NormalRecyclerView(
             RecyclerView.Adapter recyclerViewAdapter,
             RecyclerView.LayoutManager recyclerViewLayoutManager,
-            ViewListeners.OnRecyclerViewScrollListener onRecyclerViewScrollListener,
+            RecyclerView.OnScrollListener onScrollListener,
             ViewListeners.OnSwipeRefreshListener onSwipeRefreshListener) {
 
         mRecyclerViewAdapter = recyclerViewAdapter;
         mRecyclerViewLayoutManager = recyclerViewLayoutManager;
-        mOnRecyclerViewScrollListener = onRecyclerViewScrollListener;
+        mOnScrollListener = onScrollListener;
         mOnSwipeRefreshListener = onSwipeRefreshListener;
 
         mAutoRefreshing = true;
@@ -76,8 +77,18 @@ public class NormalRecyclerView extends BaseObservable {
         return mErrorText;
     }
 
-    public ViewListeners.OnRecyclerViewScrollListener getOnRecyclerViewScrollListener() {
-        return mOnRecyclerViewScrollListener;
+    public RecyclerView.OnScrollListener getOnScrollListener() {
+        return mOnScrollListener;
+    }
+
+    public void setRemoveOnScrollListener(boolean removeOnScrollListener) {
+        mRemoveOnScrollListener = removeOnScrollListener;
+        notifyPropertyChanged(BR.removeOnScrollListener);
+    }
+
+    @Bindable
+    public boolean isRemoveOnScrollListener() {
+        return mRemoveOnScrollListener;
     }
 
     public ViewListeners.OnSwipeRefreshListener getOnSwipeRefreshListener() {

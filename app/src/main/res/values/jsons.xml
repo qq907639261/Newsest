@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="comment_cache_json_format" formatted="true" translatable="false">
+        {
+        "date":%1$d,
+        "content":%2$s,
+        "code":%3$s
+        }
+    </string>
+</resources>

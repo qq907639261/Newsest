@@ -34,9 +34,12 @@
 
         <activity
             android:name=".NewsDetailActivity"
-            android:parentActivityName=".MainActivity">
+            android:parentActivityName=".MainActivity"
+            android:windowSoftInputMode="stateHidden">
         </activity>
-        <activity android:name=".SettingsActivity">
+        <activity
+            android:name=".SettingsActivity"
+            android:parentActivityName=".MainActivity">
         </activity>
     </application>
 

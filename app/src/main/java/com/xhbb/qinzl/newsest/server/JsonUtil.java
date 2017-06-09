@@ -2,8 +2,9 @@ package com.xhbb.qinzl.newsest.server;
 
 import android.content.ContentValues;
 
+import com.xhbb.qinzl.newsest.data.Contract.CommentEntry;
 import com.xhbb.qinzl.newsest.data.Contract.NewsEntry;
-import com.xhbb.qinzl.newsest.server.JsonUtils.JsonNews.ShowApiResBodyObject.PageBeanObject.ContentListArray;
+import com.xhbb.qinzl.newsest.server.JsonUtil.JsonNews.ShowApiResBodyObject.PageBeanObject.ContentListArray;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -15,7 +16,7 @@ import java.util.List;
  * Created by qinzl on 2017/5/27.
  */
 
-public class JsonUtils {
+public class JsonUtil {
 
     public static int fillNewsValuesAndGetTotalPage(
             String jsonString, List<ContentValues> newsValuesList, String newsType)
@@ -62,6 +63,27 @@ public class JsonUtils {
         return totalPage;
     }
 
+    public static ContentValues getCommentValues(String commentJson) {
+        ContentValues commentValues = null;
+        try {
+            JSONObject jsonObject = new JSONObject(commentJson);
+
+            long commentDate = jsonObject.getLong(JsonComment.DATE);
+            String commentContent = jsonObject.getString(JsonComment.CONTENT);
+            String newsCode = jsonObject.getString(JsonComment.CODE);
+
+            commentValues = new ContentValues();
+
+            commentValues.put(CommentEntry._COMMENT_CONTENT, commentContent);
+            commentValues.put(CommentEntry._COMMENT_DATE, commentDate);
+            commentValues.put(CommentEntry._NEWS_CODE, newsCode);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        return commentValues;
+    }
+
     interface JsonNews {
 
         String SHOW_API_RES_BODY = "showapi_res_body";
@@ -93,5 +115,12 @@ public class JsonUtils {
                 }
             }
         }
+    }
+
+    interface JsonComment {
+
+        String DATE = "date";
+        String CONTENT = "content";
+        String CODE = "code";
     }
 }

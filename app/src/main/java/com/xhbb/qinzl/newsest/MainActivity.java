@@ -35,6 +35,11 @@ public class MainActivity extends AppCompatActivity implements
         mNewsMasterPagerAdapter = new NewsMasterPagerAdapter(getSupportFragmentManager());
         mMainModel = new MainModel(mNewsMasterPagerAdapter, this);
 
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            Transition transition = TransitionInflater.from(this).inflateTransition(R.transition.slide_start);
+            getWindow().setExitTransition(transition);
+        }
+
         binding.setMainModel(mMainModel);
     }
 
@@ -49,10 +54,6 @@ public class MainActivity extends AppCompatActivity implements
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.menu_item_settings:
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                    Transition transition = TransitionInflater.from(this).inflateTransition(R.transition.slide_start);
-                    getWindow().setExitTransition(transition);
-                }
                 SettingsActivity.start(this);
                 return true;
             default:

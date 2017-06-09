@@ -6,12 +6,8 @@
     <data>
 
         <variable
-            name="news"
-            type="com.xhbb.qinzl.newsest.viewmodel.News"/>
-
-        <variable
-            name="comment"
-            type="com.xhbb.qinzl.newsest.viewmodel.Comment"/>
+            name="newsDetail"
+            type="com.xhbb.qinzl.newsest.viewmodel.NewsDetail"/>
     </data>
 
     <android.support.design.widget.CoordinatorLayout
@@ -30,85 +26,134 @@
         </android.support.design.widget.AppBarLayout>
 
         <android.support.v4.widget.NestedScrollView
-            android:id="@+id/newsDetail"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
-            <LinearLayout
+            <android.support.constraint.ConstraintLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:orientation="vertical"
                 android:paddingBottom="96dp">
 
                 <ImageView
+                    android:id="@+id/newsImage"
                     style="@style/LargeNewsImage"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_gravity="center"
                     android:contentDescription="@string/news_image_content_description"
                     android:errorSrc="@{@drawable/news_error}"
-                    android:imageObj="@{news.imageUrl1}"
+                    android:imageObj="@{newsDetail.imageUrl}"
                     android:placeHolderSrc="@{@drawable/news_empty}"
                     android:scaleType="centerCrop"
+                    app:layout_constraintLeft_toLeftOf="parent"
+                    app:layout_constraintRight_toRightOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
                     tools:src="@drawable/news_error"/>
 
                 <TextView
-                    android:layout_width="match_parent"
+                    android:id="@+id/title"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
+                    android:layout_marginEnd="8dp"
                     android:layout_marginLeft="8dp"
                     android:layout_marginRight="8dp"
+                    android:layout_marginStart="8dp"
                     android:layout_marginTop="8dp"
                     android:gravity="center"
-                    android:text="@{news.title}"
+                    android:text="@{newsDetail.title}"
                     android:textAppearance="@android:style/TextAppearance.Large"
+                    app:layout_constraintLeft_toLeftOf="parent"
+                    app:layout_constraintRight_toRightOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/newsImage"
                     tools:text="标题"/>
 
                 <TextView
-                    android:layout_width="wrap_content"
+                    android:id="@+id/date"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_marginLeft="8dp"
-                    android:layout_marginRight="8dp"
                     android:layout_marginTop="8dp"
-                    android:text="@{news.publishDate}"
+                    android:text="@{newsDetail.publishDate}"
                     android:textStyle="italic"
+                    app:layout_constraintLeft_toLeftOf="@+id/title"
+                    app:layout_constraintRight_toRightOf="@+id/title"
+                    app:layout_constraintTop_toBottomOf="@+id/title"
                     tools:text="2017-06-07 10:25:58"/>
 
                 <TextView
-                    android:id="@+id/source"
-                    android:layout_width="wrap_content"
+                    android:id="@+id/sourceWeb"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_marginLeft="8dp"
-                    android:layout_marginRight="8dp"
                     android:layout_marginTop="4dp"
-                    android:text="@{news.sourceWeb}"
+                    android:text="@{newsDetail.sourceWeb}"
                     android:textStyle="italic"
+                    app:layout_constraintLeft_toLeftOf="@+id/title"
+                    app:layout_constraintRight_toRightOf="@+id/title"
+                    app:layout_constraintTop_toBottomOf="@+id/date"
                     tools:text="中国新闻网"/>
 
                 <TextView
                     android:id="@+id/content"
-                    android:layout_width="wrap_content"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_marginLeft="16dp"
-                    android:layout_marginRight="16dp"
+                    android:layout_marginEnd="8dp"
+                    android:layout_marginLeft="8dp"
+                    android:layout_marginRight="8dp"
+                    android:layout_marginStart="8dp"
                     android:layout_marginTop="8dp"
                     android:lineSpacingExtra="10sp"
-                    android:text="@{news.newsContent}"
+                    android:text="@{newsDetail.newsContent}"
                     android:textSize="@dimen/news_content_text_size"
                     android:textStyle="bold"
+                    app:layout_constraintLeft_toLeftOf="@+id/title"
+                    app:layout_constraintRight_toRightOf="@+id/title"
+                    app:layout_constraintTop_toBottomOf="@+id/sourceWeb"
                     tools:text="正文"/>
 
-                <FrameLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:paddingLeft="8dp"
-                    android:paddingRight="8dp"
-                    android:paddingTop="32dp">
+                <View
+                    android:layout_width="0dp"
+                    android:layout_height="1dp"
+                    android:layout_marginEnd="8dp"
+                    android:layout_marginLeft="8dp"
+                    android:layout_marginRight="8dp"
+                    android:layout_marginStart="8dp"
+                    android:background="@color/dividingLine"
+                    app:layout_constraintBottom_toBottomOf="@+id/commentLabel"
+                    app:layout_constraintLeft_toLeftOf="parent"
+                    app:layout_constraintRight_toLeftOf="@+id/commentLabel"
+                    app:layout_constraintTop_toTopOf="@+id/commentLabel"/>
 
-                    <include
-                        layout="@layout/layout_top_comments"
-                        app:comment="@{comment}"/>
-                </FrameLayout>
-            </LinearLayout>
+                <TextView
+                    android:id="@+id/commentLabel"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="64dp"
+                    android:text="@string/comment_text"
+                    android:textSize="16sp"
+                    app:layout_constraintLeft_toLeftOf="parent"
+                    app:layout_constraintRight_toRightOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/content"/>
+
+                <View
+                    android:layout_width="0dp"
+                    android:layout_height="1dp"
+                    android:layout_marginEnd="8dp"
+                    android:layout_marginLeft="8dp"
+                    android:layout_marginRight="8dp"
+                    android:layout_marginStart="8dp"
+                    android:background="@color/dividingLine"
+                    app:layout_constraintBottom_toBottomOf="@+id/commentLabel"
+                    app:layout_constraintLeft_toRightOf="@+id/commentLabel"
+                    app:layout_constraintRight_toRightOf="parent"
+                    app:layout_constraintTop_toTopOf="@+id/commentLabel"/>
+
+                <android.support.v7.widget.RecyclerView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="32dp"
+                    app:layout_constraintLeft_toLeftOf="parent"
+                    app:layout_constraintRight_toRightOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/commentLabel"/>
+            </android.support.constraint.ConstraintLayout>
         </android.support.v4.widget.NestedScrollView>
 
         <android.support.v7.widget.Toolbar
@@ -123,20 +168,24 @@
                 android:layout_height="match_parent">
 
                 <EditText
+                    android:id="@+id/commentEdit"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:hint="@string/comment_hint"
-                    android:maxLines="4"/>
+                    android:maxLines="4"
+                    android:onTextChanged="@{(charSequence,i,i1,i2)->newsDetail.onTextChanged(charSequence,commentButton)}"/>
 
                 <Button
+                    android:id="@+id/commentButton"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
                     android:layout_marginLeft="8dp"
                     android:layout_marginRight="8dp"
-                    android:onClick="@{()->comment.onClickCommitButton()}"
-                    android:text="@string/commit_comment_button"/>
+                    android:enabled="false"
+                    android:onClick="@{()->newsDetail.onClickButton(commentEdit)}"
+                    android:text="@string/comment_button"/>
             </LinearLayout>
         </android.support.v7.widget.Toolbar>
     </android.support.design.widget.CoordinatorLayout>

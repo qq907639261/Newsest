@@ -5,8 +5,8 @@ import android.content.ContentValues;
 import android.content.Context;
 
 import com.xhbb.qinzl.newsest.data.Contract.NewsEntry;
-import com.xhbb.qinzl.newsest.server.JsonUtils;
-import com.xhbb.qinzl.newsest.server.NetworkUtils;
+import com.xhbb.qinzl.newsest.server.JsonUtil;
+import com.xhbb.qinzl.newsest.server.NetworkUtil;
 
 import org.json.JSONException;
 
@@ -22,10 +22,10 @@ public class UpdateDataTask {
 
     public static boolean updateNewsDataAndGetIsPageEqualsTotalPage(Context context, String newsType, int newsPage)
             throws IOException, JSONException {
-        String newsResponse = NetworkUtils.getNewsResponse(context, newsType, newsPage);
+        String newsResponse = NetworkUtil.getNewsResponse(context, newsType, newsPage);
 
         List<ContentValues> newsValuesList = new ArrayList<>();
-        int totalPage = JsonUtils.fillNewsValuesAndGetTotalPage(newsResponse, newsValuesList, newsType);
+        int totalPage = JsonUtil.fillNewsValuesAndGetTotalPage(newsResponse, newsValuesList, newsType);
 
         ContentResolver contentResolver = context.getContentResolver();
         if (newsPage == 1) {

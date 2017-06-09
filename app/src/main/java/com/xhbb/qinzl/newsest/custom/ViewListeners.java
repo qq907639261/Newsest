@@ -10,24 +10,16 @@ import android.support.v7.widget.RecyclerView;
 
 public class ViewListeners {
 
-    @BindingAdapter({"android:onScroll"})
-    public static void addOnRecyclerViewScrollListener(
-            RecyclerView recyclerView,
-            final OnRecyclerViewScrollListener onRecyclerViewScrollListener) {
-
-        recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
-            @Override
-            public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
-                super.onScrollStateChanged(recyclerView, newState);
-                onRecyclerViewScrollListener.onScrollStateChanged(recyclerView, newState);
-            }
-
-            @Override
-            public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
-                super.onScrolled(recyclerView, dx, dy);
-                onRecyclerViewScrollListener.onScrolled(recyclerView, dx, dy);
-            }
-        });
+    @BindingAdapter(value = {"android:onScrollListener", "android:removeOnScrollListener"},
+            requireAll = false)
+    public static void addOrRemoveOnScrollListener(RecyclerView recyclerView,
+                                                   RecyclerView.OnScrollListener onScrollListener,
+                                                   boolean removeOnScrollListener) {
+        if (removeOnScrollListener) {
+            recyclerView.removeOnScrollListener(onScrollListener);
+        } else {
+            recyclerView.addOnScrollListener(onScrollListener);
+        }
     }
 
     @BindingAdapter({"android:onRefresh"})
@@ -39,12 +31,6 @@ public class ViewListeners {
                 onSwipeRefreshListener.onSwipeRefresh();
             }
         });
-    }
-
-    public interface OnRecyclerViewScrollListener {
-
-        void onScrollStateChanged(RecyclerView recyclerView, int newState);
-        void onScrolled(RecyclerView recyclerView, int dx, int dy);
     }
 
     public interface OnSwipeRefreshListener {

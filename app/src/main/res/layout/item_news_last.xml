@@ -5,8 +5,8 @@
     <data>
 
         <variable
-            name="news"
-            type="com.xhbb.qinzl.newsest.viewmodel.News"/>
+            name="newsMaster"
+            type="com.xhbb.qinzl.newsest.viewmodel.NewsMaster"/>
 
         <variable
             name="alreadyToBottom"
@@ -21,7 +21,7 @@
 
         <include
             layout="@layout/item_news"
-            app:news="@{news}"/>
+            app:newsMaster="@{newsMaster}"/>
 
         <include
             layout="@layout/layout_item_last"
