@@ -25,13 +25,13 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.xhbb.qinzl.newsest.async.UpdateDataTask;
-import com.xhbb.qinzl.newsest.common.MainEnum.RefreshState;
+import com.xhbb.qinzl.newsest.async.UpdateDataTasks;
+import com.xhbb.qinzl.newsest.common.MainEnums.RefreshState;
 import com.xhbb.qinzl.newsest.common.RecyclerViewCursorAdapter;
 import com.xhbb.qinzl.newsest.custom.ViewListeners;
 import com.xhbb.qinzl.newsest.data.Contract.NewsEntry;
 import com.xhbb.qinzl.newsest.databinding.LayoutNormalRecyclerViewBinding;
-import com.xhbb.qinzl.newsest.server.NetworkUtil;
+import com.xhbb.qinzl.newsest.server.NetworkUtils;
 import com.xhbb.qinzl.newsest.viewmodel.NewsMaster;
 import com.xhbb.qinzl.newsest.viewmodel.NormalRecyclerView;
 
@@ -41,7 +41,7 @@ import java.io.IOException;
 
 public class NewsMasterFragment extends Fragment
         implements LoaderManager.LoaderCallbacks<Cursor>,
-        ViewListeners.OnSwipeRefreshListener {
+        ViewListeners.OnRefreshListener, ViewListeners.OnScrollListener {
 
     private static final String ARG_NEWS_TYPE = "ARG_NEWS_TYPE";
     private static final String SAVE_ITEM_POSITION = "SAVE_ITEM_POSITION";
@@ -54,7 +54,6 @@ public class NewsMasterFragment extends Fragment
     private boolean mNewsPageEqualsTotalPage;
     private String mNewsType;
     private int mRefreshState;
-    private OnNewsMasterScrollListener mOnNewsMasterScrollListener;
     private FragmentActivity mActivity;
     private NewsAdapter mNewsAdapter;
     private LinearLayoutManager mLinearLayoutManager;
@@ -74,12 +73,8 @@ public class NewsMasterFragment extends Fragment
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        Bundle args = getArguments();
 
         mRefreshState = RefreshState.NO_REFRESHING;
-        mNewsType = args.getString(ARG_NEWS_TYPE);
-        mOnNewsMasterScrollListener = new OnNewsMasterScrollListener();
-
         if (savedInstanceState != null) {
             mItemPosition = savedInstanceState.getInt(SAVE_ITEM_POSITION);
             mNewsPage = savedInstanceState.getInt(SAVE_NEWS_PAGE);
@@ -92,13 +87,14 @@ public class NewsMasterFragment extends Fragment
                              @Nullable Bundle savedInstanceState) {
         LayoutNormalRecyclerViewBinding binding = DataBindingUtil
                 .inflate(inflater, R.layout.layout_normal_recycler_view, container, false);
+        Bundle args = getArguments();
 
         mActivity = getActivity();
         mNewsAdapter = new NewsAdapter(mActivity, R.layout.item_news);
         mLinearLayoutManager = new LinearLayoutManager(mActivity);
+        mNewsType = args.getString(ARG_NEWS_TYPE);
 
-        mNormalRecyclerView = new NormalRecyclerView(mNewsAdapter, mLinearLayoutManager,
-                mOnNewsMasterScrollListener, this);
+        mNormalRecyclerView = new NormalRecyclerView(mNewsAdapter, mLinearLayoutManager, this, this);
 
         getLoaderManager().initLoader(0, null, this);
         binding.setNormalRecyclerView(mNormalRecyclerView);
@@ -127,18 +123,6 @@ public class NewsMasterFragment extends Fragment
     }
 
     @Override
-    public void onStop() {
-        super.onStop();
-        mNormalRecyclerView.setRemoveOnScrollListener(true);
-    }
-
-    @Override
-    public void onStart() {
-        super.onStart();
-        mNormalRecyclerView.setRemoveOnScrollListener(false);
-    }
-
-    @Override
     public void onSwipeRefresh() {
         refreshNewsData(RefreshState.SWIPE_REFRESHING);
     }
@@ -154,14 +138,14 @@ public class NewsMasterFragment extends Fragment
 
             @Override
             protected Integer doInBackground(Void... params) {
-                if (!NetworkUtil.isNetworkConnectedOrConnecting(mActivity)) {
+                if (!NetworkUtils.isNetworkConnectedOrConnecting(mActivity)) {
                     return NETWORK_ERROR;
                 }
 
                 try {
                     boolean scrollRefreshing = mRefreshState == RefreshState.SCROLL_REFRESHING;
                     int newsPage = scrollRefreshing ? mNewsPage : 1;
-                    mNewsPageEqualsTotalPage = UpdateDataTask
+                    mNewsPageEqualsTotalPage = UpdateDataTasks
                             .updateNewsDataAndGetIsPageEqualsTotalPage(mActivity, mNewsType, newsPage);
 
                     return REFRESH_SUCCESS;
@@ -222,7 +206,7 @@ public class NewsMasterFragment extends Fragment
         int lastVisibleItemPosition = mLinearLayoutManager.findLastVisibleItemPosition();
         int itemCount = mNewsAdapter.getItemCount();
 
-        if (lastVisibleItemPosition >= itemCount - NetworkUtil.NEWS_COUNT_OF_EACH_PAGE) {
+        if (lastVisibleItemPosition >= itemCount - NetworkUtils.NEWS_COUNT_OF_EACH_PAGE) {
             refreshNewsData(RefreshState.SCROLL_REFRESHING);
         }
     }
@@ -260,6 +244,21 @@ public class NewsMasterFragment extends Fragment
     @Override
     public void onLoaderReset(Loader<Cursor> loader) {
         mNewsAdapter.swapCursor(null);
+    }
+
+    @Override
+    public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
+        if (newState == RecyclerView.SCROLL_STATE_IDLE) {
+            mItemPosition = mLinearLayoutManager.findFirstCompletelyVisibleItemPosition();
+            scrollRefresh();
+        }
+    }
+
+    @Override
+    public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+        if (mOnNewsMasterFragmentListener != null) {
+            mOnNewsMasterFragmentListener.onRecyclerViewScrolled(mLinearLayoutManager, dy);
+        }
     }
 
     private class NewsAdapter extends RecyclerViewCursorAdapter
@@ -328,11 +327,11 @@ public class NewsMasterFragment extends Fragment
             ActivityOptionsCompat options = ActivityOptionsCompat.makeSceneTransitionAnimation(
                     (Activity) mContext, sharedElement, ViewCompat.getTransitionName(sharedElement));
 
-            NewsDetailActivity.start(mContext, getNewsValues(), options.toBundle());
+            NewsDetailActivity.start(mContext, getNewsValues(itemPosition), options.toBundle());
         }
 
-        private ContentValues getNewsValues() {
-            mCursor.moveToPosition(mItemPosition);
+        private ContentValues getNewsValues(int position) {
+            mCursor.moveToPosition(position);
 
             String newsCode = mCursor.getString(mCursor.getColumnIndex(NewsEntry._NEWS_CODE));
             String publishDate = mCursor.getString(mCursor.getColumnIndex(NewsEntry._PUBLISH_DATE));
@@ -355,26 +354,6 @@ public class NewsMasterFragment extends Fragment
             newsValues.put(NewsEntry._IMAGE_URL_3, imageUrl3);
 
             return newsValues;
-        }
-    }
-
-    private class OnNewsMasterScrollListener extends RecyclerView.OnScrollListener {
-
-        @Override
-        public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
-            super.onScrollStateChanged(recyclerView, newState);
-            if (newState == RecyclerView.SCROLL_STATE_IDLE) {
-                mItemPosition = mLinearLayoutManager.findFirstCompletelyVisibleItemPosition();
-                scrollRefresh();
-            }
-        }
-
-        @Override
-        public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
-            super.onScrolled(recyclerView, dx, dy);
-            if (mOnNewsMasterFragmentListener != null) {
-                mOnNewsMasterFragmentListener.onRecyclerViewScrolled(mLinearLayoutManager, dy);
-            }
         }
     }
 

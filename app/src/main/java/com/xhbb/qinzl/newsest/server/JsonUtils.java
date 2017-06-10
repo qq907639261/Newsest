@@ -4,7 +4,7 @@ import android.content.ContentValues;
 
 import com.xhbb.qinzl.newsest.data.Contract.CommentEntry;
 import com.xhbb.qinzl.newsest.data.Contract.NewsEntry;
-import com.xhbb.qinzl.newsest.server.JsonUtil.JsonNews.ShowApiResBodyObject.PageBeanObject.ContentListArray;
+import com.xhbb.qinzl.newsest.server.JsonUtils.JsonNews.ShowApiResBodyObject.PageBeanObject.ContentListArray;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -16,7 +16,7 @@ import java.util.List;
  * Created by qinzl on 2017/5/27.
  */
 
-public class JsonUtil {
+public class JsonUtils {
 
     public static int fillNewsValuesAndGetTotalPage(
             String jsonString, List<ContentValues> newsValuesList, String newsType)

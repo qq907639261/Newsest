@@ -1,7 +1,6 @@
 package com.xhbb.qinzl.newsest.viewmodel;
 
-import android.text.Editable;
-import android.util.Log;
+import android.support.v7.widget.RecyclerView;
 import android.widget.Button;
 import android.widget.EditText;
 
@@ -12,6 +11,8 @@ import android.widget.EditText;
 public class NewsDetail {
 
     private OnNewsDetailListener mOnNewsDetailListener;
+    private RecyclerView.Adapter mCommentAdapter;
+    private RecyclerView.LayoutManager mLayoutManager;
 
     private String mTitle;
     private String mImageUrl;
@@ -20,13 +21,16 @@ public class NewsDetail {
     private String mNewsContent;
 
     public NewsDetail(String title, String imageUrl, String publishDate, String sourceWeb,
-                      String newsContent, OnNewsDetailListener onNewsDetailListener) {
+                      String newsContent, OnNewsDetailListener onNewsDetailListener,
+                      RecyclerView.Adapter commentAdapter, RecyclerView.LayoutManager layoutManager) {
         mTitle = title;
         mImageUrl = imageUrl;
         mPublishDate = publishDate;
         mSourceWeb = sourceWeb;
         mNewsContent = newsContent;
         mOnNewsDetailListener = onNewsDetailListener;
+        mCommentAdapter = commentAdapter;
+        mLayoutManager = layoutManager;
     }
 
     public String getPublishDate() {
@@ -47,6 +51,14 @@ public class NewsDetail {
 
     public String getImageUrl() {
         return mImageUrl;
+    }
+
+    public RecyclerView.Adapter getCommentAdapter() {
+        return mCommentAdapter;
+    }
+
+    public RecyclerView.LayoutManager getLayoutManager() {
+        return mLayoutManager;
     }
 
     public void onClickButton(EditText commentEdit) {

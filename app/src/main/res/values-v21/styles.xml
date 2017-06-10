@@ -2,7 +2,7 @@
 <resources>
 
     <style name="NewsImage">
-        <item name="android:transitionName">@string/news_image_transition</item>
+        <item name="android:transitionName">@string/transition_news_image</item>
     </style>
 
     <style name="AppTheme.NoActionBar">

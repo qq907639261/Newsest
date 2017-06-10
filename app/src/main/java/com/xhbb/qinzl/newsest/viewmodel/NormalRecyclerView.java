@@ -16,23 +16,22 @@ public class NormalRecyclerView extends BaseObservable {
     private boolean mAutoRefreshing;
     private boolean mSwipeRefreshing;
     private boolean mSmoothScrollToTop;
-    private boolean mRemoveOnScrollListener;
     private String mErrorText;
-    private RecyclerView.Adapter mRecyclerViewAdapter;
-    private RecyclerView.LayoutManager mRecyclerViewLayoutManager;
-    private RecyclerView.OnScrollListener mOnScrollListener;
-    private ViewListeners.OnSwipeRefreshListener mOnSwipeRefreshListener;
+    private RecyclerView.Adapter mAdapter;
+    private RecyclerView.LayoutManager mLayoutManager;
+    private ViewListeners.OnScrollListener mOnScrollListener;
+    private ViewListeners.OnRefreshListener mOnRefreshListener;
 
     public NormalRecyclerView(
-            RecyclerView.Adapter recyclerViewAdapter,
-            RecyclerView.LayoutManager recyclerViewLayoutManager,
-            RecyclerView.OnScrollListener onScrollListener,
-            ViewListeners.OnSwipeRefreshListener onSwipeRefreshListener) {
+            RecyclerView.Adapter adapter,
+            RecyclerView.LayoutManager layoutManager,
+            ViewListeners.OnScrollListener onScrollListener,
+            ViewListeners.OnRefreshListener onRefreshListener) {
 
-        mRecyclerViewAdapter = recyclerViewAdapter;
-        mRecyclerViewLayoutManager = recyclerViewLayoutManager;
+        mAdapter = adapter;
+        mLayoutManager = layoutManager;
         mOnScrollListener = onScrollListener;
-        mOnSwipeRefreshListener = onSwipeRefreshListener;
+        mOnRefreshListener = onRefreshListener;
 
         mAutoRefreshing = true;
     }
@@ -77,29 +76,19 @@ public class NormalRecyclerView extends BaseObservable {
         return mErrorText;
     }
 
-    public RecyclerView.OnScrollListener getOnScrollListener() {
+    public ViewListeners.OnScrollListener getOnScrollListener() {
         return mOnScrollListener;
     }
 
-    public void setRemoveOnScrollListener(boolean removeOnScrollListener) {
-        mRemoveOnScrollListener = removeOnScrollListener;
-        notifyPropertyChanged(BR.removeOnScrollListener);
+    public ViewListeners.OnRefreshListener getOnRefreshListener() {
+        return mOnRefreshListener;
     }
 
-    @Bindable
-    public boolean isRemoveOnScrollListener() {
-        return mRemoveOnScrollListener;
+    public RecyclerView.Adapter getAdapter() {
+        return mAdapter;
     }
 
-    public ViewListeners.OnSwipeRefreshListener getOnSwipeRefreshListener() {
-        return mOnSwipeRefreshListener;
-    }
-
-    public RecyclerView.Adapter getRecyclerViewAdapter() {
-        return mRecyclerViewAdapter;
-    }
-
-    public RecyclerView.LayoutManager getRecyclerViewLayoutManager() {
-        return mRecyclerViewLayoutManager;
+    public RecyclerView.LayoutManager getLayoutManager() {
+        return mLayoutManager;
     }
 }

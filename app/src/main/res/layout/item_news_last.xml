@@ -24,7 +24,7 @@
             app:newsMaster="@{newsMaster}"/>
 
         <include
-            layout="@layout/layout_item_last"
+            layout="@layout/layout_scroll_refresh"
             app:alreadyToBottom="@{alreadyToBottom}"/>
     </LinearLayout>
 </layout>

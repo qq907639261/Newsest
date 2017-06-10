@@ -4,7 +4,7 @@ package com.xhbb.qinzl.newsest.common;
  * Created by qinzl on 2017/6/3.
  */
 
-public interface MainEnum {
+public interface MainEnums {
 
     interface RefreshState {
 

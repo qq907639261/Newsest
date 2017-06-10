@@ -14,7 +14,7 @@ import android.transition.TransitionInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 
-import com.xhbb.qinzl.newsest.common.MainEnum.RefreshState;
+import com.xhbb.qinzl.newsest.common.MainEnums.RefreshState;
 import com.xhbb.qinzl.newsest.databinding.ActivityMainBinding;
 import com.xhbb.qinzl.newsest.databinding.LayoutNormalRecyclerViewBinding;
 import com.xhbb.qinzl.newsest.viewmodel.MainModel;
@@ -46,7 +46,9 @@ public class MainActivity extends AppCompatActivity implements
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.main, menu);
+
         menu.findItem(R.id.menu_item_share).setVisible(false);
+
         return super.onCreateOptionsMenu(menu);
     }
 

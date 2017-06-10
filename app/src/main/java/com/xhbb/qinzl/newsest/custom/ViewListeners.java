@@ -10,30 +10,42 @@ import android.support.v7.widget.RecyclerView;
 
 public class ViewListeners {
 
-    @BindingAdapter(value = {"android:onScrollListener", "android:removeOnScrollListener"},
-            requireAll = false)
-    public static void addOrRemoveOnScrollListener(RecyclerView recyclerView,
-                                                   RecyclerView.OnScrollListener onScrollListener,
-                                                   boolean removeOnScrollListener) {
-        if (removeOnScrollListener) {
-            recyclerView.removeOnScrollListener(onScrollListener);
-        } else {
-            recyclerView.addOnScrollListener(onScrollListener);
-        }
-    }
-
-    @BindingAdapter({"android:onRefresh"})
-    public static void setOnSwipeRefreshListener(SwipeRefreshLayout swipeRefreshLayout,
-                                                 final OnSwipeRefreshListener onSwipeRefreshListener) {
-        swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+    @BindingAdapter({"android:onScroll"})
+    public static void addOnScrollListener(RecyclerView recyclerView,
+                                           final OnScrollListener onScrollListener) {
+        recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
             @Override
-            public void onRefresh() {
-                onSwipeRefreshListener.onSwipeRefresh();
+            public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
+                super.onScrollStateChanged(recyclerView, newState);
+                onScrollListener.onScrollStateChanged(recyclerView, newState);
+            }
+
+            @Override
+            public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+                super.onScrolled(recyclerView, dx, dy);
+                onScrollListener.onScrolled(recyclerView, dx, dy);
             }
         });
     }
 
-    public interface OnSwipeRefreshListener {
+    @BindingAdapter({"android:onRefresh"})
+    public static void setOnRefreshListener(SwipeRefreshLayout swipeRefreshLayout,
+                                                 final OnRefreshListener onRefreshListener) {
+        swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                onRefreshListener.onSwipeRefresh();
+            }
+        });
+    }
+
+    public interface OnScrollListener {
+
+        void onScrollStateChanged(RecyclerView recyclerView, int newState);
+        void onScrolled(RecyclerView recyclerView, int dx, int dy);
+    }
+
+    public interface OnRefreshListener {
 
         void onSwipeRefresh();
     }

@@ -20,7 +20,7 @@
         <android.support.v4.widget.SwipeRefreshLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:onRefresh="@{normalRecyclerView.onSwipeRefreshListener}"
+            android:onRefresh="@{normalRecyclerView.onRefreshListener}"
             android:refreshing="@{normalRecyclerView.swipeRefreshing}">
 
             <FrameLayout
@@ -30,11 +30,10 @@
                 <android.support.v7.widget.RecyclerView
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:adapter="@{normalRecyclerView.recyclerViewAdapter}"
-                    android:onScrollListener="@{normalRecyclerView.onScrollListener}"
-                    android:removeOnScrollListener="@{normalRecyclerView.removeOnScrollListener}"
+                    android:adapter="@{normalRecyclerView.adapter}"
+                    android:onScroll="@{normalRecyclerView.onScrollListener}"
                     android:smoothScrollToTop="@{normalRecyclerView.smoothScrollToTop}"
-                    app:layoutManager="@{normalRecyclerView.recyclerViewLayoutManager}"/>
+                    app:layoutManager="@{normalRecyclerView.layoutManager}"/>
 
                 <ProgressBar
                     style="?android:attr/progressBarStyle"

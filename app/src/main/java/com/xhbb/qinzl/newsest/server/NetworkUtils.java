@@ -18,7 +18,7 @@ import java.net.URL;
  * Created by qinzl on 2017/5/27.
  */
 
-public class NetworkUtil {
+public class NetworkUtils {
 
     public static final int NEWS_COUNT_OF_EACH_PAGE = 15;
 

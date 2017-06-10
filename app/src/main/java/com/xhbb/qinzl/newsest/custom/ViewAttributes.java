@@ -23,10 +23,11 @@ public class ViewAttributes {
             requireAll = false)
     public static void setActionBar(Toolbar toolbar, boolean bindActionBar, boolean displayHomeAsUpEnabled) {
         if (bindActionBar) {
-            AppCompatActivity appCompatActivity = (AppCompatActivity) toolbar.getContext();
-            appCompatActivity.setSupportActionBar(toolbar);
+            AppCompatActivity activity = (AppCompatActivity) toolbar.getContext();
 
-            ActionBar actionBar = appCompatActivity.getSupportActionBar();
+            activity.setSupportActionBar(toolbar);
+
+            ActionBar actionBar = activity.getSupportActionBar();
             assert actionBar != null;
 
             if (displayHomeAsUpEnabled) {
@@ -38,9 +39,9 @@ public class ViewAttributes {
 
     @BindingAdapter({"android:shown"})
     public static void showOrHideFab(FloatingActionButton fab, boolean showFab) {
-        if (!fab.isShown() && showFab) {
+        if (showFab) {
             fab.show();
-        } else if (fab.isShown() && !showFab) {
+        } else {
             fab.hide();
         }
     }

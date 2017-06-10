@@ -1,9 +1,10 @@
 <resources>
     <string name="app_name">最新闻</string>
 
-    <string name="news_image_transition" translatable="false">news_image_transition</string>
+    <string name="format_date" formatted="true">%1$d年%2$2d月%3$2d日</string>
 
-    <string name="key_comment_cache_json" translatable="false">comment_cache_json</string>
+    <string name="transition_news_image" translatable="false">news_image</string>
+    <string name="key_comment_json" translatable="false">comment_json</string>
 
     <string name="international">国际</string>
     <string name="society">社会</string>

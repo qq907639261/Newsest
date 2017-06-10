@@ -16,6 +16,13 @@ public class ExampleInstrumentedTest {
     public void useAppContext() throws Exception {
         Context appContext = InstrumentationRegistry.getTargetContext();
 
+//        new DbHelper(appContext).getWritableDatabase().execSQL("CREATE TABLE " + Contract.CommentEntry.TABLE_NAME + " ( " +
+//                Contract.CommentEntry._ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
+//                Contract.CommentEntry._COMMENT_DATE + " LONG, " +
+//                Contract.CommentEntry._COMMENT_CONTENT + " TEXT, " +
+//                Contract.CommentEntry._NEWS_CODE + " TEXT " +
+//                ")");
+
         assertEquals("com.xhbb.qinzl.newsest", appContext.getPackageName());
     }
 }

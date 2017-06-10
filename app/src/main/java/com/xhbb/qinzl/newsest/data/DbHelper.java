@@ -4,6 +4,7 @@ import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
+import com.xhbb.qinzl.newsest.data.Contract.CommentEntry;
 import com.xhbb.qinzl.newsest.data.Contract.NewsEntry;
 
 /**
@@ -29,13 +30,29 @@ class DbHelper extends SQLiteOpenHelper {
                     NewsEntry._NEWS_TYPE + " TEXT " +
                     ")";
 
+    private static final String CREATE_TABLE_COMMENT =
+            "CREATE TABLE " + CommentEntry.TABLE_NAME + " ( " +
+                    CommentEntry._ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
+                    CommentEntry._COMMENT_DATE + " LONG, " +
+                    CommentEntry._COMMENT_CONTENT + " TEXT, " +
+                    CommentEntry._NEWS_CODE + " TEXT " +
+                    ")";
+
     DbHelper(Context context) {
         super(context, DB_NAME, null, DB_VERSION);
     }
 
     @Override
     public void onCreate(SQLiteDatabase db) {
-        db.execSQL(CREATE_TABLE_NEWS);
+        db.beginTransaction();
+        try {
+            db.execSQL(CREATE_TABLE_NEWS);
+            db.execSQL(CREATE_TABLE_COMMENT);
+
+            db.setTransactionSuccessful();
+        } finally {
+            db.endTransaction();
+        }
     }
 
     @Override
