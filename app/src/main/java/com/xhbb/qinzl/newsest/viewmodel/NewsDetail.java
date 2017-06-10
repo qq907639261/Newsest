@@ -1,24 +1,29 @@
 package com.xhbb.qinzl.newsest.viewmodel;
 
+import android.databinding.BaseObservable;
+import android.databinding.Bindable;
 import android.support.v7.widget.RecyclerView;
 import android.widget.Button;
 import android.widget.EditText;
+
+import com.xhbb.qinzl.newsest.BR;
 
 /**
  * Created by qinzl on 2017/6/9.
  */
 
-public class NewsDetail {
-
-    private OnNewsDetailListener mOnNewsDetailListener;
-    private RecyclerView.Adapter mCommentAdapter;
-    private RecyclerView.LayoutManager mLayoutManager;
+public class NewsDetail extends BaseObservable {
 
     private String mTitle;
     private String mImageUrl;
     private String mPublishDate;
     private String mSourceWeb;
     private String mNewsContent;
+    private boolean mSoftInputShowed;
+
+    private OnNewsDetailListener mOnNewsDetailListener;
+    private RecyclerView.Adapter mCommentAdapter;
+    private RecyclerView.LayoutManager mLayoutManager;
 
     public NewsDetail(String title, String imageUrl, String publishDate, String sourceWeb,
                       String newsContent, OnNewsDetailListener onNewsDetailListener,
@@ -31,6 +36,16 @@ public class NewsDetail {
         mOnNewsDetailListener = onNewsDetailListener;
         mCommentAdapter = commentAdapter;
         mLayoutManager = layoutManager;
+    }
+
+    @Bindable
+    public boolean isSoftInputShowed() {
+        return mSoftInputShowed;
+    }
+
+    public void setSoftInputShowed(boolean softInputShowed) {
+        mSoftInputShowed = softInputShowed;
+        notifyPropertyChanged(BR.softInputShowed);
     }
 
     public String getPublishDate() {

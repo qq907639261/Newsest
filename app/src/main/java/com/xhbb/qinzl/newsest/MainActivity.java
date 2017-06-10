@@ -66,9 +66,9 @@ public class MainActivity extends AppCompatActivity implements
     @Override
     public void onRecyclerViewScrolled(LinearLayoutManager linearLayoutManager, int dy) {
         if (dy < 0 && linearLayoutManager.findFirstCompletelyVisibleItemPosition() != 0) {
-            mMainModel.setShowFab(true);
+            mMainModel.setFabShowed(true);
         } else {
-            mMainModel.setShowFab(false);
+            mMainModel.setFabShowed(false);
         }
     }
 

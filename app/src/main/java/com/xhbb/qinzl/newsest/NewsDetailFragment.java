@@ -8,9 +8,7 @@ import android.databinding.ViewDataBinding;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.LayoutRes;
-import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
@@ -48,6 +46,7 @@ public class NewsDetailFragment extends Fragment implements
     private String mCommentJson;
     private CommentAdapter mCommentAdapter;
     private LinearLayoutManager mLinearLayoutManager;
+    private NewsDetail mNewsDetail;
 
     public static NewsDetailFragment newInstance(ContentValues newsDetailValues) {
         Bundle args = new Bundle();
@@ -78,10 +77,11 @@ public class NewsDetailFragment extends Fragment implements
             getActivity().getWindow().setExitTransition(transition);
         }
 
+        initNewsDetail();
         getCommentIntoEditIfExists();
         getLoaderManager().initLoader(0, null, this);
 
-        binding.setNewsDetail(getNewsDetail());
+        binding.setNewsDetail(mNewsDetail);
         return binding.getRoot();
     }
 
@@ -100,28 +100,27 @@ public class NewsDetailFragment extends Fragment implements
                     return;
                 }
 
-                final FragmentActivity activity = getActivity();
-                activity.runOnUiThread(new Runnable() {
+                getActivity().runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
                         String comment = commentValues.getAsString(CommentEntry._COMMENT_CONTENT);
                         mCommentEdit.append(comment);
-                        activity.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_VISIBLE);
+                        mNewsDetail.setSoftInputShowed(true);
+                        getActivity().getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_VISIBLE);
                     }
                 });
             }
         }).start();
     }
 
-    @NonNull
-    private NewsDetail getNewsDetail() {
+    private void initNewsDetail() {
         String title = mNewsDetailValues.getAsString(NewsEntry._TITLE);
         String imageUrl = mNewsDetailValues.getAsString(NewsEntry._IMAGE_URL_1);
         String publishDate = mNewsDetailValues.getAsString(NewsEntry._PUBLISH_DATE);
         String sourceWeb = mNewsDetailValues.getAsString(NewsEntry._SOURCE_WEB);
         String newsContent = mNewsDetailValues.getAsString(NewsEntry._NEWS_CONTENT);
 
-        return new NewsDetail(title, imageUrl, publishDate, sourceWeb, newsContent, this,
+        mNewsDetail = new NewsDetail(title, imageUrl, publishDate, sourceWeb, newsContent, this,
                 mCommentAdapter, mLinearLayoutManager);
     }
 
@@ -170,6 +169,7 @@ public class NewsDetailFragment extends Fragment implements
 
         getActivity().getContentResolver().insert(CommentEntry.URI, commentValues);
         commentEdit.setText("");
+        mNewsDetail.setSoftInputShowed(false);
     }
 
     @Override

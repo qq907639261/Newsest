@@ -8,6 +8,8 @@ import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.view.View;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.ImageView;
 
 import com.xhbb.qinzl.newsest.R;
@@ -37,9 +39,9 @@ public class ViewAttributes {
         }
     }
 
-    @BindingAdapter({"android:shown"})
-    public static void showOrHideFab(FloatingActionButton fab, boolean showFab) {
-        if (showFab) {
+    @BindingAdapter({"android:showed"})
+    public static void showOrHideFab(FloatingActionButton fab, boolean fabShowed) {
+        if (fabShowed) {
             fab.show();
         } else {
             fab.hide();
@@ -63,5 +65,24 @@ public class ViewAttributes {
                 .placeholder(placeHolderDrawable)
                 .error(errorDrawable)
                 .into(imageView);
+    }
+
+    @BindingAdapter({"android:requestFocus"})
+    public static void requestFocus(View view, boolean requestFocus) {
+        if (requestFocus) {
+            view.requestFocus();
+        }
+    }
+
+    @BindingAdapter({"android:softInputShowed"})
+    public static void showOrHideSoftInput(View view, boolean softInputShowed) {
+        Context context = view.getContext();
+        InputMethodManager imm = (InputMethodManager)
+                context.getSystemService(Context.INPUT_METHOD_SERVICE);
+        if (softInputShowed) {
+            imm.showSoftInput(view, InputMethodManager.SHOW_IMPLICIT);
+        } else {
+            imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+        }
     }
 }

@@ -15,21 +15,21 @@ public class MainModel extends BaseObservable {
 
     private PagerAdapter mPagerAdapter;
     private OnMainModelListener mOnMainModelListener;
-    private boolean mShowFab;
+    private boolean mFabShowed;
 
     public MainModel(PagerAdapter pagerAdapter, OnMainModelListener onMainModelListener) {
         mPagerAdapter = pagerAdapter;
         mOnMainModelListener = onMainModelListener;
     }
 
-    public void setShowFab(boolean showFab) {
-        mShowFab = showFab;
-        notifyPropertyChanged(BR.showFab);
+    public void setFabShowed(boolean fabShowed) {
+        mFabShowed = fabShowed;
+        notifyPropertyChanged(BR.fabShowed);
     }
 
     @Bindable
-    public boolean isShowFab() {
-        return mShowFab;
+    public boolean isFabShowed() {
+        return mFabShowed;
     }
 
     public PagerAdapter getPagerAdapter() {

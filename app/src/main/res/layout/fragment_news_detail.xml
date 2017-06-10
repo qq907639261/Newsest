@@ -167,7 +167,9 @@
                     android:layout_weight="1"
                     android:hint="@string/comment_hint"
                     android:maxLines="4"
-                    android:onTextChanged="@{(charSequence,i,i1,i2)->newsDetail.onTextChanged(charSequence,commentButton)}"/>
+                    android:onTextChanged="@{(charSequence,i,i1,i2)->newsDetail.onTextChanged(charSequence,commentButton)}"
+                    android:requestFocus="@{true}"
+                    android:softInputShowed="@{newsDetail.softInputShowed}"/>
 
                 <Button
                     android:id="@+id/commentButton"
