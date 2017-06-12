@@ -27,7 +27,8 @@ class DbHelper extends SQLiteOpenHelper {
                     NewsEntry._SOURCE_WEB + " TEXT, " +
                     NewsEntry._TITLE + " TEXT, " +
                     NewsEntry._NEWS_CODE + " TEXT, " +
-                    NewsEntry._NEWS_TYPE + " TEXT " +
+                    NewsEntry._NEWS_TYPE + " TEXT, " +
+                    NewsEntry._TOTAL_PAGE_BY_TYPE + " INTEGER " +
                     ")";
 
     private static final String CREATE_TABLE_COMMENT =

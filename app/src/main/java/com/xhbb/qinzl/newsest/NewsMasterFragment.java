@@ -143,8 +143,7 @@ public class NewsMasterFragment extends Fragment
                 try {
                     boolean scrollRefreshing = mRefreshState == RefreshState.SCROLL_REFRESHING;
                     int newsPage = scrollRefreshing ? mNewsPage : 1;
-                    mNewsPageEqualsTotalPage = UpdateDataTasks
-                            .updateNewsDataAndGetIsPageEqualsTotalPage(mContext, mNewsType, newsPage);
+                    UpdateDataTasks.updateNewsData(mContext, mNewsType, newsPage);
 
                     return REFRESH_SUCCESS;
                 } catch (IOException e) {
@@ -167,10 +166,6 @@ public class NewsMasterFragment extends Fragment
                         handleError(R.string.server_error_text);
                         break;
                     default:
-                        if (mNewsPageEqualsTotalPage) {
-                            break;
-                        }
-
                         if (mRefreshState == RefreshState.SCROLL_REFRESHING) {
                             mNewsPage++;
                         } else {
@@ -226,11 +221,14 @@ public class NewsMasterFragment extends Fragment
 
     @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor cursor) {
-        mNewsAdapter.swapCursor(cursor);
         if (cursor != null && cursor.getCount() > 0) {
             mHasNewsData = true;
             mNormalRecyclerView.setAutoRefreshing(false);
             mNormalRecyclerView.setErrorText(null);
+
+            cursor.moveToFirst();
+            int totalPage = cursor.getInt(cursor.getColumnIndex(NewsEntry._TOTAL_PAGE_BY_TYPE));
+            mNewsPageEqualsTotalPage = mNewsPage == totalPage;
 
             if (mViewRecreating) {
                 mLinearLayoutManager.scrollToPosition(mItemPosition);
@@ -238,6 +236,8 @@ public class NewsMasterFragment extends Fragment
         } else if (mViewRecreating) {
             refreshNewsData(RefreshState.AUTO_REFRESHING);
         }
+
+        mNewsAdapter.swapCursor(cursor);
         mViewRecreating = false;
     }
 

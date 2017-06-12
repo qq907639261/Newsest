@@ -29,7 +29,7 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:fontFamily="monospace"
-            android:text="@string/item_scroll_to_end_text"
+            android:text="@string/scroll_to_end_text"
             android:textColor="@color/scrollToEndText"
             android:textSize="20sp"
             android:textStyle="italic"

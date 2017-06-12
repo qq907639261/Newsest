@@ -10,16 +10,13 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.util.List;
-
 /**
  * Created by qinzl on 2017/5/27.
  */
 
 public class JsonUtils {
 
-    public static int fillNewsValuesAndGetTotalPage(
-            String jsonString, List<ContentValues> newsValuesList, String newsType)
+    public static ContentValues[] getNewsValuesArray(String jsonString, String newsType)
             throws JSONException {
         JSONObject jsonNews = new JSONObject(jsonString);
         JSONObject showApiResBodyObject = jsonNews.getJSONObject(JsonNews.SHOW_API_RES_BODY);
@@ -29,6 +26,7 @@ public class JsonUtils {
 
         JSONArray contentListArray = pageBeanObject.getJSONArray(JsonNews.ShowApiResBodyObject.PageBeanObject.CONTENT_LIST);
 
+        ContentValues[] newsValuesArray = new ContentValues[contentListArray.length()];
         for (int i = 0; i < contentListArray.length(); i++) {
             JSONObject contentListObject = contentListArray.getJSONObject(i);
 
@@ -47,6 +45,7 @@ public class JsonUtils {
             }
 
             ContentValues newsValues = new ContentValues();
+
             newsValues.put(NewsEntry._NEWS_CODE, newsCode);
             newsValues.put(NewsEntry._TITLE, title);
             newsValues.put(NewsEntry._PUBLISH_DATE, publish_date);
@@ -56,11 +55,12 @@ public class JsonUtils {
             newsValues.put(NewsEntry._IMAGE_URL_2, imageUrlStringArray[1]);
             newsValues.put(NewsEntry._IMAGE_URL_3, imageUrlStringArray[2]);
             newsValues.put(NewsEntry._NEWS_TYPE, newsType);
+            newsValues.put(NewsEntry._TOTAL_PAGE_BY_TYPE, totalPage);
 
-            newsValuesList.add(newsValues);
+            newsValuesArray[i] = newsValues;
         }
 
-        return totalPage;
+        return newsValuesArray;
     }
 
     public static ContentValues getCommentValues(String commentJson) {

@@ -9,6 +9,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.LayoutRes;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
@@ -107,13 +108,14 @@ public class NewsDetailFragment extends Fragment implements
                     return;
                 }
 
-                getActivity().runOnUiThread(new Runnable() {
+                final FragmentActivity activity = getActivity();
+                activity.runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
                         String comment = commentValues.getAsString(CommentEntry._COMMENT_CONTENT);
                         mNewsDetail.setComment(comment);
                         mNewsDetail.setSoftInputShowed(true);
-                        getActivity().getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_VISIBLE);
+                        activity.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_VISIBLE);
                     }
                 });
             }

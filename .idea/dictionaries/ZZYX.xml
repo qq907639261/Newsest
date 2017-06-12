@@ -3,9 +3,11 @@
     <words>
       <w>appcode</w>
       <w>contentlist</w>
+      <w>evernote</w>
       <w>imageurls</w>
       <w>newsest</w>
       <w>pagebean</w>
+      <w>sharedpref</w>
       <w>showapi</w>
     </words>
   </dictionary>

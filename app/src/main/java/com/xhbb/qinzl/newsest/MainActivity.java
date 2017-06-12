@@ -1,5 +1,9 @@
 package com.xhbb.qinzl.newsest;
 
+import android.app.Activity;
+import android.app.Application;
+import android.content.Context;
+import android.content.Intent;
 import android.databinding.DataBindingUtil;
 import android.os.Build;
 import android.os.Bundle;
@@ -14,6 +18,8 @@ import android.transition.TransitionInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 
+import com.xhbb.qinzl.newsest.async.MainNotifications;
+import com.xhbb.qinzl.newsest.async.UpdateNewsJob;
 import com.xhbb.qinzl.newsest.common.MainEnums.RefreshState;
 import com.xhbb.qinzl.newsest.databinding.ActivityMainBinding;
 import com.xhbb.qinzl.newsest.databinding.LayoutNormalRecyclerViewBinding;
@@ -22,10 +28,16 @@ import com.xhbb.qinzl.newsest.viewmodel.NormalRecyclerView;
 
 public class MainActivity extends AppCompatActivity implements
         NewsMasterFragment.OnNewsMasterFragmentListener,
-        MainModel.OnMainModelListener {
+        MainModel.OnMainModelListener,
+        Application.ActivityLifecycleCallbacks {
 
     private NewsMasterPagerAdapter mNewsMasterPagerAdapter;
     private MainModel mMainModel;
+    private Activity mStartedActivity;
+
+    public static Intent newIntent(Context context) {
+        return new Intent(context, MainActivity.class);
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -40,7 +52,14 @@ public class MainActivity extends AppCompatActivity implements
             getWindow().setExitTransition(transition);
         }
 
+        getApplication().registerActivityLifecycleCallbacks(this);
         binding.setMainModel(mMainModel);
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        getApplication().unregisterActivityLifecycleCallbacks(this);
     }
 
     @Override
@@ -84,6 +103,52 @@ public class MainActivity extends AppCompatActivity implements
             normalRecyclerView.setSwipeRefreshing(true);
             newsMasterFragment.refreshNewsData(RefreshState.SWIPE_REFRESHING);
         }
+    }
+
+    @Override
+    public void onActivityCreated(Activity activity, Bundle bundle) {
+
+    }
+
+    @Override
+    public void onActivityStarted(Activity activity) {
+        mStartedActivity = activity;
+
+        UpdateNewsJob.cancelJob();
+        MainNotifications.cancel(this);
+
+        // TODO: 2017/6/12 通知 有序广播
+    }
+
+    @Override
+    public void onActivityResumed(Activity activity) {
+
+    }
+
+    @Override
+    public void onActivityPaused(Activity activity) {
+
+    }
+
+    @Override
+    public void onActivityStopped(Activity activity) {
+        if (activity != mStartedActivity) {
+            return;
+        }
+
+        UpdateNewsJob.scheduleJob();
+
+        // TODO: 2017/6/12 通知 有序广播
+    }
+
+    @Override
+    public void onActivitySaveInstanceState(Activity activity, Bundle bundle) {
+
+    }
+
+    @Override
+    public void onActivityDestroyed(Activity activity) {
+
     }
 
     private class NewsMasterPagerAdapter extends FragmentStatePagerAdapter {

@@ -2,6 +2,8 @@ package com.xhbb.qinzl.newsest;
 
 import org.junit.Test;
 
+import java.util.concurrent.TimeUnit;
+
 import static org.junit.Assert.assertEquals;
 
 /**
@@ -13,6 +15,6 @@ public class ExampleUnitTest {
 
     @Test
     public void addition_isCorrect() throws Exception {
-        assertEquals(4, 2 + 2);
+        assertEquals(30 * 60 * 1000, TimeUnit.MINUTES.toMillis(30));
     }
 }

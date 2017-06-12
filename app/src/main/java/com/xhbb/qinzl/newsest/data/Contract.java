@@ -25,6 +25,7 @@ public interface Contract {
         String _IMAGE_URL_2 = "image_url_2";
         String _IMAGE_URL_3 = "image_url_3";
         String _NEWS_TYPE = "news_type";
+        String _TOTAL_PAGE_BY_TYPE = "total_page_by_type";
     }
 
     interface CommentEntry extends BaseColumns {
