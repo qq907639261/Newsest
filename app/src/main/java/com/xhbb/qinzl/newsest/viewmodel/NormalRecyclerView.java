@@ -5,7 +5,6 @@ import android.databinding.Bindable;
 import android.support.v7.widget.RecyclerView;
 
 import com.xhbb.qinzl.newsest.BR;
-import com.xhbb.qinzl.newsest.custom.ViewListeners;
 
 /**
  * Created by qinzl on 2017/5/29.
@@ -19,19 +18,15 @@ public class NormalRecyclerView extends BaseObservable {
     private String mErrorText;
     private RecyclerView.Adapter mAdapter;
     private RecyclerView.LayoutManager mLayoutManager;
-    private ViewListeners.OnScrollListener mOnScrollListener;
-    private ViewListeners.OnRefreshListener mOnRefreshListener;
+    private OnNormalRecyclerViewListener mOnNormalRecyclerViewListener;
 
-    public NormalRecyclerView(
-            RecyclerView.Adapter adapter,
-            RecyclerView.LayoutManager layoutManager,
-            ViewListeners.OnScrollListener onScrollListener,
-            ViewListeners.OnRefreshListener onRefreshListener) {
+    public NormalRecyclerView(RecyclerView.Adapter adapter,
+                              RecyclerView.LayoutManager layoutManager,
+                              OnNormalRecyclerViewListener onNormalRecyclerViewListener) {
 
         mAdapter = adapter;
         mLayoutManager = layoutManager;
-        mOnScrollListener = onScrollListener;
-        mOnRefreshListener = onRefreshListener;
+        mOnNormalRecyclerViewListener = onNormalRecyclerViewListener;
 
         mAutoRefreshing = true;
     }
@@ -76,12 +71,16 @@ public class NormalRecyclerView extends BaseObservable {
         return mErrorText;
     }
 
-    public ViewListeners.OnScrollListener getOnScrollListener() {
-        return mOnScrollListener;
+    public void onRefresh() {
+        mOnNormalRecyclerViewListener.onSwipeRefresh();
     }
 
-    public ViewListeners.OnRefreshListener getOnRefreshListener() {
-        return mOnRefreshListener;
+    public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
+        mOnNormalRecyclerViewListener.onScrollStateChanged(recyclerView, newState);
+    }
+
+    public void onScrolled(RecyclerView recyclerView, int dy) {
+        mOnNormalRecyclerViewListener.onScrolled(recyclerView, dy);
     }
 
     public RecyclerView.Adapter getAdapter() {
@@ -90,5 +89,12 @@ public class NormalRecyclerView extends BaseObservable {
 
     public RecyclerView.LayoutManager getLayoutManager() {
         return mLayoutManager;
+    }
+
+    public interface OnNormalRecyclerViewListener {
+
+        void onSwipeRefresh();
+        void onScrollStateChanged(RecyclerView recyclerView, int newState);
+        void onScrolled(RecyclerView recyclerView, int dy);
     }
 }

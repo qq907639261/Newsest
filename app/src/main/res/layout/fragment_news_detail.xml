@@ -12,7 +12,8 @@
 
     <android.support.design.widget.CoordinatorLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:onTransferView="@{()->newsDetail.onTransferView(commentEdit)}">
 
         <android.support.design.widget.AppBarLayout
             android:layout_width="match_parent"
@@ -165,6 +166,7 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
+                    android:append="@{newsDetail.comment}"
                     android:hint="@string/comment_hint"
                     android:maxLines="4"
                     android:onTextChanged="@{(charSequence,i,i1,i2)->newsDetail.onTextChanged(charSequence,commentButton)}"

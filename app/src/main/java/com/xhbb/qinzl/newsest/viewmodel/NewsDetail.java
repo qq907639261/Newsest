@@ -20,22 +20,36 @@ public class NewsDetail extends BaseObservable {
     private String mSourceWeb;
     private String mNewsContent;
     private boolean mSoftInputShowed;
+    private CharSequence mComment;
 
-    private OnNewsDetailListener mOnNewsDetailListener;
     private RecyclerView.Adapter mCommentAdapter;
     private RecyclerView.LayoutManager mLayoutManager;
+    private OnNewsDetailListener mOnNewsDetailListener;
 
-    public NewsDetail(String title, String imageUrl, String publishDate, String sourceWeb,
-                      String newsContent, OnNewsDetailListener onNewsDetailListener,
-                      RecyclerView.Adapter commentAdapter, RecyclerView.LayoutManager layoutManager) {
+    public NewsDetail(String title, String imageUrl, String publishDate, String sourceWeb, String newsContent,
+                      RecyclerView.Adapter commentAdapter,
+                      RecyclerView.LayoutManager layoutManager,
+                      OnNewsDetailListener onNewsDetailListener) {
         mTitle = title;
         mImageUrl = imageUrl;
         mPublishDate = publishDate;
         mSourceWeb = sourceWeb;
         mNewsContent = newsContent;
-        mOnNewsDetailListener = onNewsDetailListener;
         mCommentAdapter = commentAdapter;
         mLayoutManager = layoutManager;
+        mOnNewsDetailListener = onNewsDetailListener;
+
+        mComment = "";
+    }
+
+    @Bindable
+    public CharSequence getComment() {
+        return mComment;
+    }
+
+    public void setComment(CharSequence comment) {
+        mComment = comment;
+        notifyPropertyChanged(BR.comment);
     }
 
     @Bindable
@@ -88,8 +102,13 @@ public class NewsDetail extends BaseObservable {
         }
     }
 
+    public void onTransferView(EditText commentEdit) {
+        mOnNewsDetailListener.onTransferView(commentEdit);
+    }
+
     public interface OnNewsDetailListener {
 
         void onClickCommentButton(EditText commentEdit);
+        void onTransferView(EditText commentEdit);
     }
 }

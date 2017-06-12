@@ -14,7 +14,6 @@ import android.support.annotation.Nullable;
 import android.support.annotation.StringRes;
 import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
@@ -28,7 +27,6 @@ import android.view.ViewGroup;
 import com.xhbb.qinzl.newsest.async.UpdateDataTasks;
 import com.xhbb.qinzl.newsest.common.MainEnums.RefreshState;
 import com.xhbb.qinzl.newsest.common.RecyclerViewCursorAdapter;
-import com.xhbb.qinzl.newsest.custom.ViewListeners;
 import com.xhbb.qinzl.newsest.data.Contract.NewsEntry;
 import com.xhbb.qinzl.newsest.databinding.LayoutNormalRecyclerViewBinding;
 import com.xhbb.qinzl.newsest.server.NetworkUtils;
@@ -41,7 +39,7 @@ import java.io.IOException;
 
 public class NewsMasterFragment extends Fragment
         implements LoaderManager.LoaderCallbacks<Cursor>,
-        ViewListeners.OnRefreshListener, ViewListeners.OnScrollListener {
+        NormalRecyclerView.OnNormalRecyclerViewListener {
 
     private static final String ARG_NEWS_TYPE = "ARG_NEWS_TYPE";
     private static final String SAVE_ITEM_POSITION = "SAVE_ITEM_POSITION";
@@ -54,7 +52,7 @@ public class NewsMasterFragment extends Fragment
     private boolean mNewsPageEqualsTotalPage;
     private String mNewsType;
     private int mRefreshState;
-    private FragmentActivity mActivity;
+    private Context mContext;
     private NewsAdapter mNewsAdapter;
     private LinearLayoutManager mLinearLayoutManager;
     private NormalRecyclerView mNormalRecyclerView;
@@ -89,12 +87,12 @@ public class NewsMasterFragment extends Fragment
                 .inflate(inflater, R.layout.layout_normal_recycler_view, container, false);
         Bundle args = getArguments();
 
-        mActivity = getActivity();
-        mNewsAdapter = new NewsAdapter(mActivity, R.layout.item_news);
-        mLinearLayoutManager = new LinearLayoutManager(mActivity);
+        mContext = getContext();
+        mNewsAdapter = new NewsAdapter(mContext, R.layout.item_news);
+        mLinearLayoutManager = new LinearLayoutManager(mContext);
         mNewsType = args.getString(ARG_NEWS_TYPE);
 
-        mNormalRecyclerView = new NormalRecyclerView(mNewsAdapter, mLinearLayoutManager, this, this);
+        mNormalRecyclerView = new NormalRecyclerView(mNewsAdapter, mLinearLayoutManager, this);
 
         getLoaderManager().initLoader(0, null, this);
         binding.setNormalRecyclerView(mNormalRecyclerView);
@@ -138,7 +136,7 @@ public class NewsMasterFragment extends Fragment
 
             @Override
             protected Integer doInBackground(Void... params) {
-                if (!NetworkUtils.isNetworkConnectedOrConnecting(mActivity)) {
+                if (!NetworkUtils.isNetworkConnectedOrConnecting(mContext)) {
                     return NETWORK_ERROR;
                 }
 
@@ -146,7 +144,7 @@ public class NewsMasterFragment extends Fragment
                     boolean scrollRefreshing = mRefreshState == RefreshState.SCROLL_REFRESHING;
                     int newsPage = scrollRefreshing ? mNewsPage : 1;
                     mNewsPageEqualsTotalPage = UpdateDataTasks
-                            .updateNewsDataAndGetIsPageEqualsTotalPage(mActivity, mNewsType, newsPage);
+                            .updateNewsDataAndGetIsPageEqualsTotalPage(mContext, mNewsType, newsPage);
 
                     return REFRESH_SUCCESS;
                 } catch (IOException e) {
@@ -191,7 +189,7 @@ public class NewsMasterFragment extends Fragment
                     mNewsAdapter.notifyItemChanged(mNewsAdapter.getItemCount() - 1);
                 } else {
                     if (isAdded()) {
-                        mNormalRecyclerView.setErrorText(getString(errorTextRes));
+                        mNormalRecyclerView.setErrorText(mContext.getString(errorTextRes));
                     }
                 }
             }
@@ -223,7 +221,7 @@ public class NewsMasterFragment extends Fragment
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
         String selection = NewsEntry._NEWS_TYPE + "=?";
         String[] selectionArgs = {mNewsType};
-        return new CursorLoader(mActivity, NewsEntry.URI, null, selection, selectionArgs, null);
+        return new CursorLoader(mContext, NewsEntry.URI, null, selection, selectionArgs, null);
     }
 
     @Override
@@ -236,9 +234,11 @@ public class NewsMasterFragment extends Fragment
 
             if (mViewRecreating) {
                 mLinearLayoutManager.scrollToPosition(mItemPosition);
-                mViewRecreating = false;
             }
+        } else if (mViewRecreating) {
+            refreshNewsData(RefreshState.AUTO_REFRESHING);
         }
+        mViewRecreating = false;
     }
 
     @Override
@@ -255,7 +255,7 @@ public class NewsMasterFragment extends Fragment
     }
 
     @Override
-    public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+    public void onScrolled(RecyclerView recyclerView, int dy) {
         if (mOnNewsMasterFragmentListener != null) {
             mOnNewsMasterFragmentListener.onRecyclerViewScrolled(mLinearLayoutManager, dy);
         }

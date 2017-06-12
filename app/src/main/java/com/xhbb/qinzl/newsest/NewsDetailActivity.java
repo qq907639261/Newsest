@@ -15,6 +15,7 @@ public class NewsDetailActivity extends AppCompatActivity {
     public static void start(Context context, ContentValues newsDetailValues, @Nullable Bundle options) {
         Intent starter = new Intent(context, NewsDetailActivity.class);
         starter.putExtra(EXTRA_NEWS_DETAIL_VALUES, newsDetailValues);
+
         ActivityCompat.startActivity(context, starter, options);
     }
 

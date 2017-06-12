@@ -20,7 +20,7 @@
         <android.support.v4.widget.SwipeRefreshLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:onRefresh="@{normalRecyclerView.onRefreshListener}"
+            android:onRefresh="@{()->normalRecyclerView.onRefresh()}"
             android:refreshing="@{normalRecyclerView.swipeRefreshing}">
 
             <FrameLayout
@@ -31,7 +31,8 @@
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:adapter="@{normalRecyclerView.adapter}"
-                    android:onScroll="@{normalRecyclerView.onScrollListener}"
+                    android:onScrollStateChanged="@{(view,listener)->normalRecyclerView.onScrollStateChanged(view,listener)}"
+                    android:onScrolled="@{(view,dx,dy)->normalRecyclerView.onScrolled(view,dy)}"
                     android:smoothScrollToTop="@{normalRecyclerView.smoothScrollToTop}"
                     app:layoutManager="@{normalRecyclerView.layoutManager}"/>
 

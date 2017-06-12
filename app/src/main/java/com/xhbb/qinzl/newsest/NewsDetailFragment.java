@@ -35,18 +35,19 @@ import com.xhbb.qinzl.newsest.viewmodel.Comment;
 import com.xhbb.qinzl.newsest.viewmodel.NewsDetail;
 
 public class NewsDetailFragment extends Fragment implements
-        NewsDetail.OnNewsDetailListener, LoaderManager.LoaderCallbacks<Cursor> {
+        NewsDetail.OnNewsDetailListener,
+        LoaderManager.LoaderCallbacks<Cursor> {
 
     private static final String ARG_NEWS_DETAIL_VALUES = "ARG_NEWS_DETAIL_VALUES";
 
     private ContentValues mNewsDetailValues;
     private Context mContext;
     private String mNewsCode;
-    private EditText mCommentEdit;
     private String mCommentJson;
     private CommentAdapter mCommentAdapter;
     private LinearLayoutManager mLinearLayoutManager;
     private NewsDetail mNewsDetail;
+    private EditText mCommentEdit;
 
     public static NewsDetailFragment newInstance(ContentValues newsDetailValues) {
         Bundle args = new Bundle();
@@ -63,29 +64,35 @@ public class NewsDetailFragment extends Fragment implements
         FragmentNewsDetailBinding binding = DataBindingUtil.inflate(
                 inflater, R.layout.fragment_news_detail, container, false);
         setHasOptionsMenu(true);
+        Bundle args = getArguments();
 
-        mCommentEdit = binding.commentEdit;
         mContext = getContext();
-        mNewsDetailValues = getArguments().getParcelable(ARG_NEWS_DETAIL_VALUES);
+        mNewsDetailValues = args.getParcelable(ARG_NEWS_DETAIL_VALUES);
         mCommentJson = PreferencesUtils.getCommentJson(mContext);
         mNewsCode = mNewsDetailValues.getAsString(NewsEntry._NEWS_CODE);
         mCommentAdapter = new CommentAdapter(mContext, R.layout.item_comment);
         mLinearLayoutManager = new LinearLayoutManager(mContext);
+
+        initNewsDetail();
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             Transition transition = TransitionInflater.from(mContext).inflateTransition(R.transition.explode);
             getActivity().getWindow().setExitTransition(transition);
         }
 
-        initNewsDetail();
-        getCommentIntoEditIfExists();
+        setCommentIfExists();
         getLoaderManager().initLoader(0, null, this);
 
         binding.setNewsDetail(mNewsDetail);
         return binding.getRoot();
     }
 
-    private void getCommentIntoEditIfExists() {
+    @Override
+    public void onTransferView(EditText commentEdit) {
+        mCommentEdit = commentEdit;
+    }
+
+    private void setCommentIfExists() {
         if (mCommentJson == null) {
             return;
         }
@@ -104,7 +111,7 @@ public class NewsDetailFragment extends Fragment implements
                     @Override
                     public void run() {
                         String comment = commentValues.getAsString(CommentEntry._COMMENT_CONTENT);
-                        mCommentEdit.append(comment);
+                        mNewsDetail.setComment(comment);
                         mNewsDetail.setSoftInputShowed(true);
                         getActivity().getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_VISIBLE);
                     }
@@ -120,8 +127,10 @@ public class NewsDetailFragment extends Fragment implements
         String sourceWeb = mNewsDetailValues.getAsString(NewsEntry._SOURCE_WEB);
         String newsContent = mNewsDetailValues.getAsString(NewsEntry._NEWS_CONTENT);
 
-        mNewsDetail = new NewsDetail(title, imageUrl, publishDate, sourceWeb, newsContent, this,
-                mCommentAdapter, mLinearLayoutManager);
+        mNewsDetail = new NewsDetail(title, imageUrl, publishDate, sourceWeb, newsContent,
+                mCommentAdapter,
+                mLinearLayoutManager,
+                this);
     }
 
     @Override
@@ -151,7 +160,9 @@ public class NewsDetailFragment extends Fragment implements
         String comment = mCommentEdit.getText().toString().trim();
         if (comment.length() > 0) {
             long currentDate = System.currentTimeMillis();
-            String commentJson = getString(R.string.comment_cache_json_format, currentDate, comment, mNewsCode);
+            String commentJson = mContext.getString(R.string.comment_cache_json_format,
+                    currentDate, comment, mNewsCode);
+
             PreferencesUtils.saveCommentJson(mContext, commentJson);
         } else {
             PreferencesUtils.removeCommentJson(mContext);
