@@ -16,7 +16,7 @@ import java.io.IOException;
  * Created by qinzl on 2017/5/29.
  */
 
-public class UpdateDataTasks {
+public class MainTasks {
 
     public static void updateNewsData(Context context, String newsType, int newsPage)
             throws IOException, JSONException {

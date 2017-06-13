@@ -3,12 +3,16 @@
     xmlns:tools="http://schemas.android.com/tools"
     package="com.xhbb.qinzl.newsest">
 
+    <permission
+        android:name="com.xhbb.qinzl.newsest.PRIVATE"
+        android:protectionLevel="signature"/>
+
     <uses-permission android:name="android.permission.INTERNET"/>
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
     <uses-permission android:name="android.permission.VIBRATE"/>
+    <uses-permission android:name="com.xhbb.qinzl.newsest.PRIVATE"/>
 
     <application
-        android:name=".common.MainApplication"
         android:allowBackup="true"
         android:fullBackupContent="@xml/backup_config"
         android:icon="@mipmap/ic_launcher"
@@ -43,6 +47,15 @@
             android:name=".SettingsActivity"
             android:parentActivityName=".MainActivity">
         </activity>
+
+        <receiver
+            android:name=".async.NotificationReceiver"
+            android:enabled="true"
+            android:exported="false">
+            <intent-filter android:priority="-999">
+                <action android:name="com.xhbb.qinzl.newsest.ACTION_NEWS_UPDATED"/>
+            </intent-filter>
+        </receiver>
     </application>
 
 </manifest>

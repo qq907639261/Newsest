@@ -24,11 +24,11 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.xhbb.qinzl.newsest.async.UpdateDataTasks;
+import com.xhbb.qinzl.newsest.async.MainTasks;
 import com.xhbb.qinzl.newsest.common.MainEnums.RefreshState;
 import com.xhbb.qinzl.newsest.common.RecyclerViewCursorAdapter;
 import com.xhbb.qinzl.newsest.data.Contract.NewsEntry;
-import com.xhbb.qinzl.newsest.databinding.LayoutNormalRecyclerViewBinding;
+import com.xhbb.qinzl.newsest.databinding.FragmentNormalRecyclerViewBinding;
 import com.xhbb.qinzl.newsest.server.NetworkUtils;
 import com.xhbb.qinzl.newsest.viewmodel.NewsMaster;
 import com.xhbb.qinzl.newsest.viewmodel.NormalRecyclerView;
@@ -83,8 +83,8 @@ public class NewsMasterFragment extends Fragment
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
-        LayoutNormalRecyclerViewBinding binding = DataBindingUtil
-                .inflate(inflater, R.layout.layout_normal_recycler_view, container, false);
+        FragmentNormalRecyclerViewBinding binding = DataBindingUtil
+                .inflate(inflater, R.layout.fragment_normal_recycler_view, container, false);
         Bundle args = getArguments();
 
         mContext = getContext();
@@ -143,7 +143,7 @@ public class NewsMasterFragment extends Fragment
                 try {
                     boolean scrollRefreshing = mRefreshState == RefreshState.SCROLL_REFRESHING;
                     int newsPage = scrollRefreshing ? mNewsPage : 1;
-                    UpdateDataTasks.updateNewsData(mContext, mNewsType, newsPage);
+                    MainTasks.updateNewsData(mContext, mNewsType, newsPage);
 
                     return REFRESH_SUCCESS;
                 } catch (IOException e) {

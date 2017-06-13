@@ -2,10 +2,11 @@ package com.xhbb.qinzl.newsest;
 
 import android.app.Activity;
 import android.app.Application;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.databinding.DataBindingUtil;
-import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -13,16 +14,15 @@ import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
-import android.transition.Transition;
-import android.transition.TransitionInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 
 import com.xhbb.qinzl.newsest.async.MainNotifications;
 import com.xhbb.qinzl.newsest.async.UpdateNewsJob;
+import com.xhbb.qinzl.newsest.common.GlobalSingleton;
 import com.xhbb.qinzl.newsest.common.MainEnums.RefreshState;
 import com.xhbb.qinzl.newsest.databinding.ActivityMainBinding;
-import com.xhbb.qinzl.newsest.databinding.LayoutNormalRecyclerViewBinding;
+import com.xhbb.qinzl.newsest.databinding.FragmentNormalRecyclerViewBinding;
 import com.xhbb.qinzl.newsest.viewmodel.MainModel;
 import com.xhbb.qinzl.newsest.viewmodel.NormalRecyclerView;
 
@@ -34,6 +34,7 @@ public class MainActivity extends AppCompatActivity implements
     private NewsMasterPagerAdapter mNewsMasterPagerAdapter;
     private MainModel mMainModel;
     private Activity mStartedActivity;
+    private LocalNotificationReceiver mLocalNotificationReceiver;
 
     public static Intent newIntent(Context context) {
         return new Intent(context, MainActivity.class);
@@ -43,14 +44,12 @@ public class MainActivity extends AppCompatActivity implements
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         ActivityMainBinding binding = DataBindingUtil.setContentView(this, R.layout.activity_main);
+        GlobalSingleton.getInstance(getApplicationContext());
 
         mNewsMasterPagerAdapter = new NewsMasterPagerAdapter(getSupportFragmentManager());
         mMainModel = new MainModel(mNewsMasterPagerAdapter, this);
-
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            Transition transition = TransitionInflater.from(this).inflateTransition(R.transition.slide_start);
-            getWindow().setExitTransition(transition);
-        }
+        mLocalNotificationReceiver = new LocalNotificationReceiver();
+        mStartedActivity = this;
 
         getApplication().registerActivityLifecycleCallbacks(this);
         binding.setMainModel(mMainModel);
@@ -95,7 +94,7 @@ public class MainActivity extends AppCompatActivity implements
     public void onClickToTopFab(ViewPager viewPager) {
         NewsMasterFragment newsMasterFragment = (NewsMasterFragment) mNewsMasterPagerAdapter
                 .instantiateItem(viewPager, viewPager.getCurrentItem());
-        LayoutNormalRecyclerViewBinding binding = DataBindingUtil.getBinding(newsMasterFragment.getView());
+        FragmentNormalRecyclerViewBinding binding = DataBindingUtil.getBinding(newsMasterFragment.getView());
 
         if (binding != null) {
             NormalRecyclerView normalRecyclerView = binding.getNormalRecyclerView();
@@ -107,17 +106,25 @@ public class MainActivity extends AppCompatActivity implements
 
     @Override
     public void onActivityCreated(Activity activity, Bundle bundle) {
-
+        if (bundle != null) {
+            mStartedActivity = activity;
+        }
     }
 
     @Override
     public void onActivityStarted(Activity activity) {
-        mStartedActivity = activity;
+        if (mStartedActivity != activity) {
+            mStartedActivity = activity;
+            return;
+        }
 
-        UpdateNewsJob.cancelJob();
         MainNotifications.cancel(this);
+        UpdateNewsJob.cancelJob();
 
-        // TODO: 2017/6/12 通知 有序广播
+        IntentFilter filter = new IntentFilter(UpdateNewsJob.ACTION_NEWS_UPDATED);
+        filter.setPriority(IntentFilter.SYSTEM_HIGH_PRIORITY);
+        String permission = getString(R.string.permission_private);
+        registerReceiver(mLocalNotificationReceiver, filter, permission, null);
     }
 
     @Override
@@ -136,9 +143,8 @@ public class MainActivity extends AppCompatActivity implements
             return;
         }
 
-        UpdateNewsJob.scheduleJob();
-
-        // TODO: 2017/6/12 通知 有序广播
+        UpdateNewsJob.scheduleMainJob();
+        unregisterReceiver(mLocalNotificationReceiver);
     }
 
     @Override
@@ -173,6 +179,14 @@ public class MainActivity extends AppCompatActivity implements
         @Override
         public CharSequence getPageTitle(int position) {
             return mNewsTypeArray[position];
+        }
+    }
+
+    private class LocalNotificationReceiver extends BroadcastReceiver {
+
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            setResultCode(Activity.RESULT_CANCELED);
         }
     }
 }

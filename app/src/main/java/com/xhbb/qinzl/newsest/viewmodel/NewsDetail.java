@@ -95,9 +95,10 @@ public class NewsDetail extends BaseObservable {
     }
 
     public void onTextChanged(CharSequence charSequence, Button commentButton) {
-        if (charSequence.toString().trim().length() < 5) {
+        int textLength = charSequence.toString().trim().length();
+        if (textLength < 5 && commentButton.isEnabled()) {
             commentButton.setEnabled(false);
-        } else {
+        } else if (textLength >= 5 && !commentButton.isEnabled()) {
             commentButton.setEnabled(true);
         }
     }

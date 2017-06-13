@@ -5,7 +5,6 @@ import android.content.Context;
 import android.database.Cursor;
 import android.databinding.DataBindingUtil;
 import android.databinding.ViewDataBinding;
-import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.LayoutRes;
 import android.support.v4.app.Fragment;
@@ -14,8 +13,6 @@ import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
 import android.support.v7.widget.LinearLayoutManager;
-import android.transition.Transition;
-import android.transition.TransitionInflater;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -75,12 +72,6 @@ public class NewsDetailFragment extends Fragment implements
         mLinearLayoutManager = new LinearLayoutManager(mContext);
 
         initNewsDetail();
-
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            Transition transition = TransitionInflater.from(mContext).inflateTransition(R.transition.explode);
-            getActivity().getWindow().setExitTransition(transition);
-        }
-
         setCommentIfExists();
         getLoaderManager().initLoader(0, null, this);
 

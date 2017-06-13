@@ -3,6 +3,7 @@ package com.xhbb.qinzl.newsest;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
+import android.databinding.DataBindingUtil;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
@@ -22,7 +23,7 @@ public class NewsDetailActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_fragment);
+        DataBindingUtil.setContentView(this, R.layout.activity_fragment);
 
         if (savedInstanceState == null) {
             ContentValues newsDetailValues = getIntent().getParcelableExtra(EXTRA_NEWS_DETAIL_VALUES);

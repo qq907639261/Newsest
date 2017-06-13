@@ -5,6 +5,7 @@
 
     <string name="transition_news_image" translatable="false">news_image</string>
     <string name="key_comment_json" translatable="false">comment_json</string>
+    <string name="permission_private" translatable="false">com.xhbb.qinzl.newsest.PRIVATE</string>
 
     <string name="international">国际</string>
     <string name="society">社会</string>

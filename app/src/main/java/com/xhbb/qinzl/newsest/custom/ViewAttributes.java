@@ -41,9 +41,9 @@ public class ViewAttributes {
 
     @BindingAdapter({"android:showed"})
     public static void showOrHideFab(FloatingActionButton fab, boolean fabShowed) {
-        if (fabShowed) {
+        if (fabShowed && !fab.isShown()) {
             fab.show();
-        } else {
+        } else if (!fabShowed && fab.isShown()) {
             fab.hide();
         }
     }

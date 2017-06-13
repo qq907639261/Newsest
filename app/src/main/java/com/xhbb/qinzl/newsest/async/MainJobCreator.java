@@ -12,7 +12,7 @@ public class MainJobCreator implements JobCreator {
     @Override
     public Job create(String tag) {
         switch (tag) {
-            case UpdateNewsJob.TAG:
+            case UpdateNewsJob.JOB_TAG:
                 return new UpdateNewsJob();
             default:
                 return null;

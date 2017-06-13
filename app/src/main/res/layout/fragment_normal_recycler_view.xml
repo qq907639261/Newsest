@@ -34,7 +34,8 @@
                     android:onScrollStateChanged="@{(view,listener)->normalRecyclerView.onScrollStateChanged(view,listener)}"
                     android:onScrolled="@{(view,dx,dy)->normalRecyclerView.onScrolled(view,dy)}"
                     android:smoothScrollToTop="@{normalRecyclerView.smoothScrollToTop}"
-                    app:layoutManager="@{normalRecyclerView.layoutManager}"/>
+                    app:layoutManager="@{normalRecyclerView.layoutManager}"
+                    tools:listitem="@layout/item_news"/>
 
                 <ProgressBar
                     style="?android:attr/progressBarStyle"
