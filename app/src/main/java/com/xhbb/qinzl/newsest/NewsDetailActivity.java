@@ -8,6 +8,9 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
+import android.view.Menu;
+import android.view.MenuItem;
+import android.widget.Toast;
 
 public class NewsDetailActivity extends AppCompatActivity {
 
@@ -31,6 +34,26 @@ public class NewsDetailActivity extends AppCompatActivity {
             getSupportFragmentManager().beginTransaction()
                     .replace(R.id.fragment_container, NewsDetailFragment.newInstance(newsDetailValues))
                     .commit();
+        }
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.main, menu);
+        return super.onCreateOptionsMenu(menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.menu_item_share:
+                Toast.makeText(this, "", Toast.LENGTH_SHORT).show();
+                return true;
+            case R.id.menu_item_settings:
+                SettingsActivity.start(this);
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
         }
     }
 }

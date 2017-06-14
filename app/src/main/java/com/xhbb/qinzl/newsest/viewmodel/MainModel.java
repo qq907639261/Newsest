@@ -40,8 +40,13 @@ public class MainModel extends BaseObservable {
         mOnMainModelListener.onClickToTopFab(viewPager);
     }
 
+    public void onClick() {
+        mOnMainModelListener.onClickToTopFab();
+    }
+
     public interface OnMainModelListener {
 
         void onClickToTopFab(ViewPager viewPager);
+        void onClickToTopFab();
     }
 }

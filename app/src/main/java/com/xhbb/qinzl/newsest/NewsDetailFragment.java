@@ -14,14 +14,10 @@ import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
 import android.support.v7.widget.LinearLayoutManager;
 import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuInflater;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.WindowManager;
+import android.view.WindowManager.LayoutParams;
 import android.widget.EditText;
-import android.widget.Toast;
 
 import com.xhbb.qinzl.newsest.common.RecyclerViewCursorAdapter;
 import com.xhbb.qinzl.newsest.data.Contract.CommentEntry;
@@ -61,30 +57,24 @@ public class NewsDetailFragment extends Fragment implements
                              Bundle savedInstanceState) {
         FragmentNewsDetailBinding binding = DataBindingUtil.inflate(
                 inflater, R.layout.fragment_news_detail, container, false);
-        setHasOptionsMenu(true);
-        Bundle args = getArguments();
 
         mContext = getContext();
-        mNewsDetailValues = args.getParcelable(ARG_NEWS_DETAIL_VALUES);
+        mNewsDetailValues = getArguments().getParcelable(ARG_NEWS_DETAIL_VALUES);
         mCommentJson = PreferencesUtils.getCommentJson(mContext);
         mNewsCode = mNewsDetailValues.getAsString(NewsEntry._NEWS_CODE);
         mCommentAdapter = new CommentAdapter(mContext, R.layout.item_comment);
         mLinearLayoutManager = new LinearLayoutManager(mContext);
+        mCommentEdit = binding.commentEdit;
 
         initNewsDetail();
-        setCommentIfExists();
+        setCommentFromJsonIfExists();
         getLoaderManager().initLoader(0, null, this);
 
         binding.setNewsDetail(mNewsDetail);
         return binding.getRoot();
     }
 
-    @Override
-    public void onTransferView(EditText commentEdit) {
-        mCommentEdit = commentEdit;
-    }
-
-    private void setCommentIfExists() {
+    private void setCommentFromJsonIfExists() {
         if (mCommentJson == null) {
             return;
         }
@@ -105,8 +95,9 @@ public class NewsDetailFragment extends Fragment implements
                     public void run() {
                         String comment = commentValues.getAsString(CommentEntry._COMMENT_CONTENT);
                         mNewsDetail.setComment(comment);
+
                         mNewsDetail.setSoftInputShowed(true);
-                        activity.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_VISIBLE);
+                        activity.getWindow().setSoftInputMode(LayoutParams.SOFT_INPUT_STATE_ALWAYS_VISIBLE);
                     }
                 });
             }
@@ -124,26 +115,6 @@ public class NewsDetailFragment extends Fragment implements
                 mCommentAdapter,
                 mLinearLayoutManager,
                 this);
-    }
-
-    @Override
-    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        super.onCreateOptionsMenu(menu, inflater);
-        inflater.inflate(R.menu.main, menu);
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case R.id.menu_item_share:
-                Toast.makeText(mContext, "", Toast.LENGTH_SHORT).show();
-                return true;
-            case R.id.menu_item_settings:
-                SettingsActivity.start(getActivity());
-                return true;
-            default:
-                return super.onOptionsItemSelected(item);
-        }
     }
 
     @Override

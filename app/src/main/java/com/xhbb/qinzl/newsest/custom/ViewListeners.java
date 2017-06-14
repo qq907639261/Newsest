@@ -3,7 +3,6 @@ package com.xhbb.qinzl.newsest.custom;
 import android.databinding.BindingAdapter;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.RecyclerView;
-import android.view.View;
 
 /**
  * Created by qinzl on 2017/6/6.
@@ -52,11 +51,6 @@ public class ViewListeners {
         });
     }
 
-    @BindingAdapter({"android:onTransferView"})
-    public static void setOnTransferViewListener(View view, OnTransferViewListener onTransferViewListener) {
-        onTransferViewListener.onTransferView(view);
-    }
-
     public interface OnScrollStateChangedListener {
 
         void onScrollStateChanged(RecyclerView recyclerView, int newState);
@@ -65,10 +59,5 @@ public class ViewListeners {
     public interface OnScrolledListener {
 
         void onScrolled(RecyclerView recyclerView, int dx, int dy);
-    }
-
-    public interface OnTransferViewListener {
-
-        void onTransferView(View view);
     }
 }

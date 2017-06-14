@@ -58,6 +58,8 @@ public class NewsMasterFragment extends Fragment
     private NormalRecyclerView mNormalRecyclerView;
     private OnNewsMasterFragmentListener mOnNewsMasterFragmentListener;
     private boolean mViewRecreating;
+    private boolean mTwoPane;
+    private boolean mFirstCreating;
 
     public static NewsMasterFragment newInstance(String newsType) {
         Bundle args = new Bundle();
@@ -73,10 +75,13 @@ public class NewsMasterFragment extends Fragment
         super.onCreate(savedInstanceState);
 
         mRefreshState = RefreshState.NO_REFRESHING;
+
         if (savedInstanceState != null) {
             mItemPosition = savedInstanceState.getInt(SAVE_ITEM_POSITION);
             mNewsPage = savedInstanceState.getInt(SAVE_NEWS_PAGE);
             mNewsPageEqualsTotalPage = savedInstanceState.getBoolean(SAVE_NEWS_PAGE_EQUALS_TOTAL_PAGE);
+        } else {
+            mFirstCreating = true;
         }
     }
 
@@ -87,12 +92,12 @@ public class NewsMasterFragment extends Fragment
                 .inflate(inflater, R.layout.fragment_normal_recycler_view, container, false);
         Bundle args = getArguments();
 
+        mNewsType = args.getString(ARG_NEWS_TYPE);
         mContext = getContext();
         mNewsAdapter = new NewsAdapter(mContext, R.layout.item_news);
         mLinearLayoutManager = new LinearLayoutManager(mContext);
-        mNewsType = args.getString(ARG_NEWS_TYPE);
-
         mNormalRecyclerView = new NormalRecyclerView(mNewsAdapter, mLinearLayoutManager, this);
+        mTwoPane = getActivity().findViewById(R.id.detail_fragment_container) != null;
 
         getLoaderManager().initLoader(0, null, this);
         binding.setNormalRecyclerView(mNormalRecyclerView);
@@ -220,7 +225,7 @@ public class NewsMasterFragment extends Fragment
     }
 
     @Override
-    public void onLoadFinished(Loader<Cursor> loader, Cursor cursor) {
+    public void onLoadFinished(Loader<Cursor> loader, final Cursor cursor) {
         if (cursor != null && cursor.getCount() > 0) {
             mHasNewsData = true;
             mNormalRecyclerView.setAutoRefreshing(false);
@@ -233,12 +238,28 @@ public class NewsMasterFragment extends Fragment
             if (mViewRecreating) {
                 mLinearLayoutManager.scrollToPosition(mItemPosition);
             }
+
+            if (mFirstCreating && mTwoPane) {
+                View rootView = getView();
+                if (isAdded() && rootView != null) {
+                    rootView.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            ContentValues newsValues = mNewsAdapter.getNewsValues(cursor);
+                            getFragmentManager().beginTransaction()
+                                    .replace(R.id.detail_fragment_container, NewsDetailFragment.newInstance(newsValues))
+                                    .commit();
+                        }
+                    });
+                }
+            }
         } else if (mViewRecreating) {
             refreshNewsData(RefreshState.AUTO_REFRESHING);
         }
 
         mNewsAdapter.swapCursor(cursor);
         mViewRecreating = false;
+        mFirstCreating = false;
     }
 
     @Override
@@ -322,25 +343,34 @@ public class NewsMasterFragment extends Fragment
 
         @Override
         public void onClickNewsItem(int itemPosition, View sharedElement) {
+            mCursor.moveToPosition(itemPosition);
             mItemPosition = itemPosition;
 
-            ActivityOptionsCompat options = ActivityOptionsCompat.makeSceneTransitionAnimation(
-                    (Activity) mContext, sharedElement, ViewCompat.getTransitionName(sharedElement));
+            ContentValues newsValues = getNewsValues(mCursor);
+            if (mTwoPane) {
+                getFragmentManager().beginTransaction()
+                        .replace(R.id.detail_fragment_container, NewsDetailFragment.newInstance(newsValues))
+                        .addSharedElement(sharedElement, ViewCompat.getTransitionName(sharedElement))
+                        .commit();
+            } else {
+                Bundle options = ActivityOptionsCompat.makeSceneTransitionAnimation(
+                        (Activity) mContext,
+                        sharedElement,
+                        ViewCompat.getTransitionName(sharedElement)).toBundle();
 
-            NewsDetailActivity.start(mContext, getNewsValues(itemPosition), options.toBundle());
+                NewsDetailActivity.start(mContext, newsValues, options);
+            }
         }
 
-        private ContentValues getNewsValues(int position) {
-            mCursor.moveToPosition(position);
-
-            String newsCode = mCursor.getString(mCursor.getColumnIndex(NewsEntry._NEWS_CODE));
-            String publishDate = mCursor.getString(mCursor.getColumnIndex(NewsEntry._PUBLISH_DATE));
-            String sourceWeb = mCursor.getString(mCursor.getColumnIndex(NewsEntry._SOURCE_WEB));
-            String newsContent = mCursor.getString(mCursor.getColumnIndex(NewsEntry._NEWS_CONTENT));
-            String title = mCursor.getString(mCursor.getColumnIndex(NewsEntry._TITLE));
-            String imageUrl1 = mCursor.getString(mCursor.getColumnIndex(NewsEntry._IMAGE_URL_1));
-            String imageUrl2 = mCursor.getString(mCursor.getColumnIndex(NewsEntry._IMAGE_URL_2));
-            String imageUrl3 = mCursor.getString(mCursor.getColumnIndex(NewsEntry._IMAGE_URL_3));
+        private ContentValues getNewsValues(Cursor cursor) {
+            String newsCode = cursor.getString(cursor.getColumnIndex(NewsEntry._NEWS_CODE));
+            String publishDate = cursor.getString(cursor.getColumnIndex(NewsEntry._PUBLISH_DATE));
+            String sourceWeb = cursor.getString(cursor.getColumnIndex(NewsEntry._SOURCE_WEB));
+            String newsContent = cursor.getString(cursor.getColumnIndex(NewsEntry._NEWS_CONTENT));
+            String title = cursor.getString(cursor.getColumnIndex(NewsEntry._TITLE));
+            String imageUrl1 = cursor.getString(cursor.getColumnIndex(NewsEntry._IMAGE_URL_1));
+            String imageUrl2 = cursor.getString(cursor.getColumnIndex(NewsEntry._IMAGE_URL_2));
+            String imageUrl3 = cursor.getString(cursor.getColumnIndex(NewsEntry._IMAGE_URL_3));
 
             ContentValues newsValues = new ContentValues();
 

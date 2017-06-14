@@ -23,10 +23,26 @@ import java.util.concurrent.TimeUnit;
 public class UpdateNewsJob extends Job {
 
     public static final String ACTION_NEWS_UPDATED = "com.xhbb.qinzl.newsest.ACTION_NEWS_UPDATED";
+    static final String JOB_TAG = "UpdateNewsJob";
 
     private static final String PARAM_MAIN_JOB_SCHEDULED = "PARAM_MAIN_JOB_SCHEDULED";
 
-    static final String JOB_TAG = "UpdateNewsJob";
+    public static int scheduleMainJob() {
+        PersistableBundleCompat extras = new PersistableBundleCompat();
+        extras.putBoolean(PARAM_MAIN_JOB_SCHEDULED, true);
+
+        return new JobRequest.Builder(JOB_TAG)
+                .setExact(TimeUnit.MINUTES.toMillis(15))
+                .setPersisted(true)
+                .setUpdateCurrent(true)
+                .setExtras(extras)
+                .build()
+                .schedule();
+    }
+
+    public static void cancelJob() {
+        JobManager.instance().cancelAllForTag(JOB_TAG);
+    }
 
     @NonNull
     @Override
@@ -56,19 +72,6 @@ public class UpdateNewsJob extends Job {
         }
     }
 
-    public static int scheduleMainJob() {
-        PersistableBundleCompat extras = new PersistableBundleCompat();
-        extras.putBoolean(PARAM_MAIN_JOB_SCHEDULED, true);
-
-        return new JobRequest.Builder(JOB_TAG)
-                .setExact(TimeUnit.MINUTES.toMillis(15))
-                .setPersisted(true)
-                .setUpdateCurrent(true)
-                .setExtras(extras)
-                .build()
-                .schedule();
-    }
-
     private int schedulePeriodicJob() {
         return new JobRequest.Builder(JOB_TAG)
                 .setPeriodic(TimeUnit.HOURS.toMillis(1))
@@ -77,9 +80,5 @@ public class UpdateNewsJob extends Job {
                 .setUpdateCurrent(true)
                 .build()
                 .schedule();
-    }
-
-    public static void cancelJob() {
-        JobManager.instance().cancelAllForTag(JOB_TAG);
     }
 }

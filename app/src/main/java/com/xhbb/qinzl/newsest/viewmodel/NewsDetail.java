@@ -103,13 +103,8 @@ public class NewsDetail extends BaseObservable {
         }
     }
 
-    public void onTransferView(EditText commentEdit) {
-        mOnNewsDetailListener.onTransferView(commentEdit);
-    }
-
     public interface OnNewsDetailListener {
 
         void onClickCommentButton(EditText commentEdit);
-        void onTransferView(EditText commentEdit);
     }
 }

@@ -26,6 +26,8 @@ import com.xhbb.qinzl.newsest.databinding.FragmentNormalRecyclerViewBinding;
 import com.xhbb.qinzl.newsest.viewmodel.MainModel;
 import com.xhbb.qinzl.newsest.viewmodel.NormalRecyclerView;
 
+import java.util.Random;
+
 public class MainActivity extends AppCompatActivity implements
         NewsMasterFragment.OnNewsMasterFragmentListener,
         MainModel.OnMainModelListener,
@@ -35,6 +37,7 @@ public class MainActivity extends AppCompatActivity implements
     private MainModel mMainModel;
     private Activity mStartedActivity;
     private LocalNotificationReceiver mLocalNotificationReceiver;
+    private boolean mTwoPane;
 
     public static Intent newIntent(Context context) {
         return new Intent(context, MainActivity.class);
@@ -46,7 +49,22 @@ public class MainActivity extends AppCompatActivity implements
         ActivityMainBinding binding = DataBindingUtil.setContentView(this, R.layout.activity_main);
         GlobalSingleton.getInstance(getApplicationContext());
 
-        mNewsMasterPagerAdapter = new NewsMasterPagerAdapter(getSupportFragmentManager());
+        FragmentManager fragmentManager = getSupportFragmentManager();
+        if (binding.fragmentContainer == null) {
+            mNewsMasterPagerAdapter = new NewsMasterPagerAdapter(fragmentManager);
+        } else {
+            mTwoPane = true;
+
+            if (fragmentManager.findFragmentById(R.id.fragment_container) == null) {
+                int i = new Random().nextInt(8);
+                String newsType = getResources().getStringArray(R.array.news_type)[i];
+
+                fragmentManager.beginTransaction()
+                        .replace(R.id.fragment_container, NewsMasterFragment.newInstance(newsType))
+                        .commit();
+            }
+        }
+
         mMainModel = new MainModel(mNewsMasterPagerAdapter, this);
         mLocalNotificationReceiver = new LocalNotificationReceiver();
         mStartedActivity = this;
@@ -64,8 +82,7 @@ public class MainActivity extends AppCompatActivity implements
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.main, menu);
-
-        menu.findItem(R.id.menu_item_share).setVisible(false);
+        menu.findItem(R.id.menu_item_share).setVisible(mTwoPane);
 
         return super.onCreateOptionsMenu(menu);
     }
@@ -94,12 +111,28 @@ public class MainActivity extends AppCompatActivity implements
     public void onClickToTopFab(ViewPager viewPager) {
         NewsMasterFragment newsMasterFragment = (NewsMasterFragment) mNewsMasterPagerAdapter
                 .instantiateItem(viewPager, viewPager.getCurrentItem());
-        FragmentNormalRecyclerViewBinding binding = DataBindingUtil.getBinding(newsMasterFragment.getView());
+
+        scrollItemToTopAndRefreshData(newsMasterFragment);
+    }
+
+    @Override
+    public void onClickToTopFab() {
+        NewsMasterFragment newsMasterFragment = (NewsMasterFragment)
+                getSupportFragmentManager().findFragmentById(R.id.fragment_container);
+
+        scrollItemToTopAndRefreshData(newsMasterFragment);
+    }
+
+    private void scrollItemToTopAndRefreshData(NewsMasterFragment newsMasterFragment) {
+        FragmentNormalRecyclerViewBinding binding =
+                DataBindingUtil.getBinding(newsMasterFragment.getView());
 
         if (binding != null) {
             NormalRecyclerView normalRecyclerView = binding.getNormalRecyclerView();
+
             normalRecyclerView.setSmoothScrollToTop(true);
             normalRecyclerView.setSwipeRefreshing(true);
+
             newsMasterFragment.refreshNewsData(RefreshState.SWIPE_REFRESHING);
         }
     }
@@ -124,6 +157,7 @@ public class MainActivity extends AppCompatActivity implements
         IntentFilter filter = new IntentFilter(UpdateNewsJob.ACTION_NEWS_UPDATED);
         filter.setPriority(IntentFilter.SYSTEM_HIGH_PRIORITY);
         String permission = getString(R.string.permission_private);
+
         registerReceiver(mLocalNotificationReceiver, filter, permission, null);
     }
 
@@ -186,7 +220,12 @@ public class MainActivity extends AppCompatActivity implements
 
         @Override
         public void onReceive(Context context, Intent intent) {
-            setResultCode(Activity.RESULT_CANCELED);
+            switch (intent.getAction()) {
+                case UpdateNewsJob.ACTION_NEWS_UPDATED:
+                    setResultCode(Activity.RESULT_CANCELED);
+                    break;
+                default:
+            }
         }
     }
 }
