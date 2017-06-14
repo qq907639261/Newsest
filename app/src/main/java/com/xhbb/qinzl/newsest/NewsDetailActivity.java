@@ -40,16 +40,17 @@ public class NewsDetailActivity extends AppCompatActivity {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.main, menu);
+        menu.findItem(R.id.menu_check_app_update).setEnabled(false);
         return super.onCreateOptionsMenu(menu);
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
-            case R.id.menu_item_share:
+            case R.id.menu_share:
                 Toast.makeText(this, "", Toast.LENGTH_SHORT).show();
                 return true;
-            case R.id.menu_item_settings:
+            case R.id.menu_settings:
                 SettingsActivity.start(this);
                 return true;
             default:

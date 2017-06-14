@@ -26,4 +26,8 @@
     <string name="share_menu">分享</string>
     <string name="comment_button">发送</string>
     <string name="settings_menu">设置</string>
+    <string name="check_app_update_menu">检查更新</string>
+    <string name="update_app_tips_snackbar">发现应用有新版本，是否升级？</string>
+    <string name="update_app_snackbar_action">升级</string>
+    <string name="app_is_the_latest_version_toast">已经是最新版本。</string>
 </resources>

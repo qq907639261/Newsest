@@ -40,6 +40,21 @@ public class NetworkUtils {
         return getResponseFromHttpUrl(spec, appCode);
     }
 
+    public static boolean isAppUpdated() {
+        try {
+            URL url = new URL("http://192.168.31.35");
+            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+            connection.setReadTimeout(1000);
+            connection.setConnectTimeout(1000);
+
+            getResponseFromHttpUrl(connection);
+            return true;
+        } catch (IOException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
     public static boolean isNetworkConnectedOrConnecting(Context context) {
         ConnectivityManager cm = (ConnectivityManager)
                 context.getSystemService(Context.CONNECTIVITY_SERVICE);
@@ -50,12 +65,17 @@ public class NetworkUtils {
     @NonNull
     private static String getResponseFromHttpUrl(String spec, String appCode) throws IOException {
         URL url = new URL(spec);
-
         HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+        connection.setRequestProperty("Authorization", "APPCODE " + appCode);
+
+        return getResponseFromHttpUrl(connection);
+    }
+
+    @NonNull
+    private static String getResponseFromHttpUrl(HttpURLConnection connection) throws IOException {
         BufferedReader reader = null;
         try {
             connection.setRequestMethod("GET");
-            connection.setRequestProperty("Authorization", "APPCODE " + appCode);
 
             StringBuilder response = new StringBuilder();
             reader = new BufferedReader(new InputStreamReader(connection.getInputStream()));

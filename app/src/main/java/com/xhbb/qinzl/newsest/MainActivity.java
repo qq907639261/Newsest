@@ -8,6 +8,8 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.databinding.DataBindingUtil;
 import android.os.Bundle;
+import android.support.design.widget.FloatingActionButton;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
@@ -16,6 +18,8 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.Toast;
 
 import com.xhbb.qinzl.newsest.async.MainNotifications;
 import com.xhbb.qinzl.newsest.async.UpdateNewsJob;
@@ -23,6 +27,7 @@ import com.xhbb.qinzl.newsest.common.GlobalSingleton;
 import com.xhbb.qinzl.newsest.common.MainEnums.RefreshState;
 import com.xhbb.qinzl.newsest.databinding.ActivityMainBinding;
 import com.xhbb.qinzl.newsest.databinding.FragmentNormalRecyclerViewBinding;
+import com.xhbb.qinzl.newsest.server.NetworkUtils;
 import com.xhbb.qinzl.newsest.viewmodel.MainModel;
 import com.xhbb.qinzl.newsest.viewmodel.NormalRecyclerView;
 
@@ -31,13 +36,15 @@ import java.util.Random;
 public class MainActivity extends AppCompatActivity implements
         NewsMasterFragment.OnNewsMasterFragmentListener,
         MainModel.OnMainModelListener,
-        Application.ActivityLifecycleCallbacks {
+        Application.ActivityLifecycleCallbacks,
+        View.OnClickListener {
 
     private NewsMasterPagerAdapter mNewsMasterPagerAdapter;
     private MainModel mMainModel;
     private Activity mStartedActivity;
     private LocalNotificationReceiver mLocalNotificationReceiver;
     private boolean mTwoPane;
+    private FloatingActionButton mFab;
 
     public static Intent newIntent(Context context) {
         return new Intent(context, MainActivity.class);
@@ -65,6 +72,7 @@ public class MainActivity extends AppCompatActivity implements
             }
         }
 
+        mFab = binding.fab;
         mMainModel = new MainModel(mNewsMasterPagerAdapter, this);
         mLocalNotificationReceiver = new LocalNotificationReceiver();
         mStartedActivity = this;
@@ -82,7 +90,7 @@ public class MainActivity extends AppCompatActivity implements
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.main, menu);
-        menu.findItem(R.id.menu_item_share).setVisible(mTwoPane);
+        menu.findItem(R.id.menu_share).setVisible(mTwoPane);
 
         return super.onCreateOptionsMenu(menu);
     }
@@ -90,8 +98,38 @@ public class MainActivity extends AppCompatActivity implements
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
-            case R.id.menu_item_settings:
+            case R.id.menu_share:
+                Toast.makeText(this, "", Toast.LENGTH_SHORT).show();
+                return true;
+            case R.id.menu_settings:
                 SettingsActivity.start(this);
+                return true;
+            case R.id.menu_check_app_update:
+                new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        final boolean appUpdated = NetworkUtils.isAppUpdated();
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                if (appUpdated) {
+                                    Snackbar snackbar = Snackbar.make(
+                                            mFab,
+                                            getString(R.string.update_app_tips_snackbar),
+                                            Snackbar.LENGTH_LONG);
+
+                                    snackbar.setAction(
+                                            R.string.update_app_snackbar_action,
+                                            MainActivity.this).show();
+                                } else {
+                                    Toast.makeText(MainActivity.this,
+                                            R.string.app_is_the_latest_version_toast,
+                                            Toast.LENGTH_SHORT).show();
+                                }
+                            }
+                        });
+                    }
+                }).start();
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
@@ -189,6 +227,11 @@ public class MainActivity extends AppCompatActivity implements
     @Override
     public void onActivityDestroyed(Activity activity) {
 
+    }
+
+    @Override
+    public void onClick(View view) {
+        // TODO: 2017/6/14 升级应用
     }
 
     private class NewsMasterPagerAdapter extends FragmentStatePagerAdapter {
