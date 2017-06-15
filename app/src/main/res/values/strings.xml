@@ -4,7 +4,10 @@
     <string name="format_date" formatted="true">%1$d年%2$2d月%3$2d日</string>
 
     <string name="transition_news_image" translatable="false">news_image</string>
+    <string name="apk_file_name" translatable="false">app-debug.apk</string>
+
     <string name="key_comment_json" translatable="false">comment_json</string>
+
     <string name="permission_private" translatable="false">com.xhbb.qinzl.newsest.PRIVATE</string>
 
     <string name="international">国际</string>
@@ -26,8 +29,11 @@
     <string name="share_menu">分享</string>
     <string name="comment_button">发送</string>
     <string name="settings_menu">设置</string>
-    <string name="check_app_update_menu">检查更新</string>
-    <string name="update_app_tips_snackbar">发现应用有新版本，是否升级？</string>
-    <string name="update_app_snackbar_action">升级</string>
-    <string name="app_is_the_latest_version_toast">已经是最新版本。</string>
+    <string name="check_app_upgrade_menu">检查更新</string>
+    <string name="upgrade_app_tips_snackbar">发现应用有新版本，是否升级？</string>
+    <string name="upgrade_app_snackbar_action">升级</string>
+    <string name="app_already_is_the_latest_version_toast">已经是最新版本。</string>
+    <string name="upgrade_failed_because_environment_error_toast">升级失败，请检查存储设备。</string>
+    <string name="upgrade_failed_because_size_not_enough_toast">存储空间不足，升级失败。</string>
+    <string name="upgrade_failed_because_network_error_toast">升级失败，请检查网络。</string>
 </resources>

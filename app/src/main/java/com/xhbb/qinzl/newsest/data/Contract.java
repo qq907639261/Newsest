@@ -3,13 +3,15 @@ package com.xhbb.qinzl.newsest.data;
 import android.net.Uri;
 import android.provider.BaseColumns;
 
+import com.xhbb.qinzl.newsest.BuildConfig;
+
 /**
  * Created by qinzl on 2017/5/27.
  */
 
 public interface Contract {
 
-    String CONTENT_AUTHORITY = "content://com.xhbb.qinzl.newsest/";
+    String CONTENT_AUTHORITY = "content://" + BuildConfig.APPLICATION_ID + "/";
 
     interface NewsEntry extends BaseColumns {
 

@@ -40,7 +40,7 @@ public class NewsDetailActivity extends AppCompatActivity {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.main, menu);
-        menu.findItem(R.id.menu_check_app_update).setEnabled(false);
+        menu.findItem(R.id.menu_check_app_upgrade).setEnabled(false);
         return super.onCreateOptionsMenu(menu);
     }
 

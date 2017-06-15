@@ -15,7 +15,7 @@
         app:showAsAction="never"/>
 
     <item
-        android:id="@+id/menu_check_app_update"
-        android:title="@string/check_app_update_menu"
+        android:id="@+id/menu_check_app_upgrade"
+        android:title="@string/check_app_upgrade_menu"
         app:showAsAction="never"/>
 </menu>

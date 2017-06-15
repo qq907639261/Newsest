@@ -21,10 +21,12 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Toast;
 
+import com.xhbb.qinzl.newsest.async.DownloadTheLatestApkService;
 import com.xhbb.qinzl.newsest.async.MainNotifications;
 import com.xhbb.qinzl.newsest.async.UpdateNewsJob;
 import com.xhbb.qinzl.newsest.common.GlobalSingleton;
 import com.xhbb.qinzl.newsest.common.MainEnums.RefreshState;
+import com.xhbb.qinzl.newsest.data.FileUtils;
 import com.xhbb.qinzl.newsest.databinding.ActivityMainBinding;
 import com.xhbb.qinzl.newsest.databinding.FragmentNormalRecyclerViewBinding;
 import com.xhbb.qinzl.newsest.server.NetworkUtils;
@@ -104,26 +106,24 @@ public class MainActivity extends AppCompatActivity implements
             case R.id.menu_settings:
                 SettingsActivity.start(this);
                 return true;
-            case R.id.menu_check_app_update:
+            case R.id.menu_check_app_upgrade:
                 new Thread(new Runnable() {
                     @Override
                     public void run() {
-                        final boolean appUpdated = NetworkUtils.isAppUpdated();
+                        final boolean appUpgraded = NetworkUtils.isAppUpgraded(MainActivity.this);
                         runOnUiThread(new Runnable() {
                             @Override
                             public void run() {
-                                if (appUpdated) {
+                                if (appUpgraded) {
                                     Snackbar snackbar = Snackbar.make(
                                             mFab,
-                                            getString(R.string.update_app_tips_snackbar),
+                                            getString(R.string.upgrade_app_tips_snackbar),
                                             Snackbar.LENGTH_LONG);
 
-                                    snackbar.setAction(
-                                            R.string.update_app_snackbar_action,
-                                            MainActivity.this).show();
+                                    snackbar.setAction(R.string.upgrade_app_snackbar_action, MainActivity.this).show();
                                 } else {
                                     Toast.makeText(MainActivity.this,
-                                            R.string.app_is_the_latest_version_toast,
+                                            R.string.app_already_is_the_latest_version_toast,
                                             Toast.LENGTH_SHORT).show();
                                 }
                             }
@@ -231,7 +231,11 @@ public class MainActivity extends AppCompatActivity implements
 
     @Override
     public void onClick(View view) {
-        // TODO: 2017/6/14 升级应用
+        if (FileUtils.isExternalMounted()) {
+            startService(DownloadTheLatestApkService.newIntent(this));
+        } else {
+            Toast.makeText(this, R.string.upgrade_failed_because_environment_error_toast, Toast.LENGTH_SHORT).show();
+        }
     }
 
     private class NewsMasterPagerAdapter extends FragmentStatePagerAdapter {

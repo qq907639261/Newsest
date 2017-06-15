@@ -141,10 +141,6 @@ public class NewsMasterFragment extends Fragment
 
             @Override
             protected Integer doInBackground(Void... params) {
-                if (!NetworkUtils.isNetworkConnectedOrConnecting(mContext)) {
-                    return NETWORK_ERROR;
-                }
-
                 try {
                     boolean scrollRefreshing = mRefreshState == RefreshState.SCROLL_REFRESHING;
                     int newsPage = scrollRefreshing ? mNewsPage : 1;
