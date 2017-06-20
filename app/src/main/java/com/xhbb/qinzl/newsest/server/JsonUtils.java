@@ -2,11 +2,10 @@ package com.xhbb.qinzl.newsest.server;
 
 import android.content.ContentValues;
 
+import com.google.gson.Gson;
 import com.xhbb.qinzl.newsest.data.Contract.CommentEntry;
 import com.xhbb.qinzl.newsest.data.Contract.NewsEntry;
-import com.xhbb.qinzl.newsest.server.JsonUtils.JsonNews.ShowApiResBodyObject.PageBeanObject.ContentListArray;
 
-import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -16,51 +15,38 @@ import org.json.JSONObject;
 
 public class JsonUtils {
 
-    public static ContentValues[] getNewsValuesArray(String jsonString, String newsType)
-            throws JSONException {
-        JSONObject jsonNews = new JSONObject(jsonString);
-        JSONObject showApiResBodyObject = jsonNews.getJSONObject(JsonNews.SHOW_API_RES_BODY);
-        JSONObject pageBeanObject = showApiResBodyObject.getJSONObject(JsonNews.ShowApiResBodyObject.PAGE_BEAN);
+    public static ContentValues[] getNewsValueses(String json, String newsType) {
+        JsonNews jsonNews = new Gson().fromJson(json, JsonNews.class);
 
-        int totalPage = pageBeanObject.getInt(JsonNews.ShowApiResBodyObject.PageBeanObject.ALL_PAGES);
+        JsonNews.ShowapiResBody.PageBean.Content[] newsPrimaries =
+                jsonNews.showapi_res_body.pagebean.contentlist;
 
-        JSONArray contentListArray = pageBeanObject.getJSONArray(JsonNews.ShowApiResBodyObject.PageBeanObject.CONTENT_LIST);
+        ContentValues[] newsValueses = new ContentValues[newsPrimaries.length];
+        for (int i = 0; i < newsPrimaries.length; i++) {
+            JsonNews.ShowapiResBody.PageBean.Content newsPrimary = newsPrimaries[i];
 
-        ContentValues[] newsValuesArray = new ContentValues[contentListArray.length()];
-        for (int i = 0; i < contentListArray.length(); i++) {
-            JSONObject contentListObject = contentListArray.getJSONObject(i);
-
-            String newsCode = contentListObject.getString(ContentListArray.ID);
-            String title = contentListObject.getString(ContentListArray.TITLE);
-            String publish_date = contentListObject.getString(ContentListArray.PUB_DATE);
-            String source_web = contentListObject.getString(ContentListArray.SOURCE);
-            String content = contentListObject.getString(ContentListArray.CONTENT);
-
-            JSONArray imageUrlsArray = contentListObject.getJSONArray(ContentListArray.IMAGE_URLS);
-
-            String[] imageUrlStringArray = new String[3];
-            for (int j = 0; j < imageUrlsArray.length() && j < 3; j++) {
-                JSONObject imageUrlsObject = imageUrlsArray.getJSONObject(j);
-                imageUrlStringArray[j] = imageUrlsObject.getString(ContentListArray.ImageUrlsArray.URL);
+            String[] imageUrls = new String[3];
+            for (int j = 0; j < newsPrimary.imageurls.length && j < 3; j++) {
+                imageUrls[j] = newsPrimary.imageurls[j].url;
             }
 
             ContentValues newsValues = new ContentValues();
 
-            newsValues.put(NewsEntry._NEWS_CODE, newsCode);
-            newsValues.put(NewsEntry._TITLE, title);
-            newsValues.put(NewsEntry._PUBLISH_DATE, publish_date);
-            newsValues.put(NewsEntry._SOURCE_WEB, source_web);
-            newsValues.put(NewsEntry._NEWS_CONTENT, content);
-            newsValues.put(NewsEntry._IMAGE_URL_1, imageUrlStringArray[0]);
-            newsValues.put(NewsEntry._IMAGE_URL_2, imageUrlStringArray[1]);
-            newsValues.put(NewsEntry._IMAGE_URL_3, imageUrlStringArray[2]);
             newsValues.put(NewsEntry._NEWS_TYPE, newsType);
-            newsValues.put(NewsEntry._TOTAL_PAGE_BY_TYPE, totalPage);
+            newsValues.put(NewsEntry._TOTAL_PAGE_BY_TYPE, jsonNews.showapi_res_body.pagebean.allPages);
 
-            newsValuesArray[i] = newsValues;
+            newsValues.put(NewsEntry._NEWS_CODE, newsPrimary.id);
+            newsValues.put(NewsEntry._TITLE, newsPrimary.title);
+            newsValues.put(NewsEntry._PUBLISH_DATE, newsPrimary.pubDate);
+            newsValues.put(NewsEntry._SOURCE_WEB, newsPrimary.source);
+            newsValues.put(NewsEntry._NEWS_CONTENT, newsPrimary.content);
+            newsValues.put(NewsEntry._IMAGE_URL_1, imageUrls[0]);
+            newsValues.put(NewsEntry._IMAGE_URL_2, imageUrls[1]);
+            newsValues.put(NewsEntry._IMAGE_URL_3, imageUrls[2]);
+
+            newsValueses[i] = newsValues;
         }
-
-        return newsValuesArray;
+        return newsValueses;
     }
 
     public static ContentValues getCommentValues(String commentJson) {
@@ -84,33 +70,33 @@ public class JsonUtils {
         return commentValues;
     }
 
-    interface JsonNews {
+    private class JsonNews {
 
-        String SHOW_API_RES_BODY = "showapi_res_body";
+        ShowapiResBody showapi_res_body;
 
-        interface ShowApiResBodyObject {
+        class ShowapiResBody {
 
-            String PAGE_BEAN = "pagebean";
+            PageBean pagebean;
 
-            interface PageBeanObject {
+            class PageBean {
 
-                String ALL_PAGES = "allPages";
+                int allPages;
 
-                String CONTENT_LIST = "contentlist";
+                Content[] contentlist;
 
-                interface ContentListArray {
+                class Content {
 
-                    String ID = "id";
-                    String TITLE = "title";
-                    String PUB_DATE = "pubDate";
-                    String SOURCE = "source";
-                    String CONTENT = "content";
+                    String id;
+                    String title;
+                    String pubDate;
+                    String source;
+                    String content;
 
-                    String IMAGE_URLS = "imageurls";
+                    Image[] imageurls;
 
-                    interface ImageUrlsArray {
+                    class Image {
 
-                        String URL = "url";
+                        String url;
                     }
                 }
             }

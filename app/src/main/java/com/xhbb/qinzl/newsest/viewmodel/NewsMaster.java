@@ -8,13 +8,13 @@ import android.view.View;
 
 public class NewsMaster {
 
-    private OnNewsMasterListener mOnNewsMasterListener;
-    private int mItemPosition;
-
     private String mTitle;
     private String mImageUrl1;
     private String mImageUrl2;
     private String mImageUrl3;
+
+    private int mItemPosition;
+    private OnNewsMasterListener mOnNewsMasterListener;
 
     public NewsMaster(String title, String imageUrl1, String imageUrl2, String imageUrl3,
                       int itemPosition, OnNewsMasterListener onNewsMasterListener) {
@@ -43,11 +43,11 @@ public class NewsMaster {
     }
 
     public void onClickItem(View sharedElement) {
-        mOnNewsMasterListener.onClickNewsItem(mItemPosition, sharedElement);
+        mOnNewsMasterListener.onClickItem(mItemPosition, sharedElement);
     }
 
     public interface OnNewsMasterListener {
 
-        void onClickNewsItem(int itemPosition, View sharedElement);
+        void onClickItem(int itemPosition, View sharedElement);
     }
 }

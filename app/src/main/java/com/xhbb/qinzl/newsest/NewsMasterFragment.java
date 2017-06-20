@@ -6,12 +6,9 @@ import android.content.Context;
 import android.database.Cursor;
 import android.databinding.DataBindingUtil;
 import android.databinding.ViewDataBinding;
-import android.os.AsyncTask;
 import android.os.Bundle;
-import android.support.annotation.LayoutRes;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.annotation.StringRes;
 import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.LoaderManager;
@@ -24,22 +21,23 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
 import com.xhbb.qinzl.newsest.async.MainTasks;
 import com.xhbb.qinzl.newsest.common.MainEnums.RefreshState;
 import com.xhbb.qinzl.newsest.common.RecyclerViewCursorAdapter;
 import com.xhbb.qinzl.newsest.data.Contract.NewsEntry;
 import com.xhbb.qinzl.newsest.databinding.FragmentNormalRecyclerViewBinding;
+import com.xhbb.qinzl.newsest.server.JsonUtils;
 import com.xhbb.qinzl.newsest.server.NetworkUtils;
 import com.xhbb.qinzl.newsest.viewmodel.NewsMaster;
 import com.xhbb.qinzl.newsest.viewmodel.NormalRecyclerView;
 
-import org.json.JSONException;
-
-import java.io.IOException;
-
 public class NewsMasterFragment extends Fragment
         implements LoaderManager.LoaderCallbacks<Cursor>,
-        NormalRecyclerView.OnNormalRecyclerViewListener {
+        NormalRecyclerView.OnNormalRecyclerViewListener,
+        Response.Listener<String>,
+        Response.ErrorListener {
 
     private static final String ARG_NEWS_TYPE = "ARG_NEWS_TYPE";
     private static final String SAVE_ITEM_POSITION = "SAVE_ITEM_POSITION";
@@ -133,63 +131,34 @@ public class NewsMasterFragment extends Fragment
     public void refreshNewsData(int refreshState) {
         mRefreshState = refreshState;
 
-        new AsyncTask<Void, Void, Integer>() {
+        boolean scrollRefreshing = mRefreshState == RefreshState.SCROLL_REFRESHING;
+        int newsPage = scrollRefreshing ? mNewsPage : 1;
+        NetworkUtils.addNewsRequestToRequestQueue(mContext, mNewsType, newsPage, this, this);
+    }
 
-            private static final int NETWORK_ERROR = -1;
-            private static final int SERVER_ERROR = 0;
-            private static final int REFRESH_SUCCESS = 1;
-
-            @Override
-            protected Integer doInBackground(Void... params) {
-                try {
-                    boolean scrollRefreshing = mRefreshState == RefreshState.SCROLL_REFRESHING;
-                    int newsPage = scrollRefreshing ? mNewsPage : 1;
-                    MainTasks.updateNewsData(mContext, mNewsType, newsPage);
-
-                    return REFRESH_SUCCESS;
-                } catch (IOException e) {
-                    e.printStackTrace();
-                    return NETWORK_ERROR;
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                    return SERVER_ERROR;
-                }
+    @Override
+    public void onErrorResponse(VolleyError error) {
+        if (mHasNewsData) {
+            mNewsPageEqualsTotalPage = true;
+            mNewsAdapter.notifyItemChanged(mNewsAdapter.getItemCount() - 1);
+        } else {
+            if (isAdded()) {
+                mNormalRecyclerView.setErrorText(getString(R.string.network_error_text));
             }
+        }
+        finishRefresh();
+    }
 
-            @Override
-            protected void onPostExecute(Integer integer) {
-                super.onPostExecute(integer);
-                switch (integer) {
-                    case NETWORK_ERROR:
-                        handleError(R.string.network_error_text);
-                        break;
-                    case SERVER_ERROR:
-                        handleError(R.string.server_error_text);
-                        break;
-                    default:
-                        if (mRefreshState == RefreshState.SCROLL_REFRESHING) {
-                            mNewsPage++;
-                        } else {
-                            mNewsPage = 2;
-                        }
-                }
+    @Override
+    public void onResponse(String response) {
+        if (mRefreshState != RefreshState.SCROLL_REFRESHING) {
+            mNewsPage = 1;
+        }
 
-                mNormalRecyclerView.setAutoRefreshing(false);
-                mNormalRecyclerView.setSwipeRefreshing(false);
-                mRefreshState = RefreshState.NO_REFRESHING;
-            }
+        ContentValues[] newsValueses = JsonUtils.getNewsValueses(response, mNewsType);
+        MainTasks.updateNewsData(mContext, newsValueses, mNewsPage);
 
-            private void handleError(@StringRes int errorTextRes) {
-                if (mHasNewsData) {
-                    mNewsPageEqualsTotalPage = true;
-                    mNewsAdapter.notifyItemChanged(mNewsAdapter.getItemCount() - 1);
-                } else {
-                    if (isAdded()) {
-                        mNormalRecyclerView.setErrorText(mContext.getString(errorTextRes));
-                    }
-                }
-            }
-        }.execute();
+        mNewsPage++;
     }
 
     private void scrollRefresh() {
@@ -199,7 +168,6 @@ public class NewsMasterFragment extends Fragment
 
         int lastVisibleItemPosition = mLinearLayoutManager.findLastVisibleItemPosition();
         int itemCount = mNewsAdapter.getItemCount();
-
         if (lastVisibleItemPosition >= itemCount - NetworkUtils.NEWS_COUNT_OF_EACH_PAGE) {
             refreshNewsData(RefreshState.SCROLL_REFRESHING);
         }
@@ -208,6 +176,7 @@ public class NewsMasterFragment extends Fragment
     @Override
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
+
         outState.putInt(SAVE_ITEM_POSITION, mItemPosition);
         outState.putInt(SAVE_NEWS_PAGE, mNewsPage);
         outState.putBoolean(SAVE_NEWS_PAGE_EQUALS_TOTAL_PAGE, mNewsPageEqualsTotalPage);
@@ -221,41 +190,51 @@ public class NewsMasterFragment extends Fragment
     }
 
     @Override
-    public void onLoadFinished(Loader<Cursor> loader, final Cursor cursor) {
+    public void onLoadFinished(Loader<Cursor> loader, Cursor cursor) {
         if (cursor != null && cursor.getCount() > 0) {
-            mHasNewsData = true;
-            mNormalRecyclerView.setAutoRefreshing(false);
-            mNormalRecyclerView.setErrorText(null);
-
             cursor.moveToFirst();
+
             int totalPage = cursor.getInt(cursor.getColumnIndex(NewsEntry._TOTAL_PAGE_BY_TYPE));
             mNewsPageEqualsTotalPage = mNewsPage == totalPage;
 
             if (mViewRecreating) {
                 mLinearLayoutManager.scrollToPosition(mItemPosition);
+            } else if (mFirstCreating && mTwoPane) {
+                replaceDetailFragment(cursor);
             }
 
-            if (mFirstCreating && mTwoPane) {
-                View rootView = getView();
-                if (isAdded() && rootView != null) {
-                    rootView.post(new Runnable() {
-                        @Override
-                        public void run() {
-                            ContentValues newsValues = mNewsAdapter.getNewsValues(cursor);
-                            getFragmentManager().beginTransaction()
-                                    .replace(R.id.detail_fragment_container, NewsDetailFragment.newInstance(newsValues))
-                                    .commit();
-                        }
-                    });
-                }
-            }
+            mHasNewsData = true;
+            mNormalRecyclerView.setErrorText(null);
+            finishRefresh();
         } else if (mViewRecreating) {
             refreshNewsData(RefreshState.AUTO_REFRESHING);
         }
-
-        mNewsAdapter.swapCursor(cursor);
         mViewRecreating = false;
+        mNewsAdapter.swapCursor(cursor);
+    }
+
+    private void replaceDetailFragment(final Cursor cursor) {
+        View rootView = getView();
+        if (isAdded() && rootView != null) {
+            rootView.post(new Runnable() {
+                @Override
+                public void run() {
+                    ContentValues newsValues = mNewsAdapter.getNewsValues(cursor);
+                    NewsDetailFragment fragment = NewsDetailFragment.newInstance(newsValues);
+
+                    getFragmentManager().beginTransaction()
+                            .replace(R.id.detail_fragment_container, fragment)
+                            .commit();
+                }
+            });
+        }
+    }
+
+    private void finishRefresh() {
         mFirstCreating = false;
+        mRefreshState = RefreshState.NO_REFRESHING;
+        mNormalRecyclerView.setSwipeRefreshing(false);
+        mNormalRecyclerView.setAutoRefreshing(false);
     }
 
     @Override
@@ -284,8 +263,8 @@ public class NewsMasterFragment extends Fragment
         private static final int VIEW_TYPE_LAST_ITEM = 0;
         private static final int VIEW_TYPE_OTHER_ITEM = 1;
 
-        NewsAdapter(Context context, @LayoutRes int defaultResource) {
-            super(context, defaultResource);
+        NewsAdapter(Context context, int defaultLayoutRes) {
+            super(context, defaultLayoutRes);
         }
 
         @Override
@@ -308,8 +287,8 @@ public class NewsMasterFragment extends Fragment
         }
 
         @NonNull
-        private BindingHolder getBindingHolder(ViewGroup parent, @LayoutRes int itemResource) {
-            View view = LayoutInflater.from(mContext).inflate(itemResource, parent, false);
+        private BindingHolder getBindingHolder(ViewGroup parent, int layoutRes) {
+            View view = LayoutInflater.from(mContext).inflate(layoutRes, parent, false);
             return new BindingHolder(view);
         }
 
@@ -338,7 +317,7 @@ public class NewsMasterFragment extends Fragment
         }
 
         @Override
-        public void onClickNewsItem(int itemPosition, View sharedElement) {
+        public void onClickItem(int itemPosition, View sharedElement) {
             mCursor.moveToPosition(itemPosition);
             mItemPosition = itemPosition;
 

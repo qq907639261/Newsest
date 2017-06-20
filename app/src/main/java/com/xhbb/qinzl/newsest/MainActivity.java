@@ -24,7 +24,7 @@ import android.widget.Toast;
 import com.xhbb.qinzl.newsest.async.DownloadTheLatestApkService;
 import com.xhbb.qinzl.newsest.async.MainNotifications;
 import com.xhbb.qinzl.newsest.async.UpdateNewsJob;
-import com.xhbb.qinzl.newsest.common.GlobalSingleton;
+import com.xhbb.qinzl.newsest.common.MainSingleton;
 import com.xhbb.qinzl.newsest.common.MainEnums.RefreshState;
 import com.xhbb.qinzl.newsest.data.FileUtils;
 import com.xhbb.qinzl.newsest.databinding.ActivityMainBinding;
@@ -56,7 +56,7 @@ public class MainActivity extends AppCompatActivity implements
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         ActivityMainBinding binding = DataBindingUtil.setContentView(this, R.layout.activity_main);
-        GlobalSingleton.getInstance(getApplicationContext());
+        MainSingleton.getInstance(this);
 
         FragmentManager fragmentManager = getSupportFragmentManager();
         if (binding.fragmentContainer == null) {

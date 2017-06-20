@@ -11,10 +11,7 @@ import android.widget.Toast;
 import com.xhbb.qinzl.newsest.BuildConfig;
 import com.xhbb.qinzl.newsest.R;
 import com.xhbb.qinzl.newsest.data.Contract.NewsEntry;
-import com.xhbb.qinzl.newsest.server.JsonUtils;
 import com.xhbb.qinzl.newsest.server.NetworkUtils;
-
-import org.json.JSONException;
 
 import java.io.File;
 import java.io.IOException;
@@ -25,18 +22,22 @@ import java.io.IOException;
 
 public class MainTasks {
 
-    public static void updateNewsData(Context context, String newsType, int newsPage)
-            throws IOException, JSONException {
-        String newsResponse = NetworkUtils.getNewsResponse(context, newsType, newsPage);
-        ContentValues[] newsValuesArray = JsonUtils.getNewsValuesArray(newsResponse, newsType);
+    public static void updateNewsData(final Context context, final ContentValues[] newsValueses,
+                                      final int newsPage) {
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                ContentResolver contentResolver = context.getContentResolver();
+                if (newsPage == 1) {
+                    String newsType = newsValueses[0].getAsString(NewsEntry._NEWS_TYPE);
 
-        ContentResolver contentResolver = context.getContentResolver();
-        if (newsPage == 1) {
-            String where = NewsEntry._NEWS_TYPE + "=?";
-            String[] selectionArgs = {newsType};
-            contentResolver.delete(NewsEntry.URI, where, selectionArgs);
-        }
-        contentResolver.bulkInsert(NewsEntry.URI, newsValuesArray);
+                    String where = NewsEntry._NEWS_TYPE + "=?";
+                    String[] selectionArgs = {newsType};
+                    contentResolver.delete(NewsEntry.URI, where, selectionArgs);
+                }
+                contentResolver.bulkInsert(NewsEntry.URI, newsValueses);
+            }
+        }).start();
     }
 
     static void downloadAndSetupApk(Context context) throws IOException {

@@ -4,7 +4,6 @@ import android.content.Context;
 import android.database.Cursor;
 import android.databinding.DataBindingUtil;
 import android.databinding.ViewDataBinding;
-import android.support.annotation.LayoutRes;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -14,18 +13,17 @@ import android.view.ViewGroup;
  * Created by qinzl on 2017/5/30.
  */
 
-public abstract class RecyclerViewCursorAdapter
-        extends RecyclerView.Adapter<RecyclerViewCursorAdapter.BindingHolder> {
+public abstract class RecyclerViewCursorAdapter extends
+        RecyclerView.Adapter<RecyclerViewCursorAdapter.BindingHolder> {
 
     protected Context mContext;
     protected Cursor mCursor;
 
-    @LayoutRes
-    private int mDefaultResource;
+    private int mDefaultLayoutRes;
 
-    public RecyclerViewCursorAdapter(Context context, @LayoutRes int defaultResource) {
+    public RecyclerViewCursorAdapter(Context context, int defaultLayoutRes) {
         mContext = context;
-        mDefaultResource = defaultResource;
+        mDefaultLayoutRes = defaultLayoutRes;
     }
 
     public void swapCursor(Cursor cursor) {
@@ -35,7 +33,7 @@ public abstract class RecyclerViewCursorAdapter
 
     @Override
     public BindingHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(mContext).inflate(mDefaultResource, parent, false);
+        View view = LayoutInflater.from(mContext).inflate(mDefaultLayoutRes, parent, false);
         return new BindingHolder(view);
     }
 

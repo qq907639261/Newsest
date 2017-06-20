@@ -4,19 +4,23 @@ import android.content.Context;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.Uri;
-import android.support.annotation.NonNull;
 
+import com.android.volley.AuthFailureError;
+import com.android.volley.Request;
+import com.android.volley.Response;
+import com.android.volley.toolbox.StringRequest;
 import com.xhbb.qinzl.newsest.R;
+import com.xhbb.qinzl.newsest.common.MainSingleton;
 import com.xhbb.qinzl.newsest.data.FileUtils;
 
-import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Created by qinzl on 2017/5/27.
@@ -26,10 +30,10 @@ public class NetworkUtils {
 
     public static final int NEWS_COUNT_OF_EACH_PAGE = 15;
 
-    public static String getNewsResponse(Context context, String newsType, int page)
-            throws IOException {
-        String appCode = context.getString(R.string.news_app_code);
-        String spec = Uri.parse("http://ali-news.showapi.com")
+    public static void addNewsRequestToRequestQueue(final Context context, String newsType, int page,
+                                                    Response.Listener<String> listener,
+                                                    Response.ErrorListener errorListener) {
+        String url = Uri.parse("http://ali-news.showapi.com")
                 .buildUpon()
                 .appendPath("newsList")
                 .appendQueryParameter("maxResult", String.valueOf(NEWS_COUNT_OF_EACH_PAGE))
@@ -38,17 +42,27 @@ public class NetworkUtils {
                 .appendQueryParameter("needContent", "1")
                 .appendQueryParameter("needHtml", "1")
                 .appendQueryParameter("needAllList", "0")
-                .build().toString();
+                .build()
+                .toString();
 
-        URL url = new URL(spec);
-        HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-        connection.setRequestProperty("Authorization", "APPCODE " + appCode);
+        StringRequest request = new StringRequest(
+                Request.Method.GET, url, listener, errorListener) {
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError {
+                String appCode = context.getString(R.string.news_app_code);
 
-        return getResponseFromHttpUrl(context, connection);
+                Map<String, String> headers = new HashMap<>();
+                headers.put("Authorization", "APPCODE " + appCode);
+
+                return headers;
+            }
+        };
+
+        MainSingleton.getInstance(context).addToRequestQueue(request);
     }
 
     public static File getTheLatestApkFile(Context context) throws IOException {
-        if (!isNetworkConnectedOrConnecting(context)) {
+        if (!isNetworkAvailable(context)) {
             throw new IOException();
         }
 
@@ -92,51 +106,13 @@ public class NetworkUtils {
     }
 
     public static boolean isAppUpgraded(Context context) {
-        try {
-            URL url = new URL("http://10.0.2.2");
-            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-            connection.setReadTimeout(1000);
-            connection.setConnectTimeout(1000);
-
-            getResponseFromHttpUrl(context, connection);
-            return true;
-        } catch (IOException e) {
-            e.printStackTrace();
-            return false;
-        }
+        return isNetworkAvailable(context);
     }
 
-    @NonNull
-    private static String getResponseFromHttpUrl(Context context, HttpURLConnection connection)
-            throws IOException {
-        if (!isNetworkConnectedOrConnecting(context)) {
-            throw new IOException();
-        }
-
-        BufferedReader reader = null;
-        try {
-            connection.setRequestMethod("GET");
-
-            StringBuilder response = new StringBuilder();
-            reader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
-            String readLine;
-            while ((readLine = reader.readLine()) != null) {
-                response.append(readLine);
-            }
-
-            return response.toString();
-        } finally {
-            connection.disconnect();
-            if (reader != null) {
-                reader.close();
-            }
-        }
-    }
-
-    private static boolean isNetworkConnectedOrConnecting(Context context) {
+    public static boolean isNetworkAvailable(Context context) {
         ConnectivityManager cm = (ConnectivityManager)
                 context.getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo networkInfo = cm.getActiveNetworkInfo();
-        return networkInfo != null && networkInfo.isConnectedOrConnecting();
+        return networkInfo != null && networkInfo.isAvailable();
     }
 }

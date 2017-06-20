@@ -1,19 +1,20 @@
 package com.xhbb.qinzl.newsest.async;
 
 import android.app.Activity;
+import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
 import android.support.annotation.NonNull;
 
+import com.android.volley.Response;
 import com.evernote.android.job.Job;
 import com.evernote.android.job.JobManager;
 import com.evernote.android.job.JobRequest;
 import com.evernote.android.job.util.support.PersistableBundleCompat;
 import com.xhbb.qinzl.newsest.R;
+import com.xhbb.qinzl.newsest.server.JsonUtils;
+import com.xhbb.qinzl.newsest.server.NetworkUtils;
 
-import org.json.JSONException;
-
-import java.io.IOException;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -54,22 +55,32 @@ public class UpdateNewsJob extends Job {
         }
 
         Context context = getContext();
-        String[] newsTypeArray = context.getResources().getStringArray(R.array.news_type);
 
-        try {
-            for (String newsType : newsTypeArray) {
-                MainTasks.updateNewsData(context, newsType, 1);
-            }
-
-            Intent intent = new Intent(ACTION_NEWS_UPDATED);
-            String receiverPermission = context.getString(R.string.permission_private);
-            context.sendOrderedBroadcast(intent, receiverPermission, null, null, Activity.RESULT_OK, null, null);
-
-            return Result.SUCCESS;
-        } catch (IOException | JSONException e) {
-            e.printStackTrace();
+        if (!NetworkUtils.isNetworkAvailable(context)) {
             return Result.RESCHEDULE;
         }
+
+        String[] newsTypes = context.getResources().getStringArray(R.array.news_type);
+        for (String newsType : newsTypes) {
+            NetworkUtils.addNewsRequestToRequestQueue(context, newsType, 1, getListener(newsType), null);
+        }
+
+        Intent intent = new Intent(ACTION_NEWS_UPDATED);
+        String receiverPermission = context.getString(R.string.permission_private);
+        context.sendOrderedBroadcast(intent, receiverPermission, null, null, Activity.RESULT_OK, null, null);
+
+        return Result.SUCCESS;
+    }
+
+    @NonNull
+    private Response.Listener<String> getListener(final String newsType) {
+        return new Response.Listener<String>() {
+            @Override
+            public void onResponse(String response) {
+                ContentValues[] newsValueses = JsonUtils.getNewsValueses(response, newsType);
+                MainTasks.updateNewsData(getContext(), newsValueses, 1);
+            }
+        };
     }
 
     private int schedulePeriodicJob() {
