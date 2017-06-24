@@ -1,14 +1,13 @@
 <resources>
     <string name="app_name">最新闻</string>
 
-    <string name="format_date" formatted="true">%1$d年%2$2d月%3$2d日</string>
-
     <string name="transition_news_image" translatable="false">news_image</string>
-    <string name="apk_file_name" translatable="false">app-debug.apk</string>
-
     <string name="key_comment_json" translatable="false">comment_json</string>
 
     <string name="permission_private" translatable="false">com.xhbb.qinzl.newsest.PRIVATE</string>
+    <string name="apk_file_name" translatable="false">app-debug.apk</string>
+
+    <string name="format_date" formatted="true">%1$d年%2$2d月%3$2d日</string>
 
     <string name="international">国际</string>
     <string name="society">社会</string>
@@ -36,4 +35,5 @@
     <string name="upgrade_failed_because_environment_error_toast">升级失败，请检查存储设备。</string>
     <string name="upgrade_failed_because_size_not_enough_toast">存储空间不足，升级失败。</string>
     <string name="upgrade_failed_because_network_error_toast">升级失败，请检查网络。</string>
+    <string name="empty_data_text">暂无数据</string>
 </resources>

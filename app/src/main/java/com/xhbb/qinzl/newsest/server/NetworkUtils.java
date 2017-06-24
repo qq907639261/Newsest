@@ -105,7 +105,7 @@ public class NetworkUtils {
         }
     }
 
-    public static boolean isAppUpgraded(Context context) {
+    public static boolean hasLatestApp(Context context) {
         return isNetworkAvailable(context);
     }
 

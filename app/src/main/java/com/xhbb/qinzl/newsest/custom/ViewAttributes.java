@@ -26,7 +26,6 @@ public class ViewAttributes {
     public static void setActionBar(Toolbar toolbar, boolean bindActionBar, boolean displayHomeAsUpEnabled) {
         if (bindActionBar) {
             AppCompatActivity activity = (AppCompatActivity) toolbar.getContext();
-
             activity.setSupportActionBar(toolbar);
 
             ActionBar actionBar = activity.getSupportActionBar();

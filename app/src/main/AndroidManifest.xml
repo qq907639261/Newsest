@@ -21,7 +21,6 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme.NoActionBar"
         tools:ignore="GoogleAppIndexingWarning">
-
         <provider
             android:name="android.support.v4.content.FileProvider"
             android:authorities="com.xhbb.qinzl.newsest.FileProvider"
@@ -63,7 +62,8 @@
         <receiver
             android:name=".async.NotificationReceiver"
             android:enabled="true"
-            android:exported="false">
+            android:exported="true"
+            android:permission="@string/permission_private">
             <intent-filter android:priority="-999">
                 <action android:name="com.xhbb.qinzl.newsest.ACTION_NEWS_UPDATED"/>
             </intent-filter>
@@ -73,5 +73,23 @@
             android:name=".async.DownloadTheLatestApkService"
             android:exported="false">
         </service>
+
+        <receiver
+            android:name=".NewsListWidget">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE"/>
+                <action android:name="com.xhbb.qinzl.newsest.ACTION_NEWS_UPDATED"/>
+            </intent-filter>
+
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/news_list_widget_info"/>
+        </receiver>
+
+        <service
+            android:name=".async.NewsListWidgetService"
+            android:enabled="true"
+            android:exported="false"
+            android:permission="android.permission.BIND_REMOTEVIEWS"/>
     </application>
 </manifest>

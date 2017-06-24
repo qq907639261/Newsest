@@ -16,10 +16,13 @@ public class NewsDetailActivity extends AppCompatActivity {
 
     private static final String EXTRA_NEWS_DETAIL_VALUES = "com.xhbb.qinzl.newsest.EXTRA_NEWS_DETAIL_VALUES";
 
-    public static void start(Context context, ContentValues newsDetailValues, @Nullable Bundle options) {
-        Intent starter = new Intent(context, NewsDetailActivity.class);
-        starter.putExtra(EXTRA_NEWS_DETAIL_VALUES, newsDetailValues);
+    public static Intent newIntent(Context context, ContentValues newsDetailValues) {
+        return new Intent(context, NewsDetailActivity.class)
+                .putExtra(EXTRA_NEWS_DETAIL_VALUES, newsDetailValues);
+    }
 
+    public static void start(Context context, ContentValues newsDetailValues, @Nullable Bundle options) {
+        Intent starter = newIntent(context, newsDetailValues);
         ActivityCompat.startActivity(context, starter, options);
     }
 

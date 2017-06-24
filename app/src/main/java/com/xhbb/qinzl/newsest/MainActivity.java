@@ -8,7 +8,6 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.databinding.DataBindingUtil;
 import android.os.Bundle;
-import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -24,8 +23,8 @@ import android.widget.Toast;
 import com.xhbb.qinzl.newsest.async.DownloadTheLatestApkService;
 import com.xhbb.qinzl.newsest.async.MainNotifications;
 import com.xhbb.qinzl.newsest.async.UpdateNewsJob;
-import com.xhbb.qinzl.newsest.common.MainSingleton;
 import com.xhbb.qinzl.newsest.common.MainEnums.RefreshState;
+import com.xhbb.qinzl.newsest.common.MainSingleton;
 import com.xhbb.qinzl.newsest.data.FileUtils;
 import com.xhbb.qinzl.newsest.databinding.ActivityMainBinding;
 import com.xhbb.qinzl.newsest.databinding.FragmentNormalRecyclerViewBinding;
@@ -45,8 +44,8 @@ public class MainActivity extends AppCompatActivity implements
     private MainModel mMainModel;
     private Activity mStartedActivity;
     private LocalNotificationReceiver mLocalNotificationReceiver;
-    private boolean mTwoPane;
-    private FloatingActionButton mFab;
+    private boolean mHasTwoPane;
+    private ActivityMainBinding mBinding;
 
     public static Intent newIntent(Context context) {
         return new Intent(context, MainActivity.class);
@@ -55,14 +54,14 @@ public class MainActivity extends AppCompatActivity implements
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        ActivityMainBinding binding = DataBindingUtil.setContentView(this, R.layout.activity_main);
+        mBinding = DataBindingUtil.setContentView(this, R.layout.activity_main);
         MainSingleton.getInstance(this);
 
         FragmentManager fragmentManager = getSupportFragmentManager();
-        if (binding.fragmentContainer == null) {
+        if (mBinding.fragmentContainer == null) {
             mNewsMasterPagerAdapter = new NewsMasterPagerAdapter(fragmentManager);
         } else {
-            mTwoPane = true;
+            mHasTwoPane = true;
 
             if (fragmentManager.findFragmentById(R.id.fragment_container) == null) {
                 int i = new Random().nextInt(8);
@@ -74,13 +73,12 @@ public class MainActivity extends AppCompatActivity implements
             }
         }
 
-        mFab = binding.fab;
         mMainModel = new MainModel(mNewsMasterPagerAdapter, this);
         mLocalNotificationReceiver = new LocalNotificationReceiver();
         mStartedActivity = this;
 
         getApplication().registerActivityLifecycleCallbacks(this);
-        binding.setMainModel(mMainModel);
+        mBinding.setMainModel(mMainModel);
     }
 
     @Override
@@ -92,7 +90,7 @@ public class MainActivity extends AppCompatActivity implements
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.main, menu);
-        menu.findItem(R.id.menu_share).setVisible(mTwoPane);
+        menu.findItem(R.id.menu_share).setVisible(mHasTwoPane);
 
         return super.onCreateOptionsMenu(menu);
     }
@@ -107,32 +105,21 @@ public class MainActivity extends AppCompatActivity implements
                 SettingsActivity.start(this);
                 return true;
             case R.id.menu_check_app_upgrade:
-                new Thread(new Runnable() {
-                    @Override
-                    public void run() {
-                        final boolean appUpgraded = NetworkUtils.isAppUpgraded(MainActivity.this);
-                        runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                if (appUpgraded) {
-                                    Snackbar snackbar = Snackbar.make(
-                                            mFab,
-                                            getString(R.string.upgrade_app_tips_snackbar),
-                                            Snackbar.LENGTH_LONG);
-
-                                    snackbar.setAction(R.string.upgrade_app_snackbar_action, MainActivity.this).show();
-                                } else {
-                                    Toast.makeText(MainActivity.this,
-                                            R.string.app_already_is_the_latest_version_toast,
-                                            Toast.LENGTH_SHORT).show();
-                                }
-                            }
-                        });
-                    }
-                }).start();
+                checkAppUpgrade();
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
+        }
+    }
+
+    private void checkAppUpgrade() {
+        boolean hasLatestApp = NetworkUtils.hasLatestApp(this);
+        if (hasLatestApp) {
+            Snackbar.make(mBinding.fab, getString(R.string.upgrade_app_tips_snackbar), Snackbar.LENGTH_LONG)
+                    .setAction(R.string.upgrade_app_snackbar_action, this)
+                    .show();
+        } else {
+            Toast.makeText(this, R.string.app_already_is_the_latest_version_toast, Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -194,9 +181,7 @@ public class MainActivity extends AppCompatActivity implements
 
         IntentFilter filter = new IntentFilter(UpdateNewsJob.ACTION_NEWS_UPDATED);
         filter.setPriority(IntentFilter.SYSTEM_HIGH_PRIORITY);
-        String permission = getString(R.string.permission_private);
-
-        registerReceiver(mLocalNotificationReceiver, filter, permission, null);
+        registerReceiver(mLocalNotificationReceiver, filter, getString(R.string.permission_private), null);
     }
 
     @Override

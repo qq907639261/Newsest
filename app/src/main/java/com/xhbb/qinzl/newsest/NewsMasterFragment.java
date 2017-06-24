@@ -26,6 +26,7 @@ import com.android.volley.VolleyError;
 import com.xhbb.qinzl.newsest.async.MainTasks;
 import com.xhbb.qinzl.newsest.common.MainEnums.RefreshState;
 import com.xhbb.qinzl.newsest.common.RecyclerViewCursorAdapter;
+import com.xhbb.qinzl.newsest.common.ValuesUtils;
 import com.xhbb.qinzl.newsest.data.Contract.NewsEntry;
 import com.xhbb.qinzl.newsest.databinding.FragmentNormalRecyclerViewBinding;
 import com.xhbb.qinzl.newsest.server.JsonUtils;
@@ -219,7 +220,7 @@ public class NewsMasterFragment extends Fragment
             rootView.post(new Runnable() {
                 @Override
                 public void run() {
-                    ContentValues newsValues = mNewsAdapter.getNewsValues(cursor);
+                    ContentValues newsValues = ValuesUtils.getNewsValues(cursor);
                     NewsDetailFragment fragment = NewsDetailFragment.newInstance(newsValues);
 
                     getFragmentManager().beginTransaction()
@@ -321,7 +322,7 @@ public class NewsMasterFragment extends Fragment
             mCursor.moveToPosition(itemPosition);
             mItemPosition = itemPosition;
 
-            ContentValues newsValues = getNewsValues(mCursor);
+            ContentValues newsValues = ValuesUtils.getNewsValues(mCursor);
             if (mTwoPane) {
                 getFragmentManager().beginTransaction()
                         .replace(R.id.detail_fragment_container, NewsDetailFragment.newInstance(newsValues))
@@ -335,30 +336,6 @@ public class NewsMasterFragment extends Fragment
 
                 NewsDetailActivity.start(mContext, newsValues, options);
             }
-        }
-
-        private ContentValues getNewsValues(Cursor cursor) {
-            String newsCode = cursor.getString(cursor.getColumnIndex(NewsEntry._NEWS_CODE));
-            String publishDate = cursor.getString(cursor.getColumnIndex(NewsEntry._PUBLISH_DATE));
-            String sourceWeb = cursor.getString(cursor.getColumnIndex(NewsEntry._SOURCE_WEB));
-            String newsContent = cursor.getString(cursor.getColumnIndex(NewsEntry._NEWS_CONTENT));
-            String title = cursor.getString(cursor.getColumnIndex(NewsEntry._TITLE));
-            String imageUrl1 = cursor.getString(cursor.getColumnIndex(NewsEntry._IMAGE_URL_1));
-            String imageUrl2 = cursor.getString(cursor.getColumnIndex(NewsEntry._IMAGE_URL_2));
-            String imageUrl3 = cursor.getString(cursor.getColumnIndex(NewsEntry._IMAGE_URL_3));
-
-            ContentValues newsValues = new ContentValues();
-
-            newsValues.put(NewsEntry._NEWS_CODE, newsCode);
-            newsValues.put(NewsEntry._TITLE, title);
-            newsValues.put(NewsEntry._PUBLISH_DATE, publishDate);
-            newsValues.put(NewsEntry._SOURCE_WEB, sourceWeb);
-            newsValues.put(NewsEntry._NEWS_CONTENT, newsContent);
-            newsValues.put(NewsEntry._IMAGE_URL_1, imageUrl1);
-            newsValues.put(NewsEntry._IMAGE_URL_2, imageUrl2);
-            newsValues.put(NewsEntry._IMAGE_URL_3, imageUrl3);
-
-            return newsValues;
         }
     }
 
