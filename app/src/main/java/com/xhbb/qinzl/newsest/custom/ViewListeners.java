@@ -16,19 +16,7 @@ public class ViewListeners {
         swipeRefreshLayout.setOnRefreshListener(onRefreshListener);
     }
 
-    @BindingAdapter({"android:onScrollStateChanged"})
-    public static void addOnScrollListener(RecyclerView recyclerView,
-                                           OnScrollStateChangedListener onScrollStateChangedListener) {
-        addOnScrollListener(recyclerView, onScrollStateChangedListener, null);
-    }
-
-    @BindingAdapter({"android:onScrolled"})
-    public static void addOnScrollListener(RecyclerView recyclerView,
-                                           OnScrolledListener onScrolledListener) {
-        addOnScrollListener(recyclerView, null, onScrolledListener);
-    }
-
-    @BindingAdapter({"android:onScrollStateChanged", "android:onScrolled"})
+    @BindingAdapter(value = {"android:onScrollStateChanged", "android:onScrolled"}, requireAll = false)
     public static void addOnScrollListener(RecyclerView recyclerView,
                                            final OnScrollStateChangedListener onScrollStateChangedListener,
                                            final OnScrolledListener onScrolledListener) {
