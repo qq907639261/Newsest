@@ -20,6 +20,10 @@ public class ViewListeners {
     public static void addOnScrollListener(RecyclerView recyclerView,
                                            final OnScrollStateChangedListener onScrollStateChangedListener,
                                            final OnScrolledListener onScrolledListener) {
+        if (onScrollStateChangedListener == null && onScrolledListener == null) {
+            return;
+        }
+
         recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
             @Override
             public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
